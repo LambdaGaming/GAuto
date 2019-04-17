@@ -48,7 +48,7 @@ hook.Add( "PlayerButtonUp", "AM_KeyPressUp", function( ply, key )
 		if ply:InVehicle() then
 			if key == KEY_H then
 				net.Start( "AM_VehicleHornStop" )
-				net.SendToServer()
+				net.SendToServer() --Not sure if this the most optimised way to do this
 			end
 		end
 	end

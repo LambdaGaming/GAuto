@@ -26,8 +26,8 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 	if !IsValid( ent ) then return end
 	timer.Simple( 0.1, function() --Small timer because the model isn't seen the instant this hook is called
 		if !IsValid( ent ) then return end
-		if ent:GetModel() == "models/nova/airboat_seat.mdl" then return end --Prevents seats from being able to be locked and such
 		local vehmodel = ent:GetModel()
+		if vehmodel == "models/nova/airboat_seat.mdl" then return end --Prevents seats from being able to be locked and such
 		if ent:GetClass() == "prop_vehicle_jeep" then
 			if AM_HealthEnabled > 0 then
 				ent:SetNWInt( "AM_VehicleHealth", tonumber(AM_VehicleHealth( vehmodel )) ) --Sets vehicle health if the health system is enabled
@@ -51,6 +51,7 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 					ent.seat[i]:SetAngles( ent:WorldToLocalAngles( vehseats[i].ang ) )
 					ent.seat[i]:Spawn()
 					ent.seat[i]:SetKeyValue( "limitview", 0 )
+					ent.seat[i]:SetVehicleEntryAnim( false )
 					--ent.seat[i]:SetNoDraw( true )
 					--ent.seat[i]:SetNotSolid( true )
 					ent.seat[i]:DrawShadow( false )
@@ -128,6 +129,7 @@ hook.Add( "EntityTakeDamage", "AM_TakeDamage", function( ent, dmg )
 			ent:SetNWInt( "AM_VehicleHealth", ent:GetNWInt( "AM_VehicleHealth" ) - d )
 			if ent:GetNWInt( "AM_VehicleHealth" ) <= 0 then
 				ent:Fire( "turnoff", "", 0.01 )
+				ent:Ignite()
 			end
 		end
 	end
@@ -151,7 +153,7 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 			for i = 1, table.Count( ent.seat ) do
 				local seatdist = ply:GetPos():DistToSqr( ent.seat[i]:GetPos() )
 				--if seatdist < entdist then
-					ply:EnterVehicle( ent.seat[2] )
+					ply:EnterVehicle( ent.seat[i] )
 				--end
 			end
 		end
