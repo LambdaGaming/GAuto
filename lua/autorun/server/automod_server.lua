@@ -121,11 +121,14 @@ hook.Add( "PlayerLeaveVehicle", "AM_LeaveVehicle", function( ply, ent )
 end )
 
 hook.Add( "EntityTakeDamage", "AM_TakeDamage", function( ent, dmg )
-	print(true)
+	//print(true)
 	if AM_HealthEnabled > 0 then
 		local d = dmg:GetDamage()
 		if ent:GetClass() == "prop_vehicle_jeep" then
 			ent:SetNWInt( "AM_VehicleHealth", ent:GetNWInt( "AM_VehicleHealth" ) - d )
+			if ent:GetNWInt( "AM_VehicleHealth" ) <= 0 then
+				ent:Fire( "turnoff", "", 0.01 )
+			end
 		end
 	end
 end )

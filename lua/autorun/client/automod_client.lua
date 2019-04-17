@@ -14,7 +14,7 @@ hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it
 			surface.SetTextColor( 255, 255, 255, 255 )
 			surface.SetTextPos( 1500, ScrH() - 155 )
 		    if AM_HealthEnabled then
-			    surface.DrawText( vehicle:GetNWInt( "AM_VehicleHealth" ).."/"..vehicle:GetNWInt( "AM_VehicleMaxHealth" ) )
+			    surface.DrawText( math.Clamp( vehicle:GetNWInt( "AM_VehicleHealth" ), 0, vehicle:GetNWInt( "AM_VehicleMaxHealth" ) ).."/"..vehicle:GetNWInt( "AM_VehicleMaxHealth" ) )
 			else
 			    surface.DrawText( "Health Disabled" )
 			end
