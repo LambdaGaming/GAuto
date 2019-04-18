@@ -12,7 +12,7 @@ function AM_HornSound( model )
 			if v.HornSound then
 				return v.HornSound
 			else
-				return ""
+				return "automod/horn.wav"
 			end
 		end
 	end
@@ -40,6 +40,11 @@ function AM_EnginePos( model )
 			end
 		end
 	end
+end
+
+function AM_NumSeats( veh )
+	if !veh:IsVehicle() or veh:GetClass() != "prop_vehicle_jeep" then return end
+	return #veh.seat
 end
 
 hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
