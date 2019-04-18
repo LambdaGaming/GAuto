@@ -9,7 +9,11 @@ local AM_HornEnabled = GetConVar( "AM_Config_HornEnabled" ):GetInt()
 function AM_HornSound( model )
 	for k,v in pairs( AM_Vehicles ) do
 		if k == model then
-			return v.HornSound
+			if v.HornSound then
+				return v.HornSound
+			else
+				return ""
+			end
 		end
 	end
 end
@@ -17,7 +21,11 @@ end
 function AM_VehicleHealth( model )
 	for k,v in pairs( AM_Vehicles ) do
 		if k == model then
-			return v.MaxHealth
+			if v.MaxHealth then
+				return v.MaxHealth
+			else
+				return 100
+			end
 		end
 	end
 end
@@ -25,7 +33,11 @@ end
 function AM_EnginePos( model )
 	for k,v in pairs( AM_Vehicles ) do
 		if k == model then
-			return v.EnginePos
+			if v.EnginePos then
+				return v.EnginePos
+			else
+				return Vector( 0, 0, 0 )
+			end
 		end
 	end
 end
