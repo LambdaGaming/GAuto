@@ -22,16 +22,31 @@ function AM_VehicleHealth( model )
 	end
 end
 
+function AM_EnginePos( model )
+	for k,v in pairs( AM_Vehicles ) do
+		if k == model then
+			return v.EnginePos
+		end
+	end
+end
+
 hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 	if !IsValid( ent ) then return end
 	timer.Simple( 0.1, function() --Small timer because the model isn't seen the instant this hook is called
 		if !IsValid( ent ) then return end
 		local vehmodel = ent:GetModel()
-		if vehmodel == "models/nova/airboat_seat.mdl" then return end --Prevents seats from being able to be locked and such
 		if ent:GetClass() == "prop_vehicle_jeep" then
+			if table.HasValue( AM_Config_Blacklist, vehmodel ) then return end --Prevents blacklisted models from being affected
 			if AM_HealthEnabled > 0 then
-				ent:SetNWInt( "AM_VehicleHealth", tonumber(AM_VehicleHealth( vehmodel )) ) --Sets vehicle health if the health system is enabled
-				ent:SetNWInt( "AM_VehicleMaxHealth", tonumber(AM_VehicleHealth( vehmodel )) )
+				ent:SetNWInt( "AM_VehicleHealth", AM_VehicleHealth( vehmodel ) ) --Sets vehicle health if the health system is enabled
+				ent:SetNWInt( "AM_VehicleMaxHealth", AM_VehicleHealth( vehmodel ) )
+				ent:SetNWBool( "AM_IsSmoking", false )
+				ent:SetNWVector( "AM_EnginePos", AM_EnginePos( vehmodel ) )
+				ent:AddCallback( "PhysicsCollide", function( ent, data )
+					if data.OurOldVelocity:Length() > 10 then
+						ent:SetNWInt( "AM_VehicleHealth", ent:GetNWInt( "AM_VehicleHealth" ) - ( 20 ) )
+					end
+				end )
 			end
 			if AM_HornEnabled > 0 then
 				ent:SetNWString( "AM_HornSound", AM_HornSound( vehmodel ) )
@@ -47,8 +62,8 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 					ent.seat[i] = ents.Create( "prop_vehicle_prisoner_pod" )
 					ent.seat[i]:SetModel( "models/nova/airboat_seat.mdl" )
 					ent.seat[i]:SetParent( ent )
-					ent.seat[i]:SetPos( ent:WorldToLocal( vehseats[i].pos ) )
-					ent.seat[i]:SetAngles( ent:WorldToLocalAngles( vehseats[i].ang ) )
+					ent.seat[i]:SetPos( ent:LocalToWorld( vehseats[i].pos ) )
+					ent.seat[i]:SetAngles( ent:LocalToWorldAngles( vehseats[i].ang ) )
 					ent.seat[i]:Spawn()
 					ent.seat[i]:SetKeyValue( "limitview", 0 )
 					ent.seat[i]:SetVehicleEntryAnim( false )
@@ -85,7 +100,7 @@ end )
 hook.Add( "Think", "AM_VehicleThink", function()
 	for k,v in pairs( ents.FindByClass( "prop_vehicle_jeep" ) ) do
 		if !IsValid( v ) or v == nil then return end
-		if !v:IsEngineStarted() then
+		if !v:IsEngineStarted() then --This part is a mess but it seems to be working fine so i'm leaving it for now
 			if v.laststeer == 1 then
 				if v:GetSteering() == -1 then return end
 				v:SetSteering( 1, 1 )
@@ -122,14 +137,19 @@ hook.Add( "PlayerLeaveVehicle", "AM_LeaveVehicle", function( ply, ent )
 end )
 
 hook.Add( "EntityTakeDamage", "AM_TakeDamage", function( ent, dmg )
-	//print(true)
 	if AM_HealthEnabled > 0 then
+		if ent:IsOnFire() then return end --Prevent car from constantly igniting itself if it's on fire
 		local d = dmg:GetDamage()
 		if ent:GetClass() == "prop_vehicle_jeep" then
-			ent:SetNWInt( "AM_VehicleHealth", ent:GetNWInt( "AM_VehicleHealth" ) - d )
+			if dmg:IsBulletDamage() then
+				ent:SetNWInt( "AM_VehicleHealth", ent:GetNWInt( "AM_VehicleHealth" ) - d * 50 )
+			else
+				ent:SetNWInt( "AM_VehicleHealth", ent:GetNWInt( "AM_VehicleHealth" ) - d )
+			end
 			if ent:GetNWInt( "AM_VehicleHealth" ) <= 0 then
 				ent:Fire( "turnoff", "", 0.01 )
 				ent:Ignite()
+				ent:SetNWBool( "AM_IsSmoking", true )
 			end
 		end
 	end

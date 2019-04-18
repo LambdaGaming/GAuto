@@ -6,15 +6,16 @@ local AM_BrakeLockEnabled = GetConVar( "AM_Config_BrakeLockEnabled" ):GetBool()
 local AM_SeatsEnabled = GetConVar( "AM_Config_SeatsEnabled" ):GetBool()
 
 hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it works alongside photon and seat weaponizer mods
-	local vehicle = LocalPlayer():GetVehicle()
-	if LocalPlayer():InVehicle() then
+	local ply = LocalPlayer()
+	if ply:InVehicle() then
+		local vehicle = ply:GetVehicle()
 		if vehicle:GetClass() == "prop_vehicle_jeep" then
 			draw.RoundedBox( 5, 1500, ScrH() - 155, 200, 150, Color(25,25,25,200) )
 			surface.SetFont( "Trebuchet18" )
 			surface.SetTextColor( 255, 255, 255, 255 )
 			surface.SetTextPos( 1500, ScrH() - 155 )
 		    if AM_HealthEnabled then
-			    surface.DrawText( math.Clamp( vehicle:GetNWInt( "AM_VehicleHealth" ), 0, vehicle:GetNWInt( "AM_VehicleMaxHealth" ) ).."/"..vehicle:GetNWInt( "AM_VehicleMaxHealth" ) )
+			    surface.DrawText( math.Clamp( math.Round( vehicle:GetNWInt( "AM_VehicleHealth" ), 1 ), 0, vehicle:GetNWInt( "AM_VehicleMaxHealth" ) ).."/"..vehicle:GetNWInt( "AM_VehicleMaxHealth" ) )
 			else
 			    surface.DrawText( "Health Disabled" )
 			end
@@ -53,3 +54,14 @@ hook.Add( "PlayerButtonUp", "AM_KeyPressUp", function( ply, key )
 		end
 	end
 end )
+
+--[[hook.Add( "Think", "VehicleSmoke", function()
+	local ply = LocalPlayer()
+	
+	if ent:GetClass() == "prop_vehicle_jeep" then
+		if ent:GetNWBool( "AM_IsSmoking" ) then
+			local smoke = ParticleEmitter( ent:GetNWVector( "AM_EnginePos" ), true)
+
+		end
+	end
+end )]]
