@@ -1,10 +1,10 @@
 
-local AM_HealthEnabled = GetConVar( "AM_Config_HealthEnabled" ):GetInt()
-local AM_WheelLockEnabled = GetConVar( "AM_Config_WheelLockEnabled" ):GetInt()
-local AM_DoorLockEnabled = GetConVar( "AM_Config_LockEnabled" ):GetInt()
-local AM_BrakeLockEnabled = GetConVar( "AM_Config_BrakeLockEnabled" ):GetInt()
-local AM_SeatsEnabled = GetConVar( "AM_Config_SeatsEnabled" ):GetInt()
-local AM_HornEnabled = GetConVar( "AM_Config_HornEnabled" ):GetInt()
+local AM_HealthEnabled = GetConVar( "AM_Config_HealthEnabled" ):GetBool()
+local AM_WheelLockEnabled = GetConVar( "AM_Config_WheelLockEnabled" ):GetBool()
+local AM_DoorLockEnabled = GetConVar( "AM_Config_LockEnabled" ):GetBool()
+local AM_BrakeLockEnabled = GetConVar( "AM_Config_BrakeLockEnabled" ):GetBool()
+local AM_SeatsEnabled = GetConVar( "AM_Config_SeatsEnabled" ):GetBool()
+local AM_HornEnabled = GetConVar( "AM_Config_HornEnabled" ):GetBool()
 
 function AM_HornSound( model )
 	for k,v in pairs( AM_Vehicles ) do
@@ -12,7 +12,7 @@ function AM_HornSound( model )
 			if v.HornSound then
 				return v.HornSound
 			else
-				return "automod/horn.wav"
+				return "automod/carhorn.wav"
 			end
 		end
 	end
@@ -54,7 +54,7 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 		local vehmodel = ent:GetModel()
 		if ent:GetClass() == "prop_vehicle_jeep" then
 			if table.HasValue( AM_Config_Blacklist, vehmodel ) then return end --Prevents blacklisted models from being affected
-			if AM_HealthEnabled > 0 then
+			if AM_HealthEnabled then
 				ent:SetNWInt( "AM_VehicleHealth", AM_VehicleHealth( vehmodel ) ) --Sets vehicle health if the health system is enabled
 				ent:SetNWInt( "AM_VehicleMaxHealth", AM_VehicleHealth( vehmodel ) )
 				ent:SetNWBool( "AM_IsSmoking", false )
@@ -65,13 +65,13 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 					end
 				end )
 			end
-			if AM_HornEnabled > 0 then
+			if AM_HornEnabled then
 				ent:SetNWString( "AM_HornSound", AM_HornSound( vehmodel ) )
 			end
-			if AM_DoorLockEnabled > 0 then
+			if AM_DoorLockEnabled then
 				ent:SetNWBool( "AM_DoorsLocked", false ) --Sets door lock status if the setting is enabled
 			end
-			if AM_SeatsEnabled > 0 then
+			if AM_SeatsEnabled then
 				if !AM_Vehicles or !AM_Vehicles[vehmodel] or !AM_Vehicles[vehmodel].Seats then return end
 				local vehseats = AM_Vehicles[vehmodel].Seats
 				ent.seat = {}
@@ -85,13 +85,12 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 					ent.seat[i]:SetKeyValue( "limitview", 0 )
 					ent.seat[i]:SetVehicleEntryAnim( false )
 					--ent.seat[i]:SetNoDraw( true )
-					--ent.seat[i]:SetNotSolid( true )
+					ent.seat[i]:SetNotSolid( true )
 					ent.seat[i]:DrawShadow( false )
 					table.Merge( ent.seat[i], { HandleAnimation = function( _, ply )
 						return ply:SelectWeightedSequence( ACT_HL2MP_SIT )
 					end } )
 					ent.seat[i]:GetPhysicsObject():EnableMotion( false )
-					ent.seat[i]:GetPhysicsObject():EnableDrag(false) 
 					ent.seat[i]:GetPhysicsObject():SetMass(1)
 					ent:DeleteOnRemove( ent.seat[i] )
 				end
@@ -134,7 +133,7 @@ end )
 
 hook.Add( "PlayerLeaveVehicle", "AM_LeaveVehicle", function( ply, ent )
 	ent.exitcooldown = CurTime() + 0.5
-	if AM_BrakeLockEnabled > 0 then
+	if AM_BrakeLockEnabled then
 		if ply:KeyDown( IN_JUMP ) then
 			ent:Fire( "HandBrakeOn", "", 0.01 )
 			ent:EmitSound( "automod/brake.mp3" )
@@ -142,7 +141,7 @@ hook.Add( "PlayerLeaveVehicle", "AM_LeaveVehicle", function( ply, ent )
 			ent:Fire( "HandBrakeOff", "", 0.01 )
 		end
 	end
-	if AM_WheelLockEnabled > 0 then
+	if AM_WheelLockEnabled then
 		if ply.laststeer == 1 then
 			ent.laststeer = 1
 		elseif ply.laststeer == -1 then
@@ -154,7 +153,7 @@ hook.Add( "PlayerLeaveVehicle", "AM_LeaveVehicle", function( ply, ent )
 end )
 
 hook.Add( "EntityTakeDamage", "AM_TakeDamage", function( ent, dmg )
-	if AM_HealthEnabled > 0 then
+	if AM_HealthEnabled then
 		if ent:IsOnFire() then return end --Prevent car from constantly igniting itself if it's on fire
 		local d = dmg:GetDamage()
 		if ent:GetClass() == "prop_vehicle_jeep" then
@@ -184,14 +183,24 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 				ply:ChatPrint( "Vehicle unlocked." )
 			end
 		end
-		if !ent:GetNWBool( "AM_DoorsLocked" ) then
-			local entdist = ply:GetPos():DistToSqr( ent:GetPos() )
+		if !ent:GetNWBool( "AM_DoorsLocked" ) and AM_SeatsEnabled then
+			--if !IsValid( ent:GetDriver() ) then return end
+			--[[local entdist = ply:GetPos():DistToSqr( ent:GetPos() )
 			if !ent.seat then return end
 			for i = 1, table.Count( ent.seat ) do
 				local seatdist = ply:GetPos():DistToSqr( ent.seat[i]:GetPos() )
 				--if seatdist < entdist then
 					ply:EnterVehicle( ent.seat[i] )
 				--end
+			end]]
+			local seat = ent.seat[1]
+			if !IsValid( seat ) then return end
+			local dist = ( seat:GetPos() - ply:GetPos() ):Length()
+			for i=1, table.Count( ent.seat ) do
+				local distance = ( ent.seat[i]:GetPos() - ply:GetPos() ):Length()
+				if distance < dist then
+					ply:EnterVehicle( ent.seat[i] )
+				end
 			end
 		end
 	end
@@ -221,7 +230,7 @@ end )
 
 util.AddNetworkString( "AM_VehicleHorn" )
 net.Receive( "AM_VehicleHorn", function( len, ply )
-	if AM_HornEnabled > 0 then
+	if AM_HornEnabled then
 		if IsValid( ply ) and ply:IsPlayer() then
 			local veh = ply:GetVehicle()
 			veh.AM_CarHorn = CreateSound( veh, veh:GetNWString( "AM_HornSound" ) )
