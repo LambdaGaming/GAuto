@@ -19,12 +19,12 @@ AM_Vehicles["models/lonewolfie/dodge_monaco.mdl"] = {
 	EnginePos = Vector( 42, -75, -2 ),
 	Seats = {
 		{
-			pos = Vector( 30, -20, 6 ),
+			pos = Vector( 25, -30, 15 ),
 			ang = Angle( 0, 0, 0 )
 		},
 		{
-			pos = Vector( -17, 21, -11 ),
-			ang = Angle( 6, 6, 6 )
+			pos = Vector( 25, 5, 15 ),
+			ang = Angle( 0, 0, 0 )
 		}
 	}
 }

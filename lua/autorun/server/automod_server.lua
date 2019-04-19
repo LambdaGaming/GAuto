@@ -60,7 +60,7 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 				ent:SetNWBool( "AM_IsSmoking", false )
 				ent:SetNWVector( "AM_EnginePos", AM_EnginePos( vehmodel ) )
 				ent:AddCallback( "PhysicsCollide", function( ent, data )
-					if data.OurOldVelocity:Length() > 10 then
+					if data.OurOldVelocity:Length() > 1000 then
 						ent:SetNWInt( "AM_VehicleHealth", ent:GetNWInt( "AM_VehicleHealth" ) - ( 20 ) )
 					end
 				end )
@@ -96,21 +96,32 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 				end
 			end
 		end
-		ent.AMReady = true --Lets the addon know when the vehicle is fully initialized
+		//ent.AMReady = true --Lets the addon know when the vehicle is fully initialized
 	end )
 end )
 
 hook.Add( "KeyPress", "AM_KeyPressServer", function( ply, key )
-	if !ply:InVehicle() then return end
-	if AM_WheelLockEnabled then
-		if key == IN_MOVELEFT then
-			ply.laststeer = -1
-		elseif key == IN_MOVERIGHT then
-			ply.laststeer = 1
-		elseif key == IN_FORWARD then
-			ply.laststeer = 0
+	if ply:InVehicle() then
+		if AM_WheelLockEnabled then
+			if key == IN_MOVELEFT then
+				ply.laststeer = -1
+			elseif key == IN_MOVERIGHT then
+				ply.laststeer = 1
+			elseif key == IN_FORWARD then
+				ply.laststeer = 0
+			end
 		end
 	end
+	if ply:InVehicle() and ply:GetVehicle():GetClass() == "prop_vehicle_prisoner_pod" then
+		if key == IN_USE then
+			ply:ExitVehicle()
+			ply.AM_SeatCooldown = CurTime() + 1
+		end
+	end
+end )
+
+hook.Add( "CanPlayerEnterVehicle", "AM_CanEnterVehicle", function( ply, veh, role )
+	if ply.AM_SeatCooldown and ply.AM_SeatCooldown > CurTime() then return false end
 end )
 
 hook.Add( "Think", "AM_VehicleThink", function()
@@ -184,7 +195,8 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 			end
 		end
 		if !ent:GetNWBool( "AM_DoorsLocked" ) and AM_SeatsEnabled then
-			--if !IsValid( ent:GetDriver() ) then return end
+			//if ply:InVehicle() then ply:ExitVehicle() return end
+			if !IsValid( ent:GetDriver() ) then return end
 			--[[local entdist = ply:GetPos():DistToSqr( ent:GetPos() )
 			if !ent.seat then return end
 			for i = 1, table.Count( ent.seat ) do
