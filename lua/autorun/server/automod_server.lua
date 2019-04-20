@@ -47,12 +47,20 @@ function AM_NumSeats( veh )
 	return #veh.seat
 end
 
+function AM_DestroyCheck( veh )
+	if veh:GetNWInt( "AM_VehicleHealth" ) <= 0 then
+		veh:Fire( "turnoff", "", 0.01 )
+		veh:Ignite()
+		veh:SetNWBool( "AM_IsSmoking", true )
+	end
+end
+
 hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 	if !IsValid( ent ) then return end
 	timer.Simple( 0.1, function() --Small timer because the model isn't seen the instant this hook is called
 		if !IsValid( ent ) then return end
 		local vehmodel = ent:GetModel()
-		if ent:GetClass() == "prop_vehicle_jeep" then
+		if ent:IsVehicle() and ent:GetClass() == "prop_vehicle_jeep" then
 			if table.HasValue( AM_Config_Blacklist, vehmodel ) then return end --Prevents blacklisted models from being affected
 			if AM_HealthEnabled then
 				ent:SetNWInt( "AM_VehicleHealth", AM_VehicleHealth( vehmodel ) ) --Sets vehicle health if the health system is enabled
@@ -60,8 +68,11 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 				ent:SetNWBool( "AM_IsSmoking", false )
 				ent:SetNWVector( "AM_EnginePos", AM_EnginePos( vehmodel ) )
 				ent:AddCallback( "PhysicsCollide", function( ent, data )
-					if data.OurOldVelocity:Length() > 1000 then
-						ent:SetNWInt( "AM_VehicleHealth", ent:GetNWInt( "AM_VehicleHealth" ) - ( 20 ) )
+					local vel = data.OurOldVelocity:Length()
+					if vel > 1000 then
+						--if data.HitEntity:IsWorld() then return end
+						ent:SetNWInt( "AM_VehicleHealth", ent:GetNWInt( "AM_VehicleHealth" ) - ( vel / 50 ) )
+						AM_DestroyCheck( ent )
 					end
 				end )
 			end
@@ -173,11 +184,7 @@ hook.Add( "EntityTakeDamage", "AM_TakeDamage", function( ent, dmg )
 			else
 				ent:SetNWInt( "AM_VehicleHealth", ent:GetNWInt( "AM_VehicleHealth" ) - d )
 			end
-			if ent:GetNWInt( "AM_VehicleHealth" ) <= 0 then
-				ent:Fire( "turnoff", "", 0.01 )
-				ent:Ignite()
-				ent:SetNWBool( "AM_IsSmoking", true )
-			end
+			AM_DestroyCheck( ent )
 		end
 	end
 end )
