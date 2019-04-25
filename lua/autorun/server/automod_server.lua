@@ -240,7 +240,7 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 end )
 
 hook.Add( "lockpickStarted", "AM_Lockpick", function( ply, ent, trace )
-	if AM_
+	if !AM_AlarmEnabled then return end
 	if ent:IsVehicle() and ent:GetClass() == "prop_vehicle_jeep" then
 		ent:EmitSound( "automod/alarm.mp3" )
 	end
