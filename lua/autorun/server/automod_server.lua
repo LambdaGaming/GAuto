@@ -252,16 +252,12 @@ net.Receive( "AM_VehicleLock", function( len, ply )
 		if IsValid( ply ) and ply:IsPlayer() then
 			if !ply:GetVehicle():GetNWBool( "AM_DoorsLocked" ) then
 				ply:ChatPrint( "Vehicle locked." )
-				if SERVER then
-					ply:GetVehicle():Fire( "Lock", "", 0.01 )
-				end
+				ply:GetVehicle():Fire( "Lock", "", 0.01 )
 				ply:GetVehicle():SetNWBool( "AM_DoorsLocked", true )
 				ply:GetVehicle():SetNWEntity( "AM_LockOwner", ply )
 			else
 				ply:ChatPrint( "Vehicle unlocked." )
-				if SERVER then
-					ply:GetVehicle():Fire( "Unlock", "", 0.01 )
-				end
+				ply:GetVehicle():Fire( "Unlock", "", 0.01 )
 				ply:GetVehicle():SetNWBool( "AM_DoorsLocked", false )
 			end
 		end
