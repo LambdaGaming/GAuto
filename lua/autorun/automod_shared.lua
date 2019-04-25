@@ -6,7 +6,7 @@
     3. Steering wheel remains in the position it was in when the player leaves the vehicle *DONE*
     4. Vehicle seat system *NOT DONE*
     5. Horns *DONE*
-    6. Vehicle locking system (with alarm) *Still needs alarm*
+    6. Vehicle locking system (with alarm) *DONE*
 ]]
 
 CreateConVar( "AM_Config_HealthEnabled", 1, FCVAR_ARCHIVE, "Enable or disable vehicles taking damage." )

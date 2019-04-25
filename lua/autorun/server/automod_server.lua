@@ -64,8 +64,7 @@ function AM_DestroyCheck( veh )
 end
 
 function AM_TakeDamage( veh, dam )
-	if !AM_HealthEnabled then return end
-	if !veh:IsVehicle() or veh:GetClass() != "prop_vehicle_jeep" then return end
+	--if !AM_HealthEnabled then return end
 	local health = veh:GetNWInt( "AM_VehicleHealth" )
 	local maxhealth = veh:GetNWInt( "AM_VehicleMaxHealth" )
 	veh:SetNWInt( math.Clamp( health - dam, 0, maxhealth ) )
@@ -218,14 +217,6 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 		if !ent:GetNWBool( "AM_DoorsLocked" ) and AM_SeatsEnabled then
 			//if ply:InVehicle() then ply:ExitVehicle() return end
 			if !IsValid( ent:GetDriver() ) then return end
-			--[[local entdist = ply:GetPos():DistToSqr( ent:GetPos() )
-			if !ent.seat then return end
-			for i = 1, table.Count( ent.seat ) do
-				local seatdist = ply:GetPos():DistToSqr( ent.seat[i]:GetPos() )
-				--if seatdist < entdist then
-					ply:EnterVehicle( ent.seat[i] )
-				--end
-			end]]
 			local seat = ent.seat[1]
 			if !IsValid( seat ) then return end
 			local dist = ( seat:GetPos() - ply:GetPos() ):Length()

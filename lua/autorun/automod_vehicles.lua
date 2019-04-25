@@ -14,7 +14,7 @@ AM_Vehicles["models/buggy.mdl"] = {
 }
 
 AM_Vehicles["models/lonewolfie/dodge_monaco.mdl"] = {
-	HornSound = "vcmod/horn/light.wav",
+	HornSound = "automod/carhorn.wav",
 	MaxHealth = 100,
 	EnginePos = Vector( 42, -75, -2 ),
 	Seats = {
