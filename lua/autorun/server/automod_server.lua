@@ -1,19 +1,27 @@
 
+--Health and damage convars
 local AM_HealthEnabled = GetConVar( "AM_Config_HealthEnabled" ):GetBool()
+local AM_BulletDamageEnabled = GetConVar( "AM_Config_BulletDamageEnabled" ):GetBool()
+local AM_ExplosionEnabled = GetConVar( "AM_Config_DamageExplosionEnabled" ):GetBool()
+local AM_ExplodeRemoveEnabled = GetConVar( "AM_Config_ExplodeRemoveEnabled" ):GetBool()
+local AM_ExplodeRemoveTime = GetConVar( "AM_Config_ExplodeRemoveTime" ):GetInt()
+
+--All other convars
 local AM_WheelLockEnabled = GetConVar( "AM_Config_WheelLockEnabled" ):GetBool()
 local AM_DoorLockEnabled = GetConVar( "AM_Config_LockEnabled" ):GetBool()
 local AM_BrakeLockEnabled = GetConVar( "AM_Config_BrakeLockEnabled" ):GetBool()
 local AM_SeatsEnabled = GetConVar( "AM_Config_SeatsEnabled" ):GetBool()
 local AM_HornEnabled = GetConVar( "AM_Config_HornEnabled" ):GetBool()
+local AM_AlarmEnabled = GetConVar( "AM_Config_LockAlarmEnabled" ):GetBool()
+
 
 function AM_HornSound( model )
 	for k,v in pairs( AM_Vehicles ) do
 		if k == model then
 			if v.HornSound then
 				return v.HornSound
-			else
-				return "automod/carhorn.wav"
 			end
+			return "automod/carhorn.wav"
 		end
 	end
 end
@@ -23,9 +31,8 @@ function AM_VehicleHealth( model )
 		if k == model then
 			if v.MaxHealth then
 				return v.MaxHealth
-			else
-				return 100
 			end
+			return 100
 		end
 	end
 end
@@ -35,15 +42,16 @@ function AM_EnginePos( model )
 		if k == model then
 			if v.EnginePos then
 				return v.EnginePos
-			else
-				return Vector( 0, 0, 0 )
 			end
+			return Vector( 0, 0, 0 )
 		end
 	end
 end
 
 function AM_NumSeats( veh )
-	if !veh:IsVehicle() or veh:GetClass() != "prop_vehicle_jeep" then return end
+	if !veh:IsVehicle() or veh:GetClass() != "prop_vehicle_jeep" or !veh.seat then
+		return 0
+	end
 	return #veh.seat
 end
 
@@ -53,6 +61,15 @@ function AM_DestroyCheck( veh )
 		veh:Ignite()
 		veh:SetNWBool( "AM_IsSmoking", true )
 	end
+end
+
+function AM_TakeDamage( veh, dam )
+	if !AM_HealthEnabled then return end
+	if !veh:IsVehicle() or veh:GetClass() != "prop_vehicle_jeep" then return end
+	local health = veh:GetNWInt( "AM_VehicleHealth" )
+	local maxhealth = veh:GetNWInt( "AM_VehicleMaxHealth" )
+	veh:SetNWInt( math.Clamp( health - dam, 0, maxhealth ) )
+	AM_DestroyCheck( veh )
 end
 
 hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
@@ -71,8 +88,7 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 					local vel = data.OurOldVelocity:Length()
 					if vel > 1000 then
 						--if data.HitEntity:IsWorld() then return end
-						ent:SetNWInt( "AM_VehicleHealth", ent:GetNWInt( "AM_VehicleHealth" ) - ( vel / 50 ) )
-						AM_DestroyCheck( ent )
+						AM_TakeDamage( ent, vel / 50 )
 					end
 				end )
 			end
@@ -107,7 +123,6 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 				end
 			end
 		end
-		//ent.AMReady = true --Lets the addon know when the vehicle is fully initialized
 	end )
 end )
 
@@ -179,12 +194,11 @@ hook.Add( "EntityTakeDamage", "AM_TakeDamage", function( ent, dmg )
 		if ent:IsOnFire() then return end --Prevent car from constantly igniting itself if it's on fire
 		local d = dmg:GetDamage()
 		if ent:GetClass() == "prop_vehicle_jeep" then
-			if dmg:IsBulletDamage() then
-				ent:SetNWInt( "AM_VehicleHealth", ent:GetNWInt( "AM_VehicleHealth" ) - d * 50 )
+			if dmg:IsBulletDamage() and AM_BulletDamageEnabled then
+				AM_TakeDamage( ent, d * 50 )
 			else
-				ent:SetNWInt( "AM_VehicleHealth", ent:GetNWInt( "AM_VehicleHealth" ) - d )
+				AM_TakeDamage( ent, d )
 			end
-			AM_DestroyCheck( ent )
 		end
 	end
 end )
@@ -222,6 +236,13 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 				end
 			end
 		end
+	end
+end )
+
+hook.Add( "lockpickStarted", "AM_Lockpick", function( ply, ent, trace )
+	if AM_
+	if ent:IsVehicle() and ent:GetClass() == "prop_vehicle_jeep" then
+		ent:EmitSound( "automod/alarm.mp3" )
 	end
 end )
 
