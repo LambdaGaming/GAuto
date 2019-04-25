@@ -15,7 +15,7 @@ hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it
 			surface.SetTextColor( 255, 255, 255, 255 )
 			surface.SetTextPos( 1500, ScrH() - 155 )
 		    if AM_HealthEnabled then
-			    surface.DrawText( math.Clamp( math.Round( vehicle:GetNWInt( "AM_VehicleHealth" ), 1 ), 0, vehicle:GetNWInt( "AM_VehicleMaxHealth" ) ).."/"..vehicle:GetNWInt( "AM_VehicleMaxHealth" ) )
+			    surface.DrawText( vehicle:GetNWInt( "AM_VehicleHealth" ).."/"..vehicle:GetNWInt( "AM_VehicleMaxHealth" ) )
 			else
 			    surface.DrawText( "Health Disabled" )
 			end
@@ -29,7 +29,7 @@ hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it
 	end
 end )
 
-hook.Add( "PlayerButtonDown", "AM_KeyPressDown", function( ply, key ) --Possible alternative to using the IN_ keys, needs tested
+hook.Add( "PlayerButtonDown", "AM_KeyPressDown", function( ply, key )
 	if IsFirstTimePredicted() then
 		if ply:InVehicle() then
 			if key == KEY_N then
