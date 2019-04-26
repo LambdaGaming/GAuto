@@ -139,7 +139,7 @@ hook.Add( "KeyPress", "AM_KeyPressServer", function( ply, key )
 			elseif key == IN_MOVERIGHT then
 				ply.laststeer = 1
 			elseif key == IN_FORWARD then
-				ply.laststeer =  will
+				ply.laststeer =  0
 			end
 		end
 	end
