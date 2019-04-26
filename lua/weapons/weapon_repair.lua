@@ -26,12 +26,13 @@ function SWEP:PrimaryAttack()
     local tr = self.Owner:GetEyeTrace().Entity
     if tr:GetClass() == "prop_vehicle_jeep" then
     	if tr:GetNWInt( "AM_VehicleHealth" ) < tr:GetNWInt( "AM_VehicleMaxHealth" ) then
-    		tr:SetNWInt( "AM_VehicleHealth" , math.Clamp( tr:GetNWInt( "AM_VehicleHealth" ) + 2, 0, tr:GetNWInt( "AM_VehicleMaxHealth" ) ) )
+    		AM_AddHealth( tr, 10 )
+            self:SendWeaponAnim( ACT_VM_SWINGMISS )
+            self.Owner:SetAnimation( PLAYER_ATTACK1 )
     		self.Owner:ChatPrint( "Vehicle Health: "..tr:GetNWInt( "AM_VehicleHealth" ) )
+        else
+            self.Owner:ChatPrint( "Vehicle is at max health!" )
     	end
     end
     self:SetNextPrimaryFire( CurTime() + 0.5 )
-end
-
-function SWEP:SecondaryAttack()
 end
