@@ -71,6 +71,12 @@ function AM_TakeDamage( veh, dam )
 	AM_DestroyCheck( veh )
 end
 
+function AM_AddHealth( veh, hp )
+	local health = veh:GetNWInt( "AM_VehicleHealth" )
+	local maxhealth = veh:GetNWInt( "AM_VehicleMaxHealth" )
+	veh:SetNWInt( math.Clamp( health + hp, 0, maxhealth ) )
+end
+
 hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 	if !IsValid( ent ) then return end
 	timer.Simple( 0.1, function() --Small timer because the model isn't seen the instant this hook is called
