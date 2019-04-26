@@ -15,7 +15,7 @@ local AM_HornEnabled = GetConVar( "AM_Config_HornEnabled" ):GetBool()
 local AM_AlarmEnabled = GetConVar( "AM_Config_LockAlarmEnabled" ):GetBool()
 
 
-function AM_HornSound( model )
+function AM_HornSound( model ) --Finds the set horn sound for the specified model, returns a default sound if none is found
 	for k,v in pairs( AM_Vehicles ) do
 		if k == model then
 			if v.HornSound then
@@ -26,7 +26,7 @@ function AM_HornSound( model )
 	end
 end
 
-function AM_VehicleHealth( model )
+function AM_VehicleHealth( model ) --Does the same as above but with the vehicle's health
 	for k,v in pairs( AM_Vehicles ) do
 		if k == model then
 			if v.MaxHealth then
@@ -37,7 +37,7 @@ function AM_VehicleHealth( model )
 	end
 end
 
-function AM_EnginePos( model )
+function AM_EnginePos( model ) --Does the same as above but with the vehicle's engine position
 	for k,v in pairs( AM_Vehicles ) do
 		if k == model then
 			if v.EnginePos then
@@ -48,14 +48,14 @@ function AM_EnginePos( model )
 	end
 end
 
-function AM_NumSeats( veh )
+function AM_NumSeats( veh ) --Returns the number of passenger seats that are attached to the vehicle
 	if !veh:IsVehicle() or veh:GetClass() != "prop_vehicle_jeep" or !veh.seat then
 		return 0
 	end
 	return #veh.seat
 end
 
-function AM_DestroyCheck( veh )
+function AM_DestroyCheck( veh ) --Disables the engine and sets the vehicle on fire if it's health is 0
 	if veh:GetNWInt( "AM_VehicleHealth" ) <= 0 then
 		veh:Fire( "turnoff", "", 0.01 )
 		veh:Ignite()
@@ -63,7 +63,7 @@ function AM_DestroyCheck( veh )
 	end
 end
 
-function AM_TakeDamage( veh, dam )
+function AM_TakeDamage( veh, dam ) --Takes away health from the vehicle, also runs the destroy check every time the health is set
 	--if !AM_HealthEnabled then return end
 	local health = veh:GetNWInt( "AM_VehicleHealth" )
 	local maxhealth = veh:GetNWInt( "AM_VehicleMaxHealth" )
@@ -71,7 +71,7 @@ function AM_TakeDamage( veh, dam )
 	AM_DestroyCheck( veh )
 end
 
-function AM_AddHealth( veh, hp )
+function AM_AddHealth( veh, hp ) --Adds health to the vehicle, nothing special
 	local health = veh:GetNWInt( "AM_VehicleHealth" )
 	local maxhealth = veh:GetNWInt( "AM_VehicleMaxHealth" )
 	veh:SetNWInt( math.Clamp( health + hp, 0, maxhealth ) )
@@ -91,14 +91,14 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 				ent:SetNWVector( "AM_EnginePos", AM_EnginePos( vehmodel ) )
 				ent:AddCallback( "PhysicsCollide", function( ent, data )
 					local vel = data.OurOldVelocity:Length()
-					if vel > 1000 then
+					if vel > 1000 then --Temporary until I can find a better way to take physical damage
 						--if data.HitEntity:IsWorld() then return end
 						AM_TakeDamage( ent, vel / 50 )
 					end
 				end )
 			end
 			if AM_HornEnabled then
-				ent:SetNWString( "AM_HornSound", AM_HornSound( vehmodel ) )
+				ent:SetNWString( "AM_HornSound", AM_HornSound( vehmodel ) ) --Sets horn sound of the setting is enabled
 			end
 			if AM_DoorLockEnabled then
 				ent:SetNWBool( "AM_DoorsLocked", false ) --Sets door lock status if the setting is enabled
@@ -139,11 +139,11 @@ hook.Add( "KeyPress", "AM_KeyPressServer", function( ply, key )
 			elseif key == IN_MOVERIGHT then
 				ply.laststeer = 1
 			elseif key == IN_FORWARD then
-				ply.laststeer = 0
+				ply.laststeer =  will
 			end
 		end
 	end
-	if ply:InVehicle() and ply:GetVehicle():GetClass() == "prop_vehicle_prisoner_pod" then
+	if ply:InVehicle() and ply:GetVehicle():GetClass() == "prop_vehicle_prisoner_pod" then --Fix to get players out of passenger seats. Without this, players will enter the closest passenger seat without a way of getting out
 		if key == IN_USE then
 			ply:ExitVehicle()
 			ply.AM_SeatCooldown = CurTime() + 1
@@ -152,7 +152,7 @@ hook.Add( "KeyPress", "AM_KeyPressServer", function( ply, key )
 end )
 
 hook.Add( "CanPlayerEnterVehicle", "AM_CanEnterVehicle", function( ply, veh, role )
-	if ply.AM_SeatCooldown and ply.AM_SeatCooldown > CurTime() then return false end
+	if ply.AM_SeatCooldown and ply.AM_SeatCooldown > CurTime() then return false end --Cooldown to make sure players don't unlock their car the instant they exit it
 end )
 
 hook.Add( "Think", "AM_VehicleThink", function()
@@ -176,7 +176,7 @@ end )
 hook.Add( "PlayerLeaveVehicle", "AM_LeaveVehicle", function( ply, ent )
 	ent.exitcooldown = CurTime() + 0.5
 	if AM_BrakeLockEnabled then
-		if ply:KeyDown( IN_JUMP ) then
+		if ply:KeyDown( IN_JUMP ) then --Activates the parking brake if the player is holding the jump button when they exit
 			ent:Fire( "HandBrakeOn", "", 0.01 )
 			ent:EmitSound( "automod/brake.mp3" )
 		else
