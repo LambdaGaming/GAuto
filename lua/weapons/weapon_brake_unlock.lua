@@ -29,10 +29,7 @@ function SWEP:PrimaryAttack()
     		tr:Fire( "HandBrakeOff", "", 0.01 )
     		self.Owner:ChatPrint( "Brakes released." )
     	end
-    	tr:EmitSound( "" )
+    	tr:EmitSound( "physics/metal/metal_solid_strain"..math.random( 1, 5 )..".wav" )
     end
     self:SetNextPrimaryFire( CurTime() + 1 )
-end
-
-function SWEP:SecondaryAttack()
 end
