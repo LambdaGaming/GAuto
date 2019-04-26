@@ -64,10 +64,10 @@ function AM_DestroyCheck( veh ) --Disables the engine and sets the vehicle on fi
 end
 
 function AM_TakeDamage( veh, dam ) --Takes away health from the vehicle, also runs the destroy check every time the health is set
-	--if !AM_HealthEnabled then return end
+	if !AM_HealthEnabled then return end
 	local health = veh:GetNWInt( "AM_VehicleHealth" )
 	local maxhealth = veh:GetNWInt( "AM_VehicleMaxHealth" )
-	veh:SetNWInt( math.Clamp( health - dam, 0, maxhealth ) )
+	veh:SetNWInt( "AM_VehicleHealth", math.Clamp( health - dam, 0, maxhealth ) )
 	AM_DestroyCheck( veh )
 end
 
