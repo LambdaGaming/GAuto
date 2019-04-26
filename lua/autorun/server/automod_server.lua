@@ -174,7 +174,7 @@ hook.Add( "Think", "AM_VehicleThink", function()
 end )
 
 hook.Add( "PlayerLeaveVehicle", "AM_LeaveVehicle", function( ply, ent )
-	ent.exitcooldown = CurTime() + 0.5
+	ent.AM_ExitCooldown = CurTime() + 0.5
 	if AM_BrakeLockEnabled then
 		if ply:KeyDown( IN_JUMP ) then --Activates the parking brake if the player is holding the jump button when they exit
 			ent:Fire( "HandBrakeOn", "", 0.01 )
@@ -211,7 +211,7 @@ end )
 hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 	if !IsValid( ply ) or !IsValid( ent ) then return end
 	if ent:GetClass() == "prop_vehicle_jeep" then
-		if ent.exitcooldown and ent.exitcooldown > CurTime() then return end
+		if ent.AM_ExitCooldown and ent.AM_ExitCooldown > CurTime() then return end
 		if ent:GetNWBool( "AM_DoorsLocked" ) then
 			if ent:GetNWEntity( "AM_LockOwner" ) == ply then
 				ent:Fire( "Unlock", "", 0.01 )
