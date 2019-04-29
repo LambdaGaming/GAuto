@@ -67,14 +67,14 @@ function AM_TakeDamage( veh, dam ) --Takes away health from the vehicle, also ru
 	if !AM_HealthEnabled then return end
 	local health = veh:GetNWInt( "AM_VehicleHealth" )
 	local maxhealth = veh:GetNWInt( "AM_VehicleMaxHealth" )
-	veh:SetNWInt( "AM_VehicleHealth", math.Clamp( health - dam, 0, maxhealth ) )
+	veh:SetNWInt( "AM_VehicleHealth", math.Clamp( math.Round( health - dam, 0, maxhealth ), 2 ) )
 	AM_DestroyCheck( veh )
 end
 
 function AM_AddHealth( veh, hp ) --Adds health to the vehicle, nothing special
 	local health = veh:GetNWInt( "AM_VehicleHealth" )
 	local maxhealth = veh:GetNWInt( "AM_VehicleMaxHealth" )
-	veh:SetNWInt( math.Clamp( health + hp, 0, maxhealth ) )
+	veh:SetNWInt( math.Clamp( math.Round( health + hp, 0, maxhealth ), 2 ) )
 end
 
 hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
