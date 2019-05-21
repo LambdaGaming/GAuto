@@ -29,6 +29,17 @@ hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it
 	end
 end )
 
+local seatbuttons = {
+	{ KEY_1, 1 },
+	{ KEY_2, 2 },
+	{ KEY_3, 3 },
+	{ KEY_4, 4 },
+	{ KEY_5, 5 },
+	{ KEY_6, 6 },
+	{ KEY_7, 7 },
+	{ KEY_8, 8 },
+	{ KEY_9, 9 }
+}
 hook.Add( "PlayerButtonDown", "AM_KeyPressDown", function( ply, key )
 	if IsFirstTimePredicted() then
 		if ply:InVehicle() then
@@ -39,6 +50,13 @@ hook.Add( "PlayerButtonDown", "AM_KeyPressDown", function( ply, key )
 			if key == KEY_H then
 				net.Start( "AM_VehicleHorn" )
 				net.SendToServer()
+			end
+			for k,v in pairs( seatbuttons ) do
+				if v[1] == key then
+					net.Start( "AM_SeatChange" )
+					net.WriteInt( v[2] )
+					net.SendToServer()
+				end
 			end
 		end
 	end
