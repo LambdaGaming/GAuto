@@ -280,3 +280,23 @@ net.Receive( "AM_VehicleHornStop", function( len, ply )
 	if !veh.AM_CarHorn then return end
 	if veh.AM_CarHorn:IsPlaying() then veh.AM_CarHorn:Stop() end
 end )
+
+util.AddNetworkString( "AM_ChangeSeats" )
+net.Receive( "AM_ChangeSeats", function( len, ply )
+	local key = net.ReadInt()
+	local veh = ply:GetVehicle()
+	local driver = veh:GetDriver()
+	if veh:GetClass() == "prop_vehicle_jeep" then
+		if key == KEY_1 then
+			return
+		else
+			for k,v in pairs( veh.seat ) do
+				if IsValid( v[key] ) then
+					
+				end
+			end
+		end
+	else
+		
+	end
+end )
