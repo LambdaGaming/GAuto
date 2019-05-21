@@ -52,7 +52,7 @@ hook.Add( "PlayerButtonDown", "AM_KeyPressDown", function( ply, key )
 				net.SendToServer()
 			end
 			for k,v in pairs( seatbuttons ) do
-				if v[1] == key then
+				if key == v[1] then
 					net.Start( "AM_SeatChange" )
 					net.WriteInt( v[2] )
 					net.SendToServer()

@@ -292,11 +292,13 @@ net.Receive( "AM_ChangeSeats", function( len, ply )
 		else
 			for k,v in pairs( veh.seat ) do
 				if IsValid( v[key] ) then
-					
+					ply:EnterVehicle( v[key] )
 				end
 			end
 		end
 	else
-		
+		if IsValid( veh.seat[key] ) then
+			ply:EnterVehicle( veh.seat[key] )
+		end
 	end
 end )
