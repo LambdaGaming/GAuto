@@ -97,7 +97,7 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 					local vel = data.OurOldVelocity:Length()
 					if vel > 1000 then --Temporary until I can find a better way to take physical damage
 						--if data.HitEntity:IsWorld() then return end
-						AM_TakeDamage( ent, vel / 50 )
+						AM_TakeDamage( ent, veh % 10 + 20 )
 					end
 				end )
 			end
