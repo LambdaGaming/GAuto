@@ -77,6 +77,10 @@ function AM_AddHealth( veh, hp ) --Adds health to the vehicle, nothing special
 	veh:SetNWInt( math.Clamp( math.Round( health + hp, 0, maxhealth ), 2 ) )
 end
 
+function AM_Notify( ply, color, text )
+	ply:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color, text ) ]] )
+end
+
 hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 	if !IsValid( ent ) then return end
 	timer.Simple( 0.1, function() --Small timer because the model isn't seen the instant this hook is called
@@ -217,7 +221,7 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 				ent:Fire( "Unlock", "", 0.01 )
 				ent:SetNWBool( "AM_DoorsLocked", false )
 				ent:SetNWEntity( "AM_LockOwner", nil )
-				ply:ChatPrint( "Vehicle unlocked." )
+				AM_Notify( ply, color_white, "Vehicle unlocked." )
 			end
 		end
 		if !ent:GetNWBool( "AM_DoorsLocked" ) and AM_SeatsEnabled then
@@ -248,12 +252,12 @@ net.Receive( "AM_VehicleLock", function( len, ply )
 	if IsFirstTimePredicted() then
 		if IsValid( ply ) and ply:IsPlayer() then
 			if !ply:GetVehicle():GetNWBool( "AM_DoorsLocked" ) then
-				ply:ChatPrint( "Vehicle locked." )
+				AM_Notify( ply, color_white, "Vehicle locked." )
 				ply:GetVehicle():Fire( "Lock", "", 0.01 )
 				ply:GetVehicle():SetNWBool( "AM_DoorsLocked", true )
 				ply:GetVehicle():SetNWEntity( "AM_LockOwner", ply )
 			else
-				ply:ChatPrint( "Vehicle unlocked." )
+				AM_Notify( ply, color_white, "Vehicle unlocked." )
 				ply:GetVehicle():Fire( "Unlock", "", 0.01 )
 				ply:GetVehicle():SetNWBool( "AM_DoorsLocked", false )
 			end
@@ -285,20 +289,40 @@ util.AddNetworkString( "AM_ChangeSeats" )
 net.Receive( "AM_ChangeSeats", function( len, ply )
 	local key = net.ReadInt()
 	local veh = ply:GetVehicle()
+	local vehparent = veh:GetParent()
 	local driver = veh:GetDriver()
+	if !IsValid( veh ) then return end
 	if veh:GetClass() == "prop_vehicle_jeep" then
 		if key == KEY_1 then
+			AM_Notify( ply, color_white, "Seat change failed, you selected the seat you are already sitting in." )
 			return
 		else
-			for k,v in pairs( veh.seat ) do
-				if IsValid( v[key] ) then
-					ply:EnterVehicle( v[key] )
+			if IsValid( veh.seat[key] ) then
+				if !IsValid( veh.seat[key]:GetDriver() ) then
+					ply:EnterVehicle( veh.seat[key] )
+				else
+					AM_Notify( ply, color_white, "Seat change failed, selected seat is already taken." )
+					return
 				end
+			else
+				AM_Notify( ply, color_white, "Seat change failed, selected seat doesn't exist." )
+				return
 			end
 		end
 	else
-		if IsValid( veh.seat[key] ) then
-			ply:EnterVehicle( veh.seat[key] )
+		if vehparent.seat[key] == veh then
+			AM_Notify( ply, color_white, "Seat change failed, you selected the seat you are already sitting in." )
+		end
+		if IsValid( vehparent.seat[key] ) then	
+			if !IsValid( veh.seat[key]:GetDriver() ) then
+				ply:EnterVehicle( veh.seat[key] )
+			else
+				AM_Notify( ply, color_white, "Seat change failed, selected seat is already taken." )
+				return
+			end
+		else
+			AM_Notify( ply, color_white, "Seat change failed, selected seat doesn't exist." )
+			return
 		end
 	end
 end )
