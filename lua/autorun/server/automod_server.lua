@@ -93,13 +93,13 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 				ent:SetNWInt( "AM_VehicleMaxHealth", AM_VehicleHealth( vehmodel ) )
 				ent:SetNWBool( "AM_IsSmoking", false )
 				ent:SetNWVector( "AM_EnginePos", AM_EnginePos( vehmodel ) )
-				ent:AddCallback( "PhysicsCollide", function( ent, data )
+				--[[ ent:AddCallback( "PhysicsCollide", function( ent, data )
 					local vel = data.OurOldVelocity:Length()
 					if vel > 1000 then --Temporary until I can find a better way to take physical damage
 						--if data.HitEntity:IsWorld() then return end
 						AM_TakeDamage( ent, veh % 10 + 20 )
 					end
-				end )
+				end ) ]]
 			end
 			if AM_HornEnabled then
 				ent:SetNWString( "AM_HornSound", AM_HornSound( vehmodel ) ) --Sets horn sound of the setting is enabled
@@ -202,11 +202,15 @@ hook.Add( "EntityTakeDamage", "AM_TakeDamage", function( ent, dmg )
 	if AM_HealthEnabled then
 		if ent:IsOnFire() then return end --Prevent car from constantly igniting itself if it's on fire
 		local d = dmg:GetDamage()
+		local dforce = dmg:GetDamageForce():Length()
 		if ent:GetClass() == "prop_vehicle_jeep" then
 			if dmg:IsBulletDamage() and AM_BulletDamageEnabled then
 				AM_TakeDamage( ent, d * 50 )
 			else
 				AM_TakeDamage( ent, d )
+			end
+			if dforce > 0 then
+				AM_TakeDamage( ent, dforce ) --Needs tested
 			end
 		end
 	end
