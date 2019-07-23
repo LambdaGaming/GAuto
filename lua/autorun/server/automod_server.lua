@@ -116,14 +116,12 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 					ent.seat[i]:Spawn()
 					ent.seat[i]:SetKeyValue( "limitview", 0 )
 					ent.seat[i]:SetVehicleEntryAnim( false )
-					--ent.seat[i]:SetNoDraw( true )
+					ent.seat[i]:SetNoDraw( true )
 					ent.seat[i]:SetNotSolid( true )
 					ent.seat[i]:DrawShadow( false )
 					table.Merge( ent.seat[i], { HandleAnimation = function( _, ply )
 						return ply:SelectWeightedSequence( ACT_HL2MP_SIT )
 					end } )
-					ent.seat[i]:GetPhysicsObject():EnableMotion( false )
-					ent.seat[i]:GetPhysicsObject():SetMass(1)
 					ent:DeleteOnRemove( ent.seat[i] )
 				end
 			end
@@ -153,6 +151,7 @@ end )
 
 hook.Add( "CanPlayerEnterVehicle", "AM_CanEnterVehicle", function( ply, veh, role )
 	if ply.AM_SeatCooldown and ply.AM_SeatCooldown > CurTime() then return false end --Cooldown to make sure players don't unlock their car the instant they exit it
+	ply.laststeer = 0 --Resets the steering wheel straight when the player enters
 end )
 
 hook.Add( "Think", "AM_VehicleThink", function()

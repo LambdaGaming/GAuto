@@ -1,12 +1,13 @@
 
 --[[
     Planned features for this system:
-    1. Vehicle health system (explodes when damaged by an explosive weapon, otherwise the engine just stops working and the vehicle can be repaired) *NOT DONE*
+    1. Vehicle health system (explodes when damaged by an explosive weapon, otherwise the engine just stops working and the vehicle can be repaired) *NOT DONE* (needs physical damage and smoke particles)
     2. Brakes lock when the player exits the vehicle (can be released by a brake release swep for towing purposes) *DONE*
     3. Steering wheel remains in the position it was in when the player leaves the vehicle *DONE*
-    4. Vehicle seat system *NOT DONE*
+    4. Vehicle seat system *DONE*
     5. Horns *DONE*
     6. Vehicle locking system (with alarm) *DONE*
+	7. Customizable controls *NOT DONE*
 ]]
 
 CreateConVar( "AM_Config_HealthEnabled", 1, FCVAR_REPLICATED, "Enable or disable vehicles taking damage." )
@@ -22,6 +23,6 @@ CreateConVar( "AM_Config_HornEnabled", 1, FCVAR_REPLICATED, "Enable or disable p
 CreateConVar( "AM_Config_LockEnabled", 1, FCVAR_REPLICATED, "Enable or disable players being able to lock their vehicles." )
 CreateConVar( "AM_Config_LockAlarmEnabled", 1, FCVAR_REPLICATED, "Enable or disable the alarm going off when a player lockpicks a vehicle." )
 
-CreateClientConVar( "AM_Control_ModifierKey", KEY_LALT, true, false, "Sets the key to hold when pressing another key to perform a function. (Default Alt)" )
-CreateClientConVar( "AM_Control_HornKey", KEY_H, true, false, "Sets the key for the horn. (Default H)" )
-CreateClientConVar( "AM_Control_LockKey", KEY_N, true, false, "Sets the key for locking the doors. (Default N)" )
+CreateClientConVar( "AM_Control_ModifierKey", KEY_LALT, true, false, "Sets the key to hold when pressing another key to perform a function." )
+CreateClientConVar( "AM_Control_HornKey", KEY_H, true, false, "Sets the key for the horn." )
+CreateClientConVar( "AM_Control_LockKey", KEY_N, true, false, "Sets the key for locking the doors." )
