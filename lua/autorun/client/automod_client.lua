@@ -72,14 +72,3 @@ hook.Add( "PlayerButtonUp", "AM_KeyPressUp", function( ply, key )
 		end
 	end
 end )
-
---[[hook.Add( "Think", "VehicleSmoke", function()
-	local ply = LocalPlayer()
-	
-	if ent:GetClass() == "prop_vehicle_jeep" then
-		if ent:GetNWBool( "AM_IsSmoking" ) then
-			local smoke = ParticleEmitter( ent:GetNWVector( "AM_EnginePos" ), true)
-
-		end
-	end
-end )]]
