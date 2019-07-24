@@ -110,7 +110,7 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 		if !IsValid( ent ) then return end
 		local vehmodel = ent:GetModel()
 		if ent:IsVehicle() and ent:GetClass() == "prop_vehicle_jeep" then
-			if table.HasValue( AM_Config_Blacklist, vehmodel ) then return end --Prevents blacklisted models from being affected
+			if AM_Config_Blacklist[vehmodel] then return end --Prevents blacklisted models from being affected
 			if AM_HealthEnabled then
 				ent:SetNWInt( "AM_VehicleHealth", AM_VehicleHealth( vehmodel ) ) --Sets vehicle health if the health system is enabled
 				ent:SetNWInt( "AM_VehicleMaxHealth", AM_VehicleHealth( vehmodel ) )
@@ -165,7 +165,7 @@ end
 
 hook.Add( "KeyPress", "AM_KeyPressServer", function( ply, key )
 	if ply:InVehicle() then
-		if table.HasValue( AM_Config_Blacklist, ply:GetVehicle():GetModel() ) then return end
+		if AM_Config_Blacklist[ply:GetVehicle():GetModel()] then return end
 		if AM_WheelLockEnabled then
 			if key == IN_MOVELEFT then
 				ply.laststeer = -1
@@ -177,7 +177,7 @@ hook.Add( "KeyPress", "AM_KeyPressServer", function( ply, key )
 		end
 	end
 	if ply:InVehicle() and ply:GetVehicle():GetNWBool( "IsAutomodSeat" ) then --Fix to get players out of passenger seats. Without this, players will enter the closest passenger seat without a way of getting out
-		if table.HasValue( AM_Config_Blacklist, ply:GetVehicle():GetModel() ) then return end
+		if AM_Config_Blacklist[ply:GetVehicle():GetModel()] then return end
 		if key == IN_USE then
 			ply:ExitVehicle()
 			ply.AM_SeatCooldown = CurTime() + 1
@@ -193,7 +193,7 @@ end )
 hook.Add( "Think", "AM_VehicleThink", function()
 	for k,v in pairs( ents.FindByClass( "prop_vehicle_jeep" ) ) do
 		if !IsValid( v ) or v == nil then return end
-		if table.HasValue( AM_Config_Blacklist, v:GetModel() ) then return end
+		if AM_Config_Blacklist[v:GetModel()] then return end
 		if !v:IsEngineStarted() then --This part is a mess but it seems to be working fine so i'm leaving it for now
 			if v.laststeer == 1 then
 				if v:GetSteering() == -1 then return end
@@ -212,7 +212,7 @@ end )
 hook.Add( "PlayerLeaveVehicle", "AM_LeaveVehicle", function( ply, ent )
 	ent.AM_ExitCooldown = CurTime() + 1
 	if AM_BrakeLockEnabled then
-		if table.HasValue( AM_Config_Blacklist, ent:GetModel() ) then return end
+		if AM_Config_Blacklist[ent:GetModel()] then return end
 		if ply:KeyDown( IN_JUMP ) then --Activates the parking brake if the player is holding the jump button when they exit
 			ent:Fire( "HandBrakeOn", "", 0.01 )
 			ent:EmitSound( "automod/brake.mp3" )
@@ -221,7 +221,7 @@ hook.Add( "PlayerLeaveVehicle", "AM_LeaveVehicle", function( ply, ent )
 		end
 	end
 	if AM_WheelLockEnabled then
-		if table.HasValue( AM_Config_Blacklist, ent:GetModel() ) then return end
+		if AM_Config_Blacklist[ent:GetModel()] then return end
 		if ply.laststeer == 1 then
 			ent.laststeer = 1
 		elseif ply.laststeer == -1 then
@@ -278,7 +278,7 @@ end )
 
 hook.Add( "lockpickStarted", "AM_Lockpick", function( ply, ent, trace )
 	if !AM_AlarmEnabled then return end
-	if table.HasValue( AM_Config_Blacklist, ent:GetModel() ) then return end
+	if AM_Config_Blacklist[ent:GetModel()] then return end
 	if ent:IsVehicle() and ent:GetClass() == "prop_vehicle_jeep" then
 		ent:EmitSound( "automod/alarm.mp3" )
 	end
@@ -288,7 +288,7 @@ util.AddNetworkString( "AM_VehicleLock" )
 net.Receive( "AM_VehicleLock", function( len, ply )
 	if IsFirstTimePredicted() then
 		if IsValid( ply ) and ply:IsPlayer() then
-			if table.HasValue( AM_Config_Blacklist, ply:GetVehicle():GetModel() ) then return end
+			if AM_Config_Blacklist[ply:GetVehicle():GetModel()] then return end
 			if !ply:GetVehicle():GetNWBool( "AM_DoorsLocked" ) then
 				ply:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, "Vehicle locked." ) ]] )
 				ply:GetVehicle():Fire( "Lock", "", 0.01 )
@@ -308,7 +308,7 @@ net.Receive( "AM_VehicleHorn", function( len, ply )
 	if AM_HornEnabled then
 		if IsValid( ply ) and ply:InVehicle() then
 			local veh = ply:GetVehicle()
-			if table.HasValue( AM_Config_Blacklist, veh:GetModel() ) then return end
+			if AM_Config_Blacklist[veh:GetModel()] then return end
 			veh.AM_CarHorn = CreateSound( veh, veh:GetNWString( "AM_HornSound" ) )
 			if veh.AM_CarHorn:IsPlaying() then return end
 			veh.AM_CarHorn:Play()

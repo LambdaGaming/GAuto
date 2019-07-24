@@ -1,7 +1,7 @@
 
 AM_Vehicles = {}
 
-AM_Vehicles["models/buggy.mdl"] = {
+AM_Vehicles["models/buggy.mdl"] = { --HL2 jeep
 	HornSound = "automod/carhorn.wav",
 	MaxHealth = 100,
 	EnginePos = Vector( 21, 12, 63 ),
@@ -13,7 +13,7 @@ AM_Vehicles["models/buggy.mdl"] = {
 	}
 }
 
-AM_Vehicles["models/lonewolfie/dodge_monaco.mdl"] = {
+AM_Vehicles["models/lonewolfie/dodge_monaco.mdl"] = { --LW Dodge Monaco
 	HornSound = "automod/carhorn.wav",
 	MaxHealth = 100,
 	EnginePos = Vector( 0, 97, 38 ),
