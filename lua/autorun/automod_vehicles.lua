@@ -7,7 +7,7 @@ AM_Vehicles["models/buggy.mdl"] = {
 	EnginePos = Vector( 21, 12, 63 ),
 	Seats = {
 		{
-			pos = Vector( 0, 0, 0 ),
+			pos = Vector( 15, -35, 23 ),
 			ang = Angle( 0, 0, 0 )
 		}
 	}
