@@ -12,9 +12,9 @@
 
 CreateConVar( "AM_Config_HealthEnabled", 1, FCVAR_REPLICATED, "Enable or disable vehicles taking damage." )
 CreateConVar( "AM_Config_BulletDamageEnabled", 1, FCVAR_REPLICATED, "Enable or disable allowing vehicles to take damage from bullets." )
-CreateConVar( "AM_Config_DamageExplosionEnabled", 1, FCVAR_REPLICATED , "Enable or disable vehicles exploding when damaged by an explosive.")
+CreateConVar( "AM_Config_DamageExplosionEnabled", 1, FCVAR_REPLICATED , "Enable or disable vehicles exploding when their health reaches 0.")
 CreateConVar( "AM_Config_ExplodeRemoveEnabled", 0, FCVAR_REPLICATED, "Enable or disable destroyed vehicles being removed after a certain time." )
-CreateConVar( "AM_Config_ExplodeRemoveTime", 600, FCVAR_REPLICATED, "Time it takes in seconds for a destroyed vehicle to get removed. AM_Config_ExplodeRemoveEnabled needs to be set to 1 for this to work." )
+CreateConVar( "AM_Config_ExplodeRemoveTime", 600, FCVAR_REPLICATED, "Time it takes in seconds for a destroyed vehicle to get removed. AM_Config_ExplodeRemoveEnabled must be set to 1 for this to work." )
 
 CreateConVar( "AM_Config_BrakeLockEnabled", 1, FCVAR_REPLICATED, "Enable or disable the brakes locking when a player exits a vehicle." )
 CreateConVar( "AM_Config_WheelLockEnabled", 1, FCVAR_REPLICATED, "Enable or disable the steering wheel locking in a certain position when a player exits a vehicle." )

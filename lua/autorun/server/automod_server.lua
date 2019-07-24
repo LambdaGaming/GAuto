@@ -59,22 +59,49 @@ function AM_DestroyCheck( veh ) --Disables the engine and sets the vehicle on fi
 	if veh:GetNWInt( "AM_VehicleHealth" ) <= 0 then
 		veh:Fire( "turnoff", "", 0.01 )
 		veh:Ignite()
-		veh:SetNWBool( "AM_IsSmoking", true )
+		if AM_ExplosionEnabled then
+			local e = ents.Create( "env_explosion" )
+			e:SetPos( veh:WorldToLocal( veh:GetNWVector( "AM_EnginePos" ) ) )
+			e:Spawn()
+			e:SetKeyValue( "iMagnitude", 200 )
+			e:Fire( "Explode", 0, 0 )
+		end
+	end
+end
+
+function AM_SmokeCheck( veh )
+	local health = veh:GetNWInt( "AM_VehicleHealth" )
+	local maxhealth = veh:GetNWInt( "AM_VehicleMaxHealth" )
+	if health > ( maxhealth * 0.3 ) then
+		if veh:GetNWBool( "AM_IsSmoking" ) then
+			veh:SetNWBool( "AM_IsSmoking", false )
+		end
+	else
+		if !veh:GetNWBool( "AM_IsSmoking" ) then
+			veh:SetNWBool( "AM_IsSmoking", true )
+		end
 	end
 end
 
 function AM_TakeDamage( veh, dam ) --Takes away health from the vehicle, also runs the destroy check every time the health is set
 	if !AM_HealthEnabled then return end
+	if dam < 0.5 then return end
 	local health = veh:GetNWInt( "AM_VehicleHealth" )
 	local maxhealth = veh:GetNWInt( "AM_VehicleMaxHealth" )
-	veh:SetNWInt( "AM_VehicleHealth", math.Clamp( math.Round( health - dam, 0, maxhealth ), 2 ) )
+	local roundhp = math.Round( health - dam, 2 )
+	local newhp = math.Clamp( roundhp, 0, maxhealth )
+	veh:SetNWInt( "AM_VehicleHealth", newhp )
 	AM_DestroyCheck( veh )
+	AM_SmokeCheck( veh )
 end
 
 function AM_AddHealth( veh, hp ) --Adds health to the vehicle, nothing special
 	local health = veh:GetNWInt( "AM_VehicleHealth" )
 	local maxhealth = veh:GetNWInt( "AM_VehicleMaxHealth" )
-	veh:SetNWInt( math.Clamp( math.Round( health + hp, 0, maxhealth ), 2 ) )
+	local roundhp = math.Round( health + hp, 2 )
+	local newhp = math.Clamp( roundhp, 0, maxhealth )
+	veh:SetNWInt( "AM_VehicleHealth", newhp )
+	AM_SmokeCheck( veh )
 end
 
 hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
@@ -183,7 +210,7 @@ hook.Add( "Think", "AM_VehicleThink", function()
 end )
 
 hook.Add( "PlayerLeaveVehicle", "AM_LeaveVehicle", function( ply, ent )
-	ent.AM_ExitCooldown = CurTime() + 0.5
+	ent.AM_ExitCooldown = CurTime() + 1
 	if AM_BrakeLockEnabled then
 		if table.HasValue( AM_Config_Blacklist, ent:GetModel() ) then return end
 		if ply:KeyDown( IN_JUMP ) then --Activates the parking brake if the player is holding the jump button when they exit
@@ -209,15 +236,11 @@ hook.Add( "EntityTakeDamage", "AM_TakeDamage", function( ent, dmg )
 	if AM_HealthEnabled then
 		if ent:IsOnFire() then return end --Prevent car from constantly igniting itself if it's on fire
 		local d = dmg:GetDamage()
-		local dforce = dmg:GetDamageForce():Length()
 		if ent:GetClass() == "prop_vehicle_jeep" then
 			if dmg:IsBulletDamage() and AM_BulletDamageEnabled then
-				AM_TakeDamage( ent, d * 50 )
+				AM_TakeDamage( ent, d * 500 )
 			else
 				AM_TakeDamage( ent, d )
-			end
-			if dforce > 0 then
-				AM_TakeDamage( ent, dforce ) --Needs tested
 			end
 		end
 	end
@@ -236,15 +259,17 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 			end
 		end
 		if !ent:GetNWBool( "AM_DoorsLocked" ) and AM_SeatsEnabled then
-			//if ply:InVehicle() then ply:ExitVehicle() return end
+			if ply:InVehicle() then return end
 			if !IsValid( ent:GetDriver() ) then return end
-			local seat = ent.seat[1]
-			if !IsValid( seat ) then return end
-			local dist = ( seat:GetPos() - ply:GetPos() ):Length()
-			for i=1, table.Count( ent.seat ) do
-				local distance = ( ent.seat[i]:GetPos() - ply:GetPos() ):Length()
-				if distance < dist then
-					ply:EnterVehicle( ent.seat[i] )
+			local plypos = ent:WorldToLocal( ply:GetPos() ):Length()
+			local numpos = 0
+			for i = 1, table.Count( ent.seat ) do
+				local seatpos = ent:WorldToLocal( ent.seat[i]:GetPos() ):Length()
+				if seatpos and seatpos < plypos then --Checks to see what seat is closest to the player
+					plypos = seatpos
+					numpos = i
+					ply:EnterVehicle( ent.seat[numpos] )
+					ply.AM_SeatCooldown = CurTime() + 1 --Prevents players from sometimes teleporting to the last detected seat instead of the first
 				end
 			end
 		end

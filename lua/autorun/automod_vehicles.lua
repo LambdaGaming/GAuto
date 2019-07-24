@@ -16,7 +16,7 @@ AM_Vehicles["models/buggy.mdl"] = {
 AM_Vehicles["models/lonewolfie/dodge_monaco.mdl"] = {
 	HornSound = "automod/carhorn.wav",
 	MaxHealth = 100,
-	EnginePos = Vector( 42, -75, -2 ),
+	EnginePos = Vector( 0, 97, 38 ),
 	Seats = {
 		{
 			pos = Vector( 20, 7, 23 ),
@@ -24,6 +24,10 @@ AM_Vehicles["models/lonewolfie/dodge_monaco.mdl"] = {
 		},
 		{
 			pos = Vector( 21, -40, 22 ),
+			ang = Angle( 0, 0, 0 )
+		},
+		{
+			pos = Vector( -20, -40, 22 ),
 			ang = Angle( 0, 0, 0 )
 		}
 	}

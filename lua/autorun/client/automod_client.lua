@@ -72,3 +72,18 @@ hook.Add( "PlayerButtonUp", "AM_KeyPressUp", function( ply, key )
 		end
 	end
 end )
+
+local smokecooldown = CurTime()
+hook.Add( "Think", "AM_SmokeThink", function()
+	for k,v in pairs( ents.FindByClass( "prop_vehicle_jeep" ) ) do
+		if v:GetNWBool( "AM_IsSmoking" ) and smokecooldown < CurTime() then
+			local smoke = ParticleEmitter( v:LocalToWorld( v:GetNWVector( "AM_EnginePos" ) ) ):Add("particle/smokesprites_000"..math.random(1,9), v:LocalToWorld( v:GetNWVector( "AM_EnginePos" ) ) )
+			smoke:SetVelocity( Vector( 0, 0, 100 ) )
+			smoke:SetDieTime( math.Rand( 0.6, 1.3 ) )
+			smoke:SetStartSize( math.random( 0, 5 ) )
+			smoke:SetEndSize( math.random( 33, 55 ) )
+			smoke:SetColor( 72, 72, 72 )
+			smokecooldown = smokecooldown + 0.1
+		end
+	end
+end )

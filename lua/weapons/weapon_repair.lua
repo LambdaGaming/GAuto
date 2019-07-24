@@ -23,6 +23,7 @@ SWEP.Secondary.DefaultClip = -1
 SWEP.Secondary.Automatic = false
 
 function SWEP:PrimaryAttack()
+	if !IsFirstTimePredicted() or CLIENT then return end
     local tr = self.Owner:GetEyeTrace().Entity
     if tr:GetClass() == "prop_vehicle_jeep" then
     	if tr:GetNWInt( "AM_VehicleHealth" ) < tr:GetNWInt( "AM_VehicleMaxHealth" ) then
