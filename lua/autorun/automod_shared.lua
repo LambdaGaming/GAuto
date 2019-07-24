@@ -10,6 +10,8 @@
 	7. Customizable controls *NOT DONE*
 ]]
 
+AM_Vehicles = {}
+
 CreateConVar( "AM_Config_HealthEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable vehicles taking damage." )
 CreateConVar( "AM_Config_BulletDamageEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable allowing vehicles to take damage from bullets." )
 CreateConVar( "AM_Config_DamageExplosionEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE } , "Enable or disable vehicles exploding when their health reaches 0.")
