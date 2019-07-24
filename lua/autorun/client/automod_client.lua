@@ -79,7 +79,8 @@ hook.Add( "Think", "AM_SmokeThink", function()
 			AM_SmokeCooldown = CurTime()
 		end
 		if v:GetNWBool( "AM_IsSmoking" ) and AM_SmokeCooldown < CurTime() then
-			local smoke = ParticleEmitter( v:LocalToWorld( v:GetNWVector( "AM_EnginePos" ) ) ):Add("particle/smokesprites_000"..math.random(1,9), v:LocalToWorld( v:GetNWVector( "AM_EnginePos" ) ) )
+			local pos = v:LocalToWorld( v:GetNWVector( "AM_EnginePos" ) )
+			local smoke = ParticleEmitter( pos ):Add( "particle/smokesprites_000"..math.random( 1, 9 ), pos )
 			smoke:SetVelocity( Vector( 0, 0, 100 ) )
 			smoke:SetDieTime( math.Rand( 0.6, 1.3 ) )
 			smoke:SetStartSize( math.random( 0, 5 ) )
