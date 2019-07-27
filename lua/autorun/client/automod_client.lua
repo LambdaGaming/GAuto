@@ -15,7 +15,7 @@ hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it
 			surface.SetTextColor( 255, 255, 255, 255 )
 			surface.SetTextPos( 1500, ScrH() - 155 )
 		    if AM_HealthEnabled then
-			    surface.DrawText( vehicle:GetNWInt( "AM_VehicleHealth" ).."/"..vehicle:GetNWInt( "AM_VehicleMaxHealth" ) )
+			    surface.DrawText( math.Round( vehicle:GetNWInt( "AM_VehicleHealth" ) ).."/"..vehicle:GetNWInt( "AM_VehicleMaxHealth" ) )
 			else
 			    surface.DrawText( "Health Disabled" )
 			end
@@ -75,18 +75,14 @@ end )
 
 hook.Add( "Think", "AM_SmokeThink", function()
 	for k,v in pairs( ents.FindByClass( "prop_vehicle_jeep" ) ) do
-		if !AM_SmokeCooldown then
-			AM_SmokeCooldown = CurTime()
-		end
-		if v:GetNWBool( "AM_IsSmoking" ) and AM_SmokeCooldown < CurTime() then
+		if v:GetNWBool( "AM_IsSmoking" ) then
 			local pos = v:LocalToWorld( v:GetNWVector( "AM_EnginePos" ) )
 			local smoke = ParticleEmitter( pos ):Add( "particle/smokesprites_000"..math.random( 1, 9 ), pos )
-			smoke:SetVelocity( Vector( 0, 0, 100 ) )
+			smoke:SetVelocity( Vector( 0, 0, 50 ) )
 			smoke:SetDieTime( math.Rand( 0.6, 1.3 ) )
 			smoke:SetStartSize( math.random( 0, 5 ) )
 			smoke:SetEndSize( math.random( 33, 55 ) )
 			smoke:SetColor( 72, 72, 72 )
-			AM_SmokeCooldown = AM_SmokeCooldown + 0.1
 		end
 	end
 end )

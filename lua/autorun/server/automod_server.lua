@@ -21,9 +21,9 @@ function AM_HornSound( model ) --Finds the set horn sound for the specified mode
 			if v.HornSound then
 				return v.HornSound
 			end
-			return "automod/carhorn.wav"
 		end
 	end
+	return "automod/carhorn.wav"
 end
 
 function AM_VehicleHealth( model ) --Does the same as above but with the vehicle's health
@@ -32,9 +32,9 @@ function AM_VehicleHealth( model ) --Does the same as above but with the vehicle
 			if v.MaxHealth then
 				return v.MaxHealth
 			end
-			return 100
 		end
 	end
+	return 100
 end
 
 function AM_EnginePos( model ) --Does the same as above but with the vehicle's engine position
@@ -43,9 +43,9 @@ function AM_EnginePos( model ) --Does the same as above but with the vehicle's e
 			if v.EnginePos then
 				return v.EnginePos
 			end
-			return Vector( 0, 0, 0 )
 		end
 	end
+	return Vector( 0, 0, 0 )
 end
 
 function AM_NumSeats( veh ) --Returns the number of passenger seats that are attached to the vehicle
@@ -56,23 +56,24 @@ function AM_NumSeats( veh ) --Returns the number of passenger seats that are att
 end
 
 function AM_DestroyCheck( veh ) --Disables the engine and sets the vehicle on fire if it's health is 0
-	if veh:GetNWInt( "AM_VehicleHealth" ) <= 0 then
+	if veh:GetNWInt( "AM_VehicleHealth" ) <= 0 and !veh:GetNWBool( "AM_HasExploded" ) then
 		veh:Fire( "turnoff", "", 0.01 )
 		veh:Ignite()
 		if AM_ExplosionEnabled then
 			local e = ents.Create( "env_explosion" )
-			e:SetPos( veh:WorldToLocal( veh:GetNWVector( "AM_EnginePos" ) ) )
+			e:SetPos( veh:LocalToWorld( veh:GetNWVector( "AM_EnginePos" ) ) )
 			e:Spawn()
 			e:SetKeyValue( "iMagnitude", 200 )
 			e:Fire( "Explode", 0, 0 )
 		end
+		veh:SetNWBool( "AM_HasExploded", true )
 	end
 end
 
 function AM_SmokeCheck( veh )
 	local health = veh:GetNWInt( "AM_VehicleHealth" )
 	local maxhealth = veh:GetNWInt( "AM_VehicleMaxHealth" )
-	if health > ( maxhealth * 0.3 ) then
+	if health > ( maxhealth * 0.3 ) or health <= 0 then
 		if veh:GetNWBool( "AM_IsSmoking" ) then
 			veh:SetNWBool( "AM_IsSmoking", false )
 		end
@@ -88,7 +89,7 @@ function AM_TakeDamage( veh, dam ) --Takes away health from the vehicle, also ru
 	if dam < 0.5 then return end
 	local health = veh:GetNWInt( "AM_VehicleHealth" )
 	local maxhealth = veh:GetNWInt( "AM_VehicleMaxHealth" )
-	local roundhp = math.Round( health - dam, 2 )
+	local roundhp = math.Round( health - dam )
 	local newhp = math.Clamp( roundhp, 0, maxhealth )
 	veh:SetNWInt( "AM_VehicleHealth", newhp )
 	AM_DestroyCheck( veh )
@@ -100,6 +101,9 @@ function AM_AddHealth( veh, hp ) --Adds health to the vehicle, nothing special
 	local maxhealth = veh:GetNWInt( "AM_VehicleMaxHealth" )
 	local roundhp = math.Round( health + hp, 2 )
 	local newhp = math.Clamp( roundhp, 0, maxhealth )
+	if veh:GetNWBool( "AM_HasExploded" ) then
+		veh:SetNWBool( "AM_HasExploded", false )
+	end
 	veh:SetNWInt( "AM_VehicleHealth", newhp )
 	AM_SmokeCheck( veh )
 end
@@ -115,14 +119,14 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 				ent:SetNWInt( "AM_VehicleHealth", AM_VehicleHealth( vehmodel ) ) --Sets vehicle health if the health system is enabled
 				ent:SetNWInt( "AM_VehicleMaxHealth", AM_VehicleHealth( vehmodel ) )
 				ent:SetNWBool( "AM_IsSmoking", false )
+				ent:SetNWBool( "AM_HasExploded", false )
 				ent:SetNWVector( "AM_EnginePos", AM_EnginePos( vehmodel ) )
-				--[[ ent:AddCallback( "PhysicsCollide", function( ent, data )
-					local vel = data.OurOldVelocity:Length()
-					if vel > 1000 then --Temporary until I can find a better way to take physical damage
-						--if data.HitEntity:IsWorld() then return end
-						AM_TakeDamage( ent, veh % 10 + 20 )
+				ent:AddCallback( "PhysicsCollide", function( ent, data )
+					local speed = data.Speed
+					if speed > 500 then
+						AM_TakeDamage( ent, speed / 35 )
 					end
-				end ) ]]
+				end )
 			end
 			if AM_HornEnabled then
 				ent:SetNWString( "AM_HornSound", AM_HornSound( vehmodel ) ) --Sets horn sound of the setting is enabled
@@ -131,10 +135,17 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 				ent:SetNWBool( "AM_DoorsLocked", false ) --Sets door lock status if the setting is enabled
 			end
 			if AM_SeatsEnabled then
-				if !AM_Vehicles or !AM_Vehicles[vehmodel] or !AM_Vehicles[vehmodel].Seats then return end
+				if !AM_Vehicles or !AM_Vehicles[vehmodel] then
+					for k,v in pairs( player.GetAll() ) do
+						v:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, "Warning! The vehicle that was spawned is currently not supported by Automod!" ) ]] )
+					end
+					return
+				end
+				if !AM_Vehicles[vehmodel].Seats then return end
 				local vehseats = AM_Vehicles[vehmodel].Seats
+				local numseats = table.Count( vehseats )
 				ent.seat = {}
-				for i=1, table.Count( vehseats ) do
+				for i=1, numseats do
 					ent.seat[i] = ents.Create( "prop_vehicle_prisoner_pod" )
 					ent.seat[i]:SetModel( "models/nova/airboat_seat.mdl" )
 					ent.seat[i]:SetParent( ent ) --Sets the vehicle as the parent, very important for later
@@ -147,7 +158,7 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 					ent.seat[i]:SetNotSolid( true ) --We probably don't need this but i'm putting it here anyway incase of some weird physics freakout
 					ent.seat[i]:DrawShadow( false ) --Disables the shadow for the same reason as the nodraw
 					table.Merge( ent.seat[i], { HandleAnimation = function( _, ply )
-						return ply:SelectWeightedSequence( ACT_HL2MP_SIT )
+						return ply:SelectWeightedSequence( ACT_HL2MP_SIT ) --Sets the animation to the sitting animation, taken from the Gmod wiki
 					end } )
 					ent:DeleteOnRemove( ent.seat[i] )
 					ent:SetNWBool( "IsAutomodSeat", true )
@@ -188,6 +199,7 @@ end )
 hook.Add( "CanPlayerEnterVehicle", "AM_CanEnterVehicle", function( ply, veh, role )
 	if ply.AM_SeatCooldown and ply.AM_SeatCooldown > CurTime() then return false end --Cooldown to make sure players don't unlock their car the instant they exit it
 	ply.laststeer = 0 --Resets the steering wheel straight when the player enters
+	if veh:GetClass() == "prop_vehicle_prisoner_pod" then veh:SetCameraDistance( 5 ) end
 end )
 
 hook.Add( "Think", "AM_VehicleThink", function()
@@ -345,7 +357,7 @@ net.Receive( "AM_ChangeSeats", function( len, ply )
 					return
 				end
 			else
-				ply:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, "Seat change failed, selected seat doesn't exist." ) ]] )
+				ply:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, "Seat change failed, selected seat doesn't exist. Vehicle may not be currently supported." ) ]] )
 				return
 			end
 		end
