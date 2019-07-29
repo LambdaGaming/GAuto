@@ -161,7 +161,7 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 						return ply:SelectWeightedSequence( ACT_HL2MP_SIT ) --Sets the animation to the sitting animation, taken from the Gmod wiki
 					end } )
 					ent:DeleteOnRemove( ent.seat[i] )
-					ent:SetNWBool( "IsAutomodSeat", true )
+					ent.seat[i]:SetNWBool( "IsAutomodSeat", true )
 				end
 			end
 		end
@@ -268,6 +268,8 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 				ent:SetNWBool( "AM_DoorsLocked", false )
 				ent:SetNWEntity( "AM_LockOwner", nil )
 				ply:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, "Vehicle unlocked." ) ]] )
+			else
+				ply:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, "This vehicle is locked." ) ]] )
 			end
 		end
 		if !ent:GetNWBool( "AM_DoorsLocked" ) and AM_SeatsEnabled then
@@ -296,20 +298,31 @@ hook.Add( "lockpickStarted", "AM_Lockpick", function( ply, ent, trace )
 	end
 end )
 
+hook.Add( "onLockpickCompleted", "AM_LockpickFinish", function( ply, success, ent )
+	if !AM_AlarmEnabled then return end
+	if AM_Config_Blacklist[ent:GetModel()] then return end
+	if ent:IsVehicle() and ent:GetClass() == "prop_vehicle_jeep" then
+		if success then
+			ent:SetNWBool( "AM_DoorsLocked", false )
+		end
+	end
+end )
+
 util.AddNetworkString( "AM_VehicleLock" )
 net.Receive( "AM_VehicleLock", function( len, ply )
 	if IsFirstTimePredicted() then
 		if IsValid( ply ) and ply:IsPlayer() then
-			if AM_Config_Blacklist[ply:GetVehicle():GetModel()] then return end
-			if !ply:GetVehicle():GetNWBool( "AM_DoorsLocked" ) then
+			local veh = ply:GetVehicle()
+			if AM_Config_Blacklist[veh:GetModel()] then return end
+			if !veh:GetNWBool( "AM_DoorsLocked" ) then
 				ply:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, "Vehicle locked." ) ]] )
-				ply:GetVehicle():Fire( "Lock", "", 0.01 )
-				ply:GetVehicle():SetNWBool( "AM_DoorsLocked", true )
-				ply:GetVehicle():SetNWEntity( "AM_LockOwner", ply )
+				veh:Fire( "Lock", "", 0.01 )
+				veh:SetNWBool( "AM_DoorsLocked", true )
+				veh:SetNWEntity( "AM_LockOwner", ply )
 			else
 				ply:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, "Vehicle unlocked." ) ]] )
-				ply:GetVehicle():Fire( "Unlock", "", 0.01 )
-				ply:GetVehicle():SetNWBool( "AM_DoorsLocked", false )
+				veh:Fire( "Unlock", "", 0.01 )
+				veh:SetNWBool( "AM_DoorsLocked", false )
 			end
 		end
 	end

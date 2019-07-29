@@ -14,11 +14,11 @@ hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it
 			surface.SetFont( "Trebuchet18" )
 			surface.SetTextColor( 255, 255, 255, 255 )
 			surface.SetTextPos( 1500, ScrH() - 155 )
-		    if AM_HealthEnabled then
+		    --if AM_HealthEnabled then
 			    surface.DrawText( math.Round( vehicle:GetNWInt( "AM_VehicleHealth" ) ).."/"..vehicle:GetNWInt( "AM_VehicleMaxHealth" ) )
-			else
-			    surface.DrawText( "Health Disabled" )
-			end
+			--elseif !AM_HealthEnabled then
+			 --   surface.DrawText( "Health Disabled" )
+			--end
 			surface.SetTextPos( 1500, ScrH() - 135 )
 			if vehicle:GetNWBool( "AM_DoorsLocked" ) then
 			    surface.DrawText( "Doors: Locked" )
