@@ -12,19 +12,32 @@ hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it
 		if vehicle:GetClass() == "prop_vehicle_jeep" then
 			draw.RoundedBox( 5, 1500, ScrH() - 155, 200, 150, Color(25,25,25,200) )
 			surface.SetFont( "Trebuchet18" )
-			surface.SetTextColor( 255, 255, 255, 255 )
+
+			if vehicle:GetNWBool( "AM_IsSmoking" ) then
+				surface.SetTextColor( 255, 0, 0, 255 )
+			else
+				surface.SetTextColor( 255, 255, 255, 255 )
+			end
 			surface.SetTextPos( 1500, ScrH() - 155 )
 		    --if AM_HealthEnabled then
-			    surface.DrawText( math.Round( vehicle:GetNWInt( "AM_VehicleHealth" ) ).."/"..vehicle:GetNWInt( "AM_VehicleMaxHealth" ) )
+			    surface.DrawText( "Health: "..math.Round( vehicle:GetNWInt( "AM_VehicleHealth" ) ).."/"..vehicle:GetNWInt( "AM_VehicleMaxHealth" ) )
 			--elseif !AM_HealthEnabled then
 			 --   surface.DrawText( "Health Disabled" )
 			--end
+			surface.SetTextColor( 255, 255, 255, 255 )
 			surface.SetTextPos( 1500, ScrH() - 135 )
 			if vehicle:GetNWBool( "AM_DoorsLocked" ) then
 			    surface.DrawText( "Doors: Locked" )
 			else
 				surface.DrawText( "Doors: Unlocked" )
 			end
+
+			surface.SetTextPos( 1500, ScrH() - 100 )
+			surface.DrawText( "AUTOMOD BETA" )
+			surface.SetTextPos( 1500, ScrH() - 80 )
+			surface.DrawText( "Suggestions are greatly appreciated!" )
+			surface.SetTextPos( 1500, ScrH() - 60 )
+			surface.DrawText( "(This HUD is unfinished.)" )
 		end
 	end
 end )
