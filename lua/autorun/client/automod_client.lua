@@ -1,9 +1,8 @@
 
-local AM_HealthEnabled = GetConVar( "AM_Config_HealthEnabled" ):GetBool()
-local AM_WheelLockEnabled = GetConVar( "AM_Config_WheelLockEnabled" ):GetBool()
-local AM_DoorLockEnabled = GetConVar( "AM_Config_LockEnabled" ):GetBool()
-local AM_BrakeLockEnabled = GetConVar( "AM_Config_BrakeLockEnabled" ):GetBool()
-local AM_SeatsEnabled = GetConVar( "AM_Config_SeatsEnabled" ):GetBool()
+net.Receive( "AM_Notify", function( len, ply )
+	local text = net.ReadString()
+	chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, text )
+end )
 
 hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it works alongside photon and seat weaponizer mods
 	local ply = LocalPlayer()
@@ -18,20 +17,24 @@ hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it
 			else
 				surface.SetTextColor( 255, 255, 255, 255 )
 			end
+
 			surface.SetTextPos( 1500, ScrH() - 155 )
-		    --if AM_HealthEnabled then
+
+		    if vehicle:GetNWInt( "AM_VehicleMaxHealth" ) > 0 then
 			    surface.DrawText( "Health: "..math.Round( vehicle:GetNWInt( "AM_VehicleHealth" ) ).."/"..vehicle:GetNWInt( "AM_VehicleMaxHealth" ) )
-			--elseif !AM_HealthEnabled then
-			 --   surface.DrawText( "Health Disabled" )
-			--end
-			surface.SetTextColor( 255, 255, 255, 255 )
+			else
+				surface.DrawText( "Health Disabled" )
+			end
 			surface.SetTextPos( 1500, ScrH() - 135 )
 			if vehicle:GetNWBool( "AM_DoorsLocked" ) then
+				surface.SetTextColor( 255, 255, 255, 255 )
 			    surface.DrawText( "Doors: Locked" )
 			else
+				surface.SetTextColor( 196, 145, 2, 255 )
 				surface.DrawText( "Doors: Unlocked" )
 			end
 
+			surface.SetTextColor( 255, 255, 255, 255 )
 			surface.SetTextPos( 1500, ScrH() - 100 )
 			surface.DrawText( "AUTOMOD BETA" )
 			surface.SetTextPos( 1500, ScrH() - 80 )
@@ -67,7 +70,7 @@ hook.Add( "PlayerButtonDown", "AM_KeyPressDown", function( ply, key )
 			for k,v in pairs( seatbuttons ) do
 				if key == v[1] then
 					net.Start( "AM_ChangeSeats" )
-					net.WriteString( tostring( v[2] ) )
+					net.WriteString( tostring( v[2] ) ) --Converting it to a string here because using ints make weird things happen
 					net.SendToServer()
 				end
 			end

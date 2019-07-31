@@ -13,6 +13,66 @@ AM_Vehicles[""] = {
 }
 ]]
 
+AM_Vehicles["models/tdmcars/trucks/peterbilt_579_med.mdl"] = {
+	HornSound = "automod/truckhorn.mp3",
+	MaxHealth = 150,
+	EnginePos = Vector( 0, 142, 89 ),
+	Seats = {
+		{
+			pos = Vector( 22, 64, 83 ),
+			ang = Angle( 0, 0, 0 )
+		}
+	}
+}
+
+AM_Vehicles["models/tdmcars/trucks/peterbilt_579.mdl"] = {
+	HornSound = "automod/truckhorn.mp3",
+	MaxHealth = 150,
+	EnginePos = Vector( 0, 142, 89 ),
+	Seats = {
+		{
+			pos = Vector( 22, 64, 83 ),
+			ang = Angle( 0, 0, 0 )
+		}
+	}
+}
+
+AM_Vehicles["models/tdmcars/trucks/kenworth_t800.mdl"] = {
+	HornSound = "automod/truckhorn.mp3",
+	MaxHealth = 150,
+	EnginePos = Vector( 0, 148, 84 ),
+	Seats = {
+		{
+			pos = Vector( 17, 78, 76 ),
+			ang = Angle( 0, 0, 0 )
+		}
+	}
+}
+
+AM_Vehicles["models/tdmcars/trucks/gmc_c5500.mdl"] = {
+	HornSound = "automod/truckhorn.mp3",
+	MaxHealth = 125,
+	EnginePos = Vector( 0, 104, 54 ),
+	Seats = {
+		{
+			pos = Vector( 19, 34, 46 ),
+			ang = Angle( 0, 0, 0 )
+		}
+	}
+}
+
+AM_Vehicles["models/tdmcars/trucks/freight_argosy.mdl"] = {
+	HornSound = "automod/truckhorn.mp3",
+	MaxHealth = 150,
+	EnginePos = Vector( 0, 121, 54 ),
+	Seats = {
+		{
+			pos = Vector( 26, 83, 69 ),
+			ang = Angle( 0, 0, 0 )
+		}
+	}
+}
+
 AM_Vehicles["models/tdmcars/vip_viper.mdl"] = {
 	HornSound = "automod/carhorn.wav",
 	MaxHealth = 100,

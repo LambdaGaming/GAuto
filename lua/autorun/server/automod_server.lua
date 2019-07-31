@@ -1,4 +1,6 @@
 
+if CLIENT then return end
+
 --Health and damage convars
 local AM_HealthEnabled = GetConVar( "AM_Config_HealthEnabled" ):GetBool()
 local AM_BulletDamageEnabled = GetConVar( "AM_Config_BulletDamageEnabled" ):GetBool()
@@ -108,6 +110,13 @@ function AM_AddHealth( veh, hp ) --Adds health to the vehicle, nothing special
 	AM_SmokeCheck( veh )
 end
 
+util.AddNetworkString( "AM_Notify" )
+function AM_Notify( ply, text )
+	net.Start( "AM_Notify" )
+	net.WriteString( text )
+	net.Send( ply )
+end
+
 hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 	if !IsValid( ent ) then return end
 	timer.Simple( 0.1, function() --Small timer because the model isn't seen the instant this hook is called
@@ -123,8 +132,10 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 				ent:SetNWVector( "AM_EnginePos", AM_EnginePos( vehmodel ) )
 				ent:AddCallback( "PhysicsCollide", function( ent, data )
 					local speed = data.Speed
+					local hitent = data.HitEntity
 					if speed > 500 then
-						AM_TakeDamage( ent, speed / 35 )
+						if hitent:IsPlayer() or hitent:IsNPC() then return end
+						AM_TakeDamage( ent, speed / 98 )
 					end
 				end )
 			end
@@ -137,7 +148,7 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 			if AM_SeatsEnabled then
 				if !AM_Vehicles or !AM_Vehicles[vehmodel] then
 					for k,v in pairs( player.GetAll() ) do
-						v:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, "Warning! The vehicle that was spawned is currently not supported by Automod!" ) ]] )
+						AM_Notify( v, "Warning! The vehicle that was spawned is currently not supported by Automod!" )
 					end
 					return
 				end
@@ -182,7 +193,7 @@ hook.Add( "KeyPress", "AM_KeyPressServer", function( ply, key )
 				ply.laststeer = -1
 			elseif key == IN_MOVERIGHT then
 				ply.laststeer = 1
-			elseif key == IN_FORWARD then
+			elseif key == IN_FORWARD or key == IN_BACK then
 				ply.laststeer =  0
 			end
 		end
@@ -199,7 +210,7 @@ end )
 hook.Add( "CanPlayerEnterVehicle", "AM_CanEnterVehicle", function( ply, veh, role )
 	if ply.AM_SeatCooldown and ply.AM_SeatCooldown > CurTime() then return false end --Cooldown to make sure players don't unlock their car the instant they exit it
 	ply.laststeer = 0 --Resets the steering wheel straight when the player enters
-	if veh:GetClass() == "prop_vehicle_prisoner_pod" then veh:SetCameraDistance( 5 ) end
+	if veh:GetNWBool( "IsAutomodSeat" ) then veh:SetCameraDistance( 5 ) end
 end )
 
 hook.Add( "Think", "AM_VehicleThink", function()
@@ -247,13 +258,19 @@ end )
 hook.Add( "EntityTakeDamage", "AM_TakeDamage", function( ent, dmg )
 	if AM_HealthEnabled then
 		if ent:IsOnFire() then return end --Prevent car from constantly igniting itself if it's on fire
-		local d = dmg:GetDamage()
 		if ent:GetClass() == "prop_vehicle_jeep" then
 			if dmg:IsBulletDamage() and AM_BulletDamageEnabled then
-				AM_TakeDamage( ent, d * 500 )
+				AM_TakeDamage( ent, dmg:GetDamage() * 500 )
 			else
-				AM_TakeDamage( ent, d )
+				AM_TakeDamage( ent, dmg:GetDamage() )
 			end
+		end
+		if dmg:GetAttacker():IsVehicle() then
+			dmg:SetDamageType( DMG_VEHICLE )
+		end
+		if dmg:IsDamageType( DMG_VEHICLE ) then
+			dmg:ScaleDamage( 0.35 ) --Scales damage from not only vehicle drivers and passengers but also players who are hit by vehicles
+			return dmg
 		end
 	end
 end )
@@ -267,9 +284,9 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 				ent:Fire( "Unlock", "", 0.01 )
 				ent:SetNWBool( "AM_DoorsLocked", false )
 				ent:SetNWEntity( "AM_LockOwner", nil )
-				ply:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, "Vehicle unlocked." ) ]] )
+				AM_Notify( ply, "Vehicle unlocked." )
 			else
-				ply:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, "This vehicle is locked." ) ]] )
+				AM_Notify( ply, "This vehicle is locked." )
 			end
 		end
 		if !ent:GetNWBool( "AM_DoorsLocked" ) and AM_SeatsEnabled then
@@ -304,6 +321,7 @@ hook.Add( "onLockpickCompleted", "AM_LockpickFinish", function( ply, success, en
 	if ent:IsVehicle() and ent:GetClass() == "prop_vehicle_jeep" then
 		if success then
 			ent:SetNWBool( "AM_DoorsLocked", false )
+			ent:SetNWEntity( "AM_LockOwner", nil )
 		end
 	end
 end )
@@ -315,12 +333,12 @@ net.Receive( "AM_VehicleLock", function( len, ply )
 			local veh = ply:GetVehicle()
 			if AM_Config_Blacklist[veh:GetModel()] then return end
 			if !veh:GetNWBool( "AM_DoorsLocked" ) then
-				ply:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, "Vehicle locked." ) ]] )
+				AM_Notify( ply, "Vehicle locked." )
 				veh:Fire( "Lock", "", 0.01 )
 				veh:SetNWBool( "AM_DoorsLocked", true )
 				veh:SetNWEntity( "AM_LockOwner", ply )
 			else
-				ply:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, "Vehicle unlocked." ) ]] )
+				AM_Notify( ply, "Vehicle unlocked." )
 				veh:Fire( "Unlock", "", 0.01 )
 				veh:SetNWBool( "AM_DoorsLocked", false )
 			end
@@ -358,7 +376,7 @@ net.Receive( "AM_ChangeSeats", function( len, ply )
 	if !IsValid( veh ) then return end
 	if veh:GetClass() == "prop_vehicle_jeep" then
 		if key == 1 then
-			ply:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, "Seat change failed, you selected the seat you are already sitting in." ) ]] )
+			AM_Notify( ply, "Seat change failed, you selected the seat you are already sitting in." )
 			return
 		else
 			if IsValid( veh.seat[key - 1] ) then --Need to subtract 1 here since the driver's seat doesn't count as a passenger seat
@@ -366,11 +384,11 @@ net.Receive( "AM_ChangeSeats", function( len, ply )
 					ply:ExitVehicle() --Have to quickly exit the vehicle then enter the new one, or the old vehicle will still think it has a driver
 					ply:EnterVehicle( veh.seat[key - 1] )
 				else
-					ply:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, "Seat change failed, selected seat is already taken." ) ]] )
+					AM_Notify( ply, "Seat change failed, selected seat is already taken." )
 					return
 				end
 			else
-				ply:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, "Seat change failed, selected seat doesn't exist. Vehicle may not be currently supported." ) ]] )
+				AM_Notify( ply, "Seat change failed, selected seat doesn't exist. Vehicle may not be currently supported." )
 				return
 			end
 		end
@@ -381,12 +399,12 @@ net.Receive( "AM_ChangeSeats", function( len, ply )
 				ply:EnterVehicle( vehparent )
 				return
 			else
-				ply:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, "Seat change failed, selected seat is already taken." ) ]] )
+				AM_Notify( ply, "Seat change failed, selected seat is already taken." )
 				return
 			end
 		end
 		if vehparent.seat[key - 1] == veh then
-			ply:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, "Seat change failed, you selected the seat you are already sitting in." ) ]] )
+			AM_Notify( ply, "Seat change failed, you selected the seat you are already sitting in." )
 			return
 		end
 		if IsValid( vehparent ) and IsValid( vehparent.seat[key - 1] ) then	
@@ -394,11 +412,11 @@ net.Receive( "AM_ChangeSeats", function( len, ply )
 				ply:ExitVehicle()
 				ply:EnterVehicle( vehparent.seat[key - 1] )
 			else
-				ply:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, "Seat change failed, selected seat is already taken." ) ]] )
+				AM_Notify( ply, "Seat change failed, selected seat is already taken." )
 				return
 			end
 		else
-			ply:SendLua( [[ chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, "Seat change failed, selected seat doesn't exist." ) ]] )
+			AM_Notify( ply, "Seat change failed, selected seat doesn't exist." )
 			return
 		end
 	end
