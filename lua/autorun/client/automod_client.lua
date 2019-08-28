@@ -4,13 +4,23 @@ net.Receive( "AM_Notify", function( len, ply )
 	chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, text )
 end )
 
+surface.CreateFont( "AM_HUDFont1", {
+	font = "Roboto",
+	size = 18
+} )
+
+surface.CreateFont( "AM_HUDFont2", {
+	font = "Roboto",
+	size = 14
+} )
+
 hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it works alongside photon and seat weaponizer mods
 	local ply = LocalPlayer()
 	if ply:InVehicle() then
 		local vehicle = ply:GetVehicle()
 		if vehicle:GetClass() == "prop_vehicle_jeep" then
-			draw.RoundedBox( 5, 1500, ScrH() - 155, 200, 150, Color(25,25,25,200) )
-			surface.SetFont( "Trebuchet18" )
+			draw.RoundedBox( 5, 1500, ScrH() - 155, 200, 150, Color( 5, 5, 5, 245 ) )
+			surface.SetFont( "AM_HUDFont1" )
 
 			if vehicle:GetNWBool( "AM_IsSmoking" ) then
 				surface.SetTextColor( 255, 0, 0, 255 )
@@ -18,14 +28,14 @@ hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it
 				surface.SetTextColor( 255, 255, 255, 255 )
 			end
 
-			surface.SetTextPos( 1500, ScrH() - 155 )
+			surface.SetTextPos( 1541, ScrH() - 155 )
 
 		    if vehicle:GetNWInt( "AM_VehicleMaxHealth" ) > 0 then
 			    surface.DrawText( "Health: "..math.Round( vehicle:GetNWInt( "AM_VehicleHealth" ) ).."/"..vehicle:GetNWInt( "AM_VehicleMaxHealth" ) )
 			else
 				surface.DrawText( "Health Disabled" )
 			end
-			surface.SetTextPos( 1500, ScrH() - 135 )
+			surface.SetTextPos( 1540, ScrH() - 135 )
 			if vehicle:GetNWBool( "AM_DoorsLocked" ) then
 				surface.SetTextColor( 255, 255, 255, 255 )
 			    surface.DrawText( "Doors: Locked" )
@@ -34,6 +44,7 @@ hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it
 				surface.DrawText( "Doors: Unlocked" )
 			end
 
+			surface.SetFont( "AM_HUDFont2" )
 			surface.SetTextColor( 255, 255, 255, 255 )
 			surface.SetTextPos( 1500, ScrH() - 100 )
 			surface.DrawText( "AUTOMOD BETA" )
