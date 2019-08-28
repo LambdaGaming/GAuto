@@ -173,6 +173,7 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 					end } )
 					ent:DeleteOnRemove( ent.seat[i] )
 					ent.seat[i]:SetNWBool( "IsAutomodSeat", true )
+					ent.seat[i].VehicleTable = {} --Prevents photon from spamming console when it can't find each seat's VehicleTable
 				end
 			end
 		end
