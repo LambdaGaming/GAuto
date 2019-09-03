@@ -133,6 +133,12 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 				ent:AddCallback( "PhysicsCollide", function( ent, data )
 					local speed = data.Speed
 					local hitent = data.HitEntity
+					if IsValid( hitent:GetPhysicsObject() ) and hitent:GetPhysicsObject():GetMass() < 300 then
+						return
+					end
+					if constraint.FindConstraintEntity( hitent, "Weld" ) == ent or constraint.FindConstraintEntity( hitent, "Rope" ) == ent then
+						return
+					end
 					if speed > 500 then
 						if hitent:IsPlayer() or hitent:IsNPC() then return end
 						AM_TakeDamage( ent, speed / 98 )
@@ -280,6 +286,7 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 	if !IsValid( ply ) or !IsValid( ent ) then return end
 	if ent:GetClass() == "prop_vehicle_jeep" then
 		if ent.AM_ExitCooldown and ent.AM_ExitCooldown > CurTime() then return end
+		if ent.LockedNotifyCooldown and ent.LockedNotifyCooldown > CurTime() then return end
 		if ent:GetNWBool( "AM_DoorsLocked" ) then
 			if ent:GetNWEntity( "AM_LockOwner" ) == ply then
 				ent:Fire( "Unlock", "", 0.01 )
@@ -288,6 +295,7 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 				AM_Notify( ply, "Vehicle unlocked." )
 			else
 				AM_Notify( ply, "This vehicle is locked." )
+				ent.LockedNotifyCooldown = CurTime() + 1
 			end
 		end
 		if !ent:GetNWBool( "AM_DoorsLocked" ) and AM_SeatsEnabled then
