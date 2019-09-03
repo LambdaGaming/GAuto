@@ -27,6 +27,9 @@ function SWEP:PrimaryAttack()
     local tr = self.Owner:GetEyeTrace().Entity
     if tr:GetClass() == "prop_vehicle_jeep" then
     	if tr:GetNWInt( "AM_VehicleHealth" ) < tr:GetNWInt( "AM_VehicleMaxHealth" ) then
+			if tr:GetNWInt( "AM_VehicleHealth" ) <= 0 then
+				tr:Fire( "turnon", "", 0.01 )
+			end
     		AM_AddHealth( tr, 10 )
             self:SendWeaponAnim( ACT_VM_SWINGMISS )
             self.Owner:SetAnimation( PLAYER_ATTACK1 )
