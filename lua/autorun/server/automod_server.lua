@@ -133,7 +133,7 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 				ent:AddCallback( "PhysicsCollide", function( ent, data )
 					local speed = data.Speed
 					local hitent = data.HitEntity
-					if IsValid( hitent:GetPhysicsObject() ) and hitent:GetPhysicsObject():GetMass() < 300 then
+					if IsValid( hitent:GetPhysicsObject() ) and hitent:GetPhysicsObject():GetMass() < 300 and !hitent:IsWorld() then
 						return
 					end
 					if constraint.FindConstraintEntity( hitent, "Weld" ) == ent or constraint.FindConstraintEntity( hitent, "Rope" ) == ent then

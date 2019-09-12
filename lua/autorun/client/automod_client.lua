@@ -1,7 +1,9 @@
 
 net.Receive( "AM_Notify", function( len, ply )
 	local text = net.ReadString()
-	chat.AddText( Color( 180, 0, 0, 255 ), "[Automod]: ", color_white, text )
+	local textcolor1 = Color( 180, 0, 0, 255 )
+	local textcolor2 = color_white
+	chat.AddText( textcolor1, "[Automod]: ", textcolor2, text )
 end )
 
 surface.CreateFont( "AM_HUDFont1", {
@@ -18,6 +20,8 @@ hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it
 	local ply = LocalPlayer()
 	if ply:InVehicle() then
 		local vehicle = ply:GetVehicle()
+		local vehhealth = vehicle:GetNWInt( "AM_VehicleHealth" )
+		local vehmaxhealth = vehicle:GetNWInt( "AM_VehicleMaxHealth" )
 		if vehicle:GetClass() == "prop_vehicle_jeep" then
 			draw.RoundedBox( 5, 1500, ScrH() - 155, 200, 150, Color( 5, 5, 5, 245 ) )
 			surface.SetFont( "AM_HUDFont1" )
@@ -31,7 +35,7 @@ hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it
 			surface.SetTextPos( 1541, ScrH() - 155 )
 
 		    if vehicle:GetNWInt( "AM_VehicleMaxHealth" ) > 0 then
-			    surface.DrawText( "Health: "..math.Round( vehicle:GetNWInt( "AM_VehicleHealth" ) ).."/"..vehicle:GetNWInt( "AM_VehicleMaxHealth" ) )
+			    surface.DrawText( "Health: "..math.Round( vehhealth ).."/"..vehmaxhealth )
 			else
 				surface.DrawText( "Health Disabled" )
 			end
@@ -101,15 +105,20 @@ hook.Add( "PlayerButtonUp", "AM_KeyPressUp", function( ply, key )
 end )
 
 hook.Add( "Think", "AM_SmokeThink", function()
+	local ply = LocalPlayer()
 	for k,v in pairs( ents.FindByClass( "prop_vehicle_jeep" ) ) do
 		if v:GetNWBool( "AM_IsSmoking" ) then
-			local pos = v:LocalToWorld( v:GetNWVector( "AM_EnginePos" ) )
-			local smoke = ParticleEmitter( pos ):Add( "particle/smokesprites_000"..math.random( 1, 9 ), pos )
-			smoke:SetVelocity( Vector( 0, 0, 50 ) )
-			smoke:SetDieTime( math.Rand( 0.6, 1.3 ) )
-			smoke:SetStartSize( math.random( 0, 5 ) )
-			smoke:SetEndSize( math.random( 33, 55 ) )
-			smoke:SetColor( 72, 72, 72 )
+			local carpos = v:GetPos()
+			local plypos = ply:GetPos()
+			if plypos:DistToSqr( carpos ) < 4000000 then --Only displays particles if the player is within a certain distance of the vehicle, helps with optimization
+				local pos = v:LocalToWorld( v:GetNWVector( "AM_EnginePos" ) )
+				local smoke = ParticleEmitter( pos ):Add( "particle/smokesprites_000"..math.random( 1, 9 ), pos )
+				smoke:SetVelocity( Vector( 0, 0, 50 ) )
+				smoke:SetDieTime( math.Rand( 0.6, 1.3 ) )
+				smoke:SetStartSize( math.random( 0, 5 ) )
+				smoke:SetEndSize( math.random( 33, 55 ) )
+				smoke:SetColor( 72, 72, 72 )
+			end
 		end
 	end
 end )

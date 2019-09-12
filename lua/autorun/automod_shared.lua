@@ -1,13 +1,19 @@
 
 --[[
-    Planned features for this system:
-    1. Vehicle health system (explodes when damaged by an explosive weapon, otherwise the engine just stops working and the vehicle can be repaired) *NOT DONE* (needs physical damage)
-    2. Brakes lock when the player exits the vehicle (can be released by a brake release swep for towing purposes) *DONE*
-    3. Steering wheel remains in the position it was in when the player leaves the vehicle *DONE*
-    4. Vehicle seat system *DONE*
-    5. Horns *DONE*
-    6. Vehicle locking system (with alarm) *DONE*
-	7. Customizable controls *NOT DONE*
+    Features of this this system:
+    1. Vehicle health system (still working out the kinks with physical damage)
+    2. Brakes lock when the player exits the vehicle (can be released by a brake release swep for towing purposes)
+    3. Steering wheel remains in the position it was in when the player leaves the vehicle
+    4. Vehicle seat system (still working on fixing the bug where a passenger would be permanetly stuck in their seat)
+    5. Horns
+    6. Vehicle locking system (with alarm)
+
+	Planned features:
+	1. Trailer hookup (with a tool to link a truck and a trailer)
+	2. Tire popping (complete with bullet damage and spike strips)
+	3. Better looking HUD (smaller box that sits on top of the photon HUD, or down in the corner if current vehicle doesn't have photon support)
+	4. Customizable controls
+	5. Possible towing system?
 ]]
 
 AM_Vehicles = {}
