@@ -23,6 +23,7 @@ CreateConVar( "AM_Config_BulletDamageEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCH
 CreateConVar( "AM_Config_DamageExplosionEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE } , "Enable or disable vehicles exploding when their health reaches 0.")
 CreateConVar( "AM_Config_ExplodeRemoveEnabled", 0, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable destroyed vehicles being removed after a certain time." )
 CreateConVar( "AM_Config_ExplodeRemoveTime", 600, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Time it takes in seconds for a destroyed vehicle to get removed. AM_Config_ExplodeRemoveEnabled must be set to 1 for this to work." )
+CreateConVar( "AM_Config_ScalePlayerDamage", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable scaling down how much damage players take when inside a vehicle." )
 
 CreateConVar( "AM_Config_BrakeLockEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable the brakes locking when a player exits a vehicle." )
 CreateConVar( "AM_Config_WheelLockEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable the steering wheel locking in a certain position when a player exits a vehicle." )

@@ -7,6 +7,7 @@ local AM_BulletDamageEnabled = GetConVar( "AM_Config_BulletDamageEnabled" ):GetB
 local AM_ExplosionEnabled = GetConVar( "AM_Config_DamageExplosionEnabled" ):GetBool()
 local AM_ExplodeRemoveEnabled = GetConVar( "AM_Config_ExplodeRemoveEnabled" ):GetBool()
 local AM_ExplodeRemoveTime = GetConVar( "AM_Config_ExplodeRemoveTime" ):GetInt()
+local AM_ScalePlayerDamage = GetConVar( "AM_Config_ScalePlayerDamage" ):GetBool()
 
 --All other convars
 local AM_WheelLockEnabled = GetConVar( "AM_Config_WheelLockEnabled" ):GetBool()
@@ -194,55 +195,36 @@ end
 
 hook.Add( "KeyPress", "AM_KeyPressServer", function( ply, key )
 	if ply:InVehicle() then
-		if AM_Config_Blacklist[ply:GetVehicle():GetModel()] then return end
+		local veh = ply:GetVehicle()
+		if AM_Config_Blacklist[veh:GetModel()] then return end
 		if AM_WheelLockEnabled then
 			if key == IN_MOVELEFT then
-				ply.laststeer = -1
+				veh.laststeer = -1
 			elseif key == IN_MOVERIGHT then
-				ply.laststeer = 1
+				veh.laststeer = 1
 			elseif key == IN_FORWARD or key == IN_BACK then
-				ply.laststeer =  0
+				veh.laststeer =  0
 			end
 		end
-	end
-	if ply:InVehicle() and ply:GetVehicle():GetNWBool( "IsAutomodSeat" ) then --Fix to get players out of passenger seats. Without this, players will enter the closest passenger seat without a way of getting out
-		if AM_Config_Blacklist[ply:GetVehicle():GetModel()] then return end
-		if key == IN_USE then
-			ply:ExitVehicle()
-			ply.AM_SeatCooldown = CurTime() + 1
+		if veh:GetNWBool( "IsAutomodSeat" ) then --Fix to get players out of passenger seats. Without this, players will enter the closest passenger seat without a way of getting out
+			if key == IN_USE then
+				ply:ExitVehicle()
+				ply.AM_SeatCooldown = CurTime() + 1
+			end
 		end
 	end
 end )
 
 hook.Add( "CanPlayerEnterVehicle", "AM_CanEnterVehicle", function( ply, veh, role )
 	if ply.AM_SeatCooldown and ply.AM_SeatCooldown > CurTime() then return false end --Cooldown to make sure players don't unlock their car the instant they exit it
-	ply.laststeer = 0 --Resets the steering wheel straight when the player enters
-	if veh:GetNWBool( "IsAutomodSeat" ) then veh:SetCameraDistance( 5 ) end
-end )
-
-hook.Add( "Think", "AM_VehicleThink", function()
-	for k,v in pairs( ents.FindByClass( "prop_vehicle_jeep" ) ) do
-		if !IsValid( v ) or v == nil then return end
-		if AM_Config_Blacklist[v:GetModel()] then return end
-		if !v:IsEngineStarted() then --This part is a mess but it seems to be working fine so i'm leaving it for now
-			if v.laststeer == 1 then
-				if v:GetSteering() == -1 then return end
-				v:SetSteering( 1, 1 )
-			elseif v.laststeer == -1 then
-				if v:GetSteering() == 1 then return end
-				v:SetSteering( -1, 1 )
-			elseif v.laststeer == 0 then
-				if v:GetSteering() == 0 then return end
-				v:SetSteering( 0, 0 )
-			end
-		end
-	end
+	veh.laststeer = 0 --Resets the steering wheel straight when the player enters
+	if veh:GetNWBool( "IsAutomodSeat" ) then veh:SetCameraDistance( 5 ) end --Sets camera distance relatively close to the default driver's seat distance
 end )
 
 hook.Add( "PlayerLeaveVehicle", "AM_LeaveVehicle", function( ply, ent )
 	ent.AM_ExitCooldown = CurTime() + 1
+	if AM_Config_Blacklist[ent:GetModel()] then return end
 	if AM_BrakeLockEnabled then
-		if AM_Config_Blacklist[ent:GetModel()] then return end
 		if ply:KeyDown( IN_JUMP ) then --Activates the parking brake if the player is holding the jump button when they exit
 			ent:Fire( "HandBrakeOn", "", 0.01 )
 			ent:EmitSound( "automod/brake.mp3" )
@@ -251,14 +233,18 @@ hook.Add( "PlayerLeaveVehicle", "AM_LeaveVehicle", function( ply, ent )
 		end
 	end
 	if AM_WheelLockEnabled then
-		if AM_Config_Blacklist[ent:GetModel()] then return end
-		if ply.laststeer == 1 then
-			ent.laststeer = 1
-		elseif ply.laststeer == -1 then
-			ent.laststeer = -1
-		elseif ply.laststeer == 0 then
-			ent.laststeer = 0
-		end
+		timer.Simple( 0.01, function() --Small timer because it otherwise won't register
+			if ent.laststeer == 1 then
+				if ent:GetSteering() == -1 then return end
+				ent:SetSteering( 1, 1 )
+			elseif ent.laststeer == -1 then
+				if ent:GetSteering() == 1 then return end
+				ent:SetSteering( -1, 1 )
+			elseif ent.laststeer == 0 then
+				if ent:GetSteering() == 0 then return end
+				ent:SetSteering( 0, 0 )
+			end
+		end )
 	end
 end )
 
@@ -272,12 +258,14 @@ hook.Add( "EntityTakeDamage", "AM_TakeDamage", function( ent, dmg )
 				AM_TakeDamage( ent, dmg:GetDamage() )
 			end
 		end
-		if dmg:GetAttacker():IsVehicle() then
-			dmg:SetDamageType( DMG_VEHICLE )
-		end
-		if dmg:IsDamageType( DMG_VEHICLE ) then
-			dmg:ScaleDamage( 0.35 ) --Scales damage from not only vehicle drivers and passengers but also players who are hit by vehicles
-			return dmg
+		if AM_ScalePlayerDamage then
+			if dmg:GetAttacker():IsVehicle() then
+				dmg:SetDamageType( DMG_VEHICLE )
+			end
+			if dmg:IsDamageType( DMG_VEHICLE ) then
+				dmg:ScaleDamage( 0.35 ) --Scales damage from not only vehicle drivers and passengers but also players who are hit by vehicles
+				return dmg
+			end
 		end
 	end
 end )
