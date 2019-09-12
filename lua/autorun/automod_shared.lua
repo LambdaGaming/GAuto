@@ -32,6 +32,5 @@ CreateConVar( "AM_Config_HornEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "
 CreateConVar( "AM_Config_LockEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable players being able to lock their vehicles." )
 CreateConVar( "AM_Config_LockAlarmEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable the alarm going off when a player lockpicks a vehicle." )
 
-CreateClientConVar( "AM_Control_ModifierKey", KEY_LALT, true, false, "Sets the key to hold when pressing another key to perform a function." )
 CreateClientConVar( "AM_Control_HornKey", KEY_H, true, false, "Sets the key for the horn." )
 CreateClientConVar( "AM_Control_LockKey", KEY_N, true, false, "Sets the key for locking the doors." )

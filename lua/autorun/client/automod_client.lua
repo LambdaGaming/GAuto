@@ -1,4 +1,7 @@
 
+local AM_HornKey = GetConVar( "AM_Control_HornKey" ):GetInt()
+local AM_LockKey = GetConVar( "AM_Control_LockKey" ):GetInt()
+
 net.Receive( "AM_Notify", function( len, ply )
 	local text = net.ReadString()
 	local textcolor1 = Color( 180, 0, 0, 255 )
@@ -74,11 +77,11 @@ local seatbuttons = {
 hook.Add( "PlayerButtonDown", "AM_KeyPressDown", function( ply, key )
 	if IsFirstTimePredicted() then
 		if ply:InVehicle() then
-			if key == KEY_N then
+			if key == AM_LockKey then
 				net.Start( "AM_VehicleLock" )
 				net.SendToServer()
 			end
-			if key == KEY_H then
+			if key == AM_HornKey then
 				net.Start( "AM_VehicleHorn" )
 				net.SendToServer()
 			end
@@ -96,7 +99,7 @@ end )
 hook.Add( "PlayerButtonUp", "AM_KeyPressUp", function( ply, key )
 	if IsFirstTimePredicted() then
 		if ply:InVehicle() then
-			if key == KEY_H then
+			if key == AM_HornKey then
 				net.Start( "AM_VehicleHornStop" )
 				net.SendToServer() --Not sure if this the most optimised way to do this
 			end
