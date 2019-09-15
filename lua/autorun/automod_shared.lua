@@ -12,8 +12,9 @@
 	1. Trailer hookup (with a tool to link a truck and a trailer)
 	2. Tire popping (complete with bullet damage and spike strips)
 	3. Better looking HUD (smaller box that sits on top of the photon HUD, or down in the corner if current vehicle doesn't have photon support)
-	4. Customizable controls
-	5. Possible towing system?
+	4. Customizable controls/server settings
+	5. Moving vehicle tables over to json files for better performance
+	6. Possible towing system?
 ]]
 
 AM_Vehicles = {}
