@@ -253,7 +253,7 @@ hook.Add( "EntityTakeDamage", "AM_TakeDamage", function( ent, dmg )
 		if ent:IsOnFire() then return end --Prevent car from constantly igniting itself if it's on fire
 		if ent:GetClass() == "prop_vehicle_jeep" then
 			if dmg:IsBulletDamage() and AM_BulletDamageEnabled then
-				AM_TakeDamage( ent, dmg:GetDamage() * 500 )
+				AM_TakeDamage( ent, dmg:GetDamage() * 450 )
 			else
 				AM_TakeDamage( ent, dmg:GetDamage() )
 			end
