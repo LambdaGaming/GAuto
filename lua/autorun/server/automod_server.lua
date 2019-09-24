@@ -51,7 +51,29 @@ function AM_EnginePos( model ) --Does the same as above but with the vehicle's e
 	return Vector( 0, 0, 0 )
 end
 
-function AM_NumSeats( veh ) --Returns the number of passenger seats that are attached to the vehicle
+function AM_HasTowPos( model )
+	for k,v in pairs( AM_Vehicles ) do
+		if k == model then
+			if v.TowPos then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+function AM_TowPos( model )
+	for k,v in pairs( AM_Vehicles ) do
+		if k == model then
+			if v.TowPos then
+				return v.TowPos
+			end
+		end
+	end
+	return Vector( 0, 0, 0 )
+end
+
+function AM_NumSeats( veh ) --Returns the number of passenger seats that are attached to the vehicle, currently not used for anything
 	if !veh:IsVehicle() or veh:GetClass() != "prop_vehicle_jeep" or !veh.seat then
 		return 0
 	end
@@ -131,6 +153,9 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 				ent:SetNWBool( "AM_IsSmoking", false )
 				ent:SetNWBool( "AM_HasExploded", false )
 				ent:SetNWVector( "AM_EnginePos", AM_EnginePos( vehmodel ) )
+				if AM_HasTowPos( vehmodel ) then
+					ent:SetNWVector( "AM_TowPos", AM_TowPos( vehmodel ) )
+				end
 				ent:AddCallback( "PhysicsCollide", function( ent, data )
 					local speed = data.Speed
 					local hitent = data.HitEntity
@@ -217,6 +242,9 @@ end )
 
 hook.Add( "CanPlayerEnterVehicle", "AM_CanEnterVehicle", function( ply, veh, role )
 	if ply.AM_SeatCooldown and ply.AM_SeatCooldown > CurTime() then return false end --Cooldown to make sure players don't unlock their car the instant they exit it
+end )
+
+hook.Add( "PlayerEnteredVehicle", "AM_EnteredVehicle", function( ply, veh, role )
 	veh.laststeer = 0 --Resets the steering wheel straight when the player enters
 	if veh:GetNWBool( "IsAutomodSeat" ) then veh:SetCameraDistance( 5 ) end --Sets camera distance relatively close to the default driver's seat distance
 end )

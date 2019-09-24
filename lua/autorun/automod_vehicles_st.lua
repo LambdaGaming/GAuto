@@ -65,6 +65,7 @@ AM_Vehicles["models/statetrooper/ram_tow.mdl"] = {
 	HornSound = "automod/carhorn.wav",
 	MaxHealth = 100,
 	EnginePos = Vector( 0, 110, 64 ),
+	TowPos = Vector( 0, 0, 0 ),
 	Seats = {
 		{
 			pos = Vector( 23, 28, 42 ),
