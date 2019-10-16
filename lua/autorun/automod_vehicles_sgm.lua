@@ -13,6 +13,54 @@ AM_Vehicles[""] = {
 }
 ]]
 
+AM_Vehicles["models/sentry/p379_tow.mdl"] = {
+	HornSound = "automod/truckhorn.wav",
+	MaxHealth = 150,
+	EnginePos = Vector( 0, 105, 79 ),
+	Seats = {
+		{
+			pos = Vector( 23, 39, 62 ),
+			ang = Angle( 0, 0, 0 )
+		}
+	}
+}
+
+AM_Vehicles["models/sentry/p379.mdl"] = {
+	HornSound = "automod/truckhorn.wav",
+	MaxHealth = 150,
+	EnginePos = Vector( 0, 105, 79 ),
+	Seats = {
+		{
+			pos = Vector( 23, 39, 62 ),
+			ang = Angle( 0, 0, 0 )
+		}
+	}
+}
+
+AM_Vehicles["models/sentry/kt600.mdl"] = {
+	HornSound = "automod/truckhorn.wav",
+	MaxHealth = 150,
+	EnginePos = Vector( 0, 132, 78 ),
+	Seats = {
+		{
+			pos = Vector( 16, 64, 71 ),
+			ang = Angle( 0, 0, 0 )
+		}
+	}
+}
+
+AM_Vehicles["models/sentry/i9300.mdl"] = {
+	HornSound = "automod/truckhorn.wav",
+	MaxHealth = 150,
+	EnginePos = Vector( 0, 106, 79 ),
+	Seats = {
+		{
+			pos = Vector( 22, 38, 63 ),
+			ang = Angle( 0, 0, 0 )
+		}
+	}
+}
+
 AM_Vehicles["models/black_mesa_vehicles/m35.mdl"] = {
 	HornSound = "automod/truckhorn.mp3",
 	MaxHealth = 125,
