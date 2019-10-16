@@ -14,7 +14,6 @@
 	3. Better looking HUD (smaller box that sits on top of the photon HUD, or down in the corner if current vehicle doesn't have photon support)
 	4. Customizable controls/server settings
 	5. Moving vehicle tables over to json files for better performance
-	6. Possible towing system?
 ]]
 
 AM_Vehicles = {}
@@ -32,7 +31,6 @@ CreateConVar( "AM_Config_SeatsEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, 
 CreateConVar( "AM_Config_HornEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable players being able to use their horns." )
 CreateConVar( "AM_Config_LockEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable players being able to lock their vehicles." )
 CreateConVar( "AM_Config_LockAlarmEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable the alarm going off when a player lockpicks a vehicle." )
-CreateConVar( "AM_Config_TowEngineEnabled", 0, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable vehicles allowing their engines to start when being towed." )
 
 CreateClientConVar( "AM_Control_HornKey", KEY_H, true, false, "Sets the key for the horn." )
 CreateClientConVar( "AM_Control_LockKey", KEY_N, true, false, "Sets the key for locking the doors." )
