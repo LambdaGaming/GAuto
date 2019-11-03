@@ -31,6 +31,7 @@ function ENT:Initialize()
 	if (phys:IsValid()) then
 		phys:Wake()
 	end
+	self:SetNWInt( "HealthPercent", 0.3 )
 end
 
 local function AM_Spark( ent )
@@ -47,8 +48,9 @@ function ENT:StartTouch( ent )
 	if ent:GetClass() == "prop_vehicle_jeep" then
 		local health = ent:GetNWInt( "AM_VehicleHealth" )
 		local maxhealth = ent:GetNWInt( "AM_VehicleMaxHealth" )
+		local healthpercent = self:GetNWInt( "HealthPercent" )
 		if health >= maxhealth then return end
-		AM_AddHealth( ent, maxhealth * 0.3 )
+		AM_AddHealth( ent, maxhealth * healthpercent )
 		AM_Spark( self )
 		self:EmitSound( "items/smallmedkit1.wav" )
 		self:Remove()
