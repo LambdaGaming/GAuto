@@ -1,0 +1,19 @@
+{
+	"EnginePos": "[-1 101 49]",
+	"Seats": [
+		{
+			"ang": "{0 0 0}",
+			"pos": "[21 17 31]"
+		},
+		{
+			"ang": "{0 0 0}",
+			"pos": "[19 -28 25]"
+		},
+		{
+			"ang": "{0 0 0}",
+			"pos": "[-18 -28 26]"
+		}
+	],
+	"HornSound": "automod/carhorn.wav",
+	"MaxHealth": 100.0
+}

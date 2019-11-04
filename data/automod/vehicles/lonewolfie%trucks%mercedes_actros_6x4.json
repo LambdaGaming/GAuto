@@ -1,0 +1,11 @@
+{
+	"EnginePos": "[0 114 39]",
+	"Seats": [
+		{
+			"ang": "{0 0 0}",
+			"pos": "[-31 80 80]"
+		}
+	],
+	"HornSound": "automod/truckhorn.mp3",
+	"MaxHealth": 150.0
+}

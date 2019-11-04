@@ -128,14 +128,28 @@ local function TrimModel( string )
 	return "Invalid String"
 end
 
+function AM_SaveAllVehicles()
+	for k,v in pairs( AM_Vehicles ) do
+		timer.Simple( 0.5, function()
+			local slashfix = TrimModel( k )
+			if file.Exists( "addons/Automod/data/automod/vehicles/"..slashfix..".json", "GAME" ) then
+				print( "[Automod] File for '"..k.."' already exists. Skipping." )
+				return
+			end
+			if !file.Exists( "addons/Automod/data/automod/vehicles/"..slashfix..".json", "GAME" ) then file.CreateDir( "automod/vehicles" ) end
+			file.Write( "automod/vehicles/"..slashfix..".json", util.TableToJSON( v, true ) )
+			print( "[Automod] Successfully saved '"..k.."' to file." )
+		end )
+	end
+end
+
 local function AM_SaveVehicle( model )
 	if AM_Vehicles[model] then
 		local slashfix = TrimModel( model )
-		if file.Exists( "automod/vehicles/"..slashfix..".json", "DATA" ) then
+		if file.Exists( "automod/vehicles/"..slashfix..".json", "DATA" ) or file.Exists( "addons/Automod/data/automod/vehicles/"..slashfix..".json", "GAME" ) then
 			print( "[Automod] This vehicle has already been saved. Delete it's data file and try again if you're saving a newer version." )
 			return
 		end
-		if !file.Exists( "automod/vehicles", "DATA" ) then file.CreateDir( "automod/vehicles" ) end
 		file.Write( "automod/vehicles/"..slashfix..".json", util.TableToJSON( AM_Vehicles[model], true ) )
 		print( "[Automod] Successfully saved "..model.." to Automod files." )
 	else
@@ -160,12 +174,23 @@ function AM_LoadVehicle( model )
 		return
 	end
 	local slashfix = TrimModel( model )
-	local findvehicle = file.Read( "automod/vehicles/"..slashfix..".json", "DATA" )
+	local findvehicle = file.Read( "addons/Automod/data/automod/vehicles/"..slashfix..".json", "GAME" )
+	local findvehicleextra = file.Read( "automod/vehicles/"..slashfix..".json", "DATA" )
+	local filefoundinmaindir = false
 	if findvehicle == nil then
-		MsgC( Color( 255, 0, 0 ), "[Automod] ERROR: Automod file not found for model '"..model.."'." )
-		return
+		print( "[Automod] Automod file not found for '"..model.."' in addon data directory. Checking main data directory." )
+		if findvehicleextra == nil then
+			MsgC( Color( 255, 0, 0 ), "[Automod] ERROR: Automod file not found for model '"..model.."'." )
+			return
+		end
+	else
+		filefoundinmaindir = true
 	end
-	AM_Vehicles[model] = util.JSONToTable( findvehicle )
+	if filefoundinmaindir then
+		AM_Vehicles[model] = util.JSONToTable( findvehicle )
+	else
+		AM_Vehicles[model] = util.JSONToTable( findvehicleextra )
+	end
 	print( "[Automod] Successfully loaded '"..model.."' from Automod files." )
 end
 
