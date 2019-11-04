@@ -2130,7 +2130,7 @@ AM_Vehicles["models/lonewolfie/dodge_monaco_police.mdl"] = {
 	}
 }
 
-AM_Vehicles["models/lonewolfie/dodge_monaco.mdl"] = {
+--[[ AM_Vehicles["models/lonewolfie/dodge_monaco.mdl"] = {
 	HornSound = "automod/carhorn.wav",
 	MaxHealth = 100,
 	EnginePos = Vector( 0, 97, 38 ),
@@ -2148,4 +2148,4 @@ AM_Vehicles["models/lonewolfie/dodge_monaco.mdl"] = {
 			ang = Angle( 0, 0, 0 )
 		}
 	}
-}
+} ]]

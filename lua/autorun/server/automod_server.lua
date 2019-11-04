@@ -118,6 +118,57 @@ function AM_Notify( ply, text )
 	net.Send( ply )
 end
 
+local function TrimModel( string )
+	if type( string ) == "string" then
+		local removemodel = string.gsub( string, "models/", "" )
+		local removeextention = string.StripExtension( removemodel )
+		local replaceslash = string.Replace( removeextention, "/", "%" )
+		return replaceslash
+	end
+	return "Invalid String"
+end
+
+local function AM_SaveVehicle( model )
+	if AM_Vehicles[model] then
+		local slashfix = TrimModel( model )
+		if file.Exists( "automod/vehicles/"..slashfix..".json", "DATA" ) then
+			print( "[Automod] This vehicle has already been saved. Delete it's data file and try again if you're saving a newer version." )
+			return
+		end
+		if !file.Exists( "automod/vehicles", "DATA" ) then file.CreateDir( "automod/vehicles" ) end
+		file.Write( "automod/vehicles/"..slashfix..".json", util.TableToJSON( AM_Vehicles[model], true ) )
+		print( "[Automod] Successfully saved "..model.." to Automod files." )
+	else
+		MsgC( Color( 255, 0, 0 ), "[Automod] ERROR: The specified model doesn't seem to exist. Check your spelling and vehicle tables." )
+	end
+end
+concommand.Add( "AM_SaveVehicle", function( ply, cmd, args )
+	if IsValid( ply ) and !ply:IsSuperAdmin() then
+		AM_Notify( ply, "Only superadmins and server operators can access this command!" )
+		return
+	end
+	if #args > 1 then
+		MsgC( Color( 255, 0, 0 ), "[Automod] ERROR: Please only enter 1 argument." )
+		return
+	end
+	AM_SaveVehicle( args[1] )
+end )
+
+function AM_LoadVehicle( model )
+	if !model then
+		MsgC( Color( 255, 0, 0 ), "[Automod] ERROR: Invalid argument for AM_LoadVehicle()." )
+		return
+	end
+	local slashfix = TrimModel( model )
+	local findvehicle = file.Read( "automod/vehicles/"..slashfix..".json", "DATA" )
+	if findvehicle == nil then
+		MsgC( Color( 255, 0, 0 ), "[Automod] ERROR: Automod file not found for model '"..model.."'." )
+		return
+	end
+	AM_Vehicles[model] = util.JSONToTable( findvehicle )
+	print( "[Automod] Successfully loaded '"..model.."' from Automod files." )
+end
+
 hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 	if !IsValid( ent ) then return end
 	timer.Simple( 0.1, function() --Small timer because the model isn't seen the instant this hook is called
@@ -125,6 +176,10 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 		local vehmodel = ent:GetModel()
 		if ent:IsVehicle() and ent:GetClass() == "prop_vehicle_jeep" then
 			if AM_Config_Blacklist[vehmodel] then return end --Prevents blacklisted models from being affected
+			if !AM_Vehicles[vehmodel] then
+				print( "[Automod] Vehicle table not found. Attempting to load from file..." )
+				AM_LoadVehicle( vehmodel ) --Tries to load the vehicle from file if it doesn't exist in memory
+			end
 			if AM_HealthEnabled then
 				ent:SetNWInt( "AM_VehicleHealth", AM_VehicleHealth( vehmodel ) ) --Sets vehicle health if the health system is enabled
 				ent:SetNWInt( "AM_VehicleMaxHealth", AM_VehicleHealth( vehmodel ) )
