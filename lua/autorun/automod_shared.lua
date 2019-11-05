@@ -4,7 +4,7 @@
     1. Vehicle health system (still working out the kinks with physical damage)
     2. Brakes lock when the player exits the vehicle (can be released by a brake release swep for towing purposes)
     3. Steering wheel remains in the position it was in when the player leaves the vehicle
-    4. Vehicle seat system (still working on fixing the bug where a passenger would be permanetly stuck in their seat)
+    4. Vehicle seat system
     5. Horns
     6. Vehicle locking system (with alarm)
 
@@ -13,7 +13,6 @@
 	2. Tire popping (complete with bullet damage and spike strips)
 	3. Better looking HUD (smaller box that sits on top of the photon HUD, or down in the corner if current vehicle doesn't have photon support)
 	4. Customizable controls/server settings
-	5. Moving vehicle tables over to json files for better performance
 ]]
 
 AM_Vehicles = {}

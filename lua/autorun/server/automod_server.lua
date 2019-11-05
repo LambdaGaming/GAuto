@@ -465,6 +465,7 @@ net.Receive( "AM_ChangeSeats", function( len, ply )
 				if !IsValid( veh.seat[key - 1]:GetDriver() ) then
 					ply:ExitVehicle() --Have to quickly exit the vehicle then enter the new one, or the old vehicle will still think it has a driver
 					ply:EnterVehicle( veh.seat[key - 1] )
+					ply:SetEyeAngles( Angle( veh.seat[key - 1]:GetAngles():Forward() ) + Angle( 0, 90, 0 ) ) --Fix for the seats setting random eye angles
 				else
 					AM_Notify( ply, "Seat change failed, selected seat is already taken." )
 					return
@@ -479,6 +480,7 @@ net.Receive( "AM_ChangeSeats", function( len, ply )
 			if !IsValid( vehparent:GetDriver() ) then
 				ply:ExitVehicle()
 				ply:EnterVehicle( vehparent )
+				ply:SetEyeAngles( Angle( vehparent:GetAngles():Forward() ) + Angle( 0, 90, 0 ) )
 				return
 			else
 				AM_Notify( ply, "Seat change failed, selected seat is already taken." )
@@ -493,6 +495,7 @@ net.Receive( "AM_ChangeSeats", function( len, ply )
 			if !IsValid( vehparent.seat[key - 1]:GetDriver() ) then
 				ply:ExitVehicle()
 				ply:EnterVehicle( vehparent.seat[key - 1] )
+				ply:SetEyeAngles( Angle( vehparent.seat[key - 1]:GetAngles():Forward() ) + Angle( 0, 90, 0 ) )
 			else
 				AM_Notify( ply, "Seat change failed, selected seat is already taken." )
 				return
