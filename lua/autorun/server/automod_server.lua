@@ -61,7 +61,9 @@ end
 function AM_DestroyCheck( veh ) --Disables the engine and sets the vehicle on fire if it's health is 0
 	if veh:GetNWInt( "AM_VehicleHealth" ) <= 0 and !veh:GetNWBool( "AM_HasExploded" ) then
 		veh:Fire( "turnoff", "", 0.01 )
-		veh:Ignite()
+		if vFireInstalled then --Only ignites the vehicle if VFire is installed since otherwise it looks weird
+			veh:Ignite()
+		end
 		if AM_ExplosionEnabled then
 			local e = ents.Create( "env_explosion" )
 			e:SetPos( veh:LocalToWorld( veh:GetNWVector( "AM_EnginePos" ) ) )
