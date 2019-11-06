@@ -16,6 +16,7 @@ local AM_BrakeLockEnabled = GetConVar( "AM_Config_BrakeLockEnabled" ):GetBool()
 local AM_SeatsEnabled = GetConVar( "AM_Config_SeatsEnabled" ):GetBool()
 local AM_HornEnabled = GetConVar( "AM_Config_HornEnabled" ):GetBool()
 local AM_AlarmEnabled = GetConVar( "AM_Config_LockAlarmEnabled" ):GetBool()
+local AM_TirePopEnabled = GetConVar( "AM_Config_TirePopEnabled" ):GetBool()
 
 
 function AM_HornSound( model ) --Finds the set horn sound for the specified model, returns a default sound if none is found
@@ -194,6 +195,38 @@ function AM_LoadVehicle( model )
 		AM_Vehicles[model] = util.JSONToTable( findvehicleextra )
 	end
 	print( "[Automod] Successfully loaded '"..model.."' from Automod files." )
+end
+
+hook.Add( "VehicleMove", "AM_FlatTire", function( ply, veh, mv )
+	if IsValid( veh ) and veh:GetVelocity():Length() > 100 then
+		local wheelpopped = veh:GetNWInt( "AM_WheelPopped" )
+		if wheelpopped > 0 then
+			local maxdamping = math.Clamp( veh:GetWheel( wheelpopped ):GetDamping() + 0.01, 0, 40 ) --Simulates tire slowly losing air
+			veh:GetWheel( wheelpopped ):SetDamping( maxdamping, maxdamping )
+		end
+	end
+end )
+
+function AM_PopTire( veh, wheel )
+	if IsValid( veh ) and veh:IsVehicle() then
+		veh:SetSpringLength( wheel, 499 )
+		veh:EmitSound( "HL1/ambience/steamburst1.wav" )
+		veh:SetNWInt( "AM_WheelPopped", wheel )
+	end
+end
+
+function AM_RepairTire( veh )
+	if IsValid( veh ) and veh:IsVehicle() then
+		local vehmodel = veh:GetModel()
+		if AM_Config_Blacklist[vehmodel] then return end
+		for i = 1, veh:GetWheelCount() do
+			veh:SetSpringLength( 1, 500.3 )
+			if veh:GetNWInt( "AM_WheelPopped" ) > 0 then
+				veh:GetWheel( 1 ):SetDamping( 0, 0 )
+				veh:SetNWInt( "AM_WheelPopped", 0 )
+			end
+		end
+	end
 end
 
 hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
@@ -465,7 +498,7 @@ net.Receive( "AM_ChangeSeats", function( len, ply )
 				if !IsValid( veh.seat[key - 1]:GetDriver() ) then
 					ply:ExitVehicle() --Have to quickly exit the vehicle then enter the new one, or the old vehicle will still think it has a driver
 					ply:EnterVehicle( veh.seat[key - 1] )
-					ply:SetEyeAngles( Angle( veh.seat[key - 1]:GetAngles():Forward() ) + Angle( 0, 90, 0 ) ) --Fix for the seats setting random eye angles
+					ply:SetEyeAngles( Angle( veh.seat[key - 1]:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) ) --Fix for the seats setting random eye angles
 				else
 					AM_Notify( ply, "Seat change failed, selected seat is already taken." )
 					return
@@ -480,7 +513,7 @@ net.Receive( "AM_ChangeSeats", function( len, ply )
 			if !IsValid( vehparent:GetDriver() ) then
 				ply:ExitVehicle()
 				ply:EnterVehicle( vehparent )
-				ply:SetEyeAngles( Angle( vehparent:GetAngles():Forward() ) + Angle( 0, 90, 0 ) )
+				ply:SetEyeAngles( Angle( vehparent:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) )
 				return
 			else
 				AM_Notify( ply, "Seat change failed, selected seat is already taken." )
@@ -495,7 +528,7 @@ net.Receive( "AM_ChangeSeats", function( len, ply )
 			if !IsValid( vehparent.seat[key - 1]:GetDriver() ) then
 				ply:ExitVehicle()
 				ply:EnterVehicle( vehparent.seat[key - 1] )
-				ply:SetEyeAngles( Angle( vehparent.seat[key - 1]:GetAngles():Forward() ) + Angle( 0, 90, 0 ) )
+				ply:SetEyeAngles( Angle( vehparent.seat[key - 1]:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) )
 			else
 				AM_Notify( ply, "Seat change failed, selected seat is already taken." )
 				return
