@@ -121,9 +121,9 @@ function AM_Notify( ply, text )
 	net.Send( ply )
 end
 
-local function TrimModel( string )
-	if type( string ) == "string" then
-		local removemodel = string.gsub( string, "models/", "" )
+local function TrimModel( model )
+	if isstring( model ) then
+		local removemodel = string.gsub( model, "models/", "" )
 		local removeextention = string.StripExtension( removemodel )
 		local replaceslash = string.Replace( removeextention, "/", "%" )
 		return replaceslash
@@ -139,7 +139,7 @@ function AM_SaveAllVehicles()
 				print( "[Automod] File for '"..k.."' already exists. Skipping." )
 				return
 			end
-			if !file.Exists( "addons/Automod/data/automod/vehicles/"..slashfix..".json", "GAME" ) then file.CreateDir( "automod/vehicles" ) end
+			if !file.Exists( "automod/vehicles", "DATA" ) then file.CreateDir( "automod/vehicles" ) end
 			file.Write( "automod/vehicles/"..slashfix..".json", util.TableToJSON( v, true ) )
 			print( "[Automod] Successfully saved '"..k.."' to file." )
 		end )
@@ -208,6 +208,7 @@ hook.Add( "VehicleMove", "AM_FlatTire", function( ply, veh, mv )
 end )
 
 function AM_PopTire( veh, wheel )
+	if !AM_TirePopEnabled then return end
 	if IsValid( veh ) and veh:IsVehicle() then
 		veh:SetSpringLength( wheel, 499 )
 		veh:EmitSound( "HL1/ambience/steamburst1.wav" )
@@ -216,6 +217,7 @@ function AM_PopTire( veh, wheel )
 end
 
 function AM_RepairTire( veh )
+	if !AM_TirePopEnabled then return end
 	if IsValid( veh ) and veh:IsVehicle() then
 		local vehmodel = veh:GetModel()
 		if AM_Config_Blacklist[vehmodel] then return end

@@ -33,10 +33,23 @@ function SWEP:PrimaryAttack()
     		AM_AddHealth( tr, 10 )
             self:SendWeaponAnim( ACT_VM_SWINGMISS )
             self.Owner:SetAnimation( PLAYER_ATTACK1 )
-    		self.Owner:ChatPrint( "Vehicle Health: "..tr:GetNWInt( "AM_VehicleHealth" ) )
+    		AM_Notify( self.Owner, "Vehicle Health: "..tr:GetNWInt( "AM_VehicleHealth" ) )
         else
-            self.Owner:ChatPrint( "Vehicle is at max health!" )
+            AM_Notify( self.Owner, "Vehicle is at max health!" )
     	end
     end
     self:SetNextPrimaryFire( CurTime() + 0.5 )
+end
+
+function SWEP:SecondaryAttack()
+	if !IsFirstTimePredicted() or CLIENT then return end
+    local tr = self.Owner:GetEyeTrace().Entity
+    if tr:GetClass() == "prop_vehicle_jeep" and self.Owner:GetPos():DistToSqr( tr:GetPos() ) < 40000 then
+		AM_RepairTire( tr )
+		self:SendWeaponAnim( ACT_VM_SWINGMISS )
+        self.Owner:SetAnimation( PLAYER_ATTACK1 )
+    	tr:EmitSound( "physics/rubber/rubber_tire_impact_hard"..math.random( 1, 3 )..".wav" )
+		AM_Notify( self.Owner, "Vehicle tires repaired." )
+    end
+    self:SetNextSecondaryFire( CurTime() + 0.5 )
 end
