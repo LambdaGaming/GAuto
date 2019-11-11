@@ -313,6 +313,12 @@ end
 hook.Add( "KeyPress", "AM_KeyPressServer", function( ply, key )
 	if ply:InVehicle() then
 		local veh = ply:GetVehicle()
+		if veh:GetNWBool( "IsAutomodSeat" ) then --Fix to get players out of passenger seats. Without this, players will enter the closest passenger seat without a way of getting out
+			if key == IN_USE then
+				ply:ExitVehicle()
+				ply.AM_SeatCooldown = CurTime() + 1
+			end
+		end
 		if AM_Config_Blacklist[veh:GetModel()] then return end
 		if AM_WheelLockEnabled then
 			if key == IN_MOVELEFT then
@@ -321,12 +327,6 @@ hook.Add( "KeyPress", "AM_KeyPressServer", function( ply, key )
 				veh.laststeer = 1
 			elseif key == IN_FORWARD or key == IN_BACK then
 				veh.laststeer =  0
-			end
-		end
-		if veh:GetNWBool( "IsAutomodSeat" ) then --Fix to get players out of passenger seats. Without this, players will enter the closest passenger seat without a way of getting out
-			if key == IN_USE then
-				ply:ExitVehicle()
-				ply.AM_SeatCooldown = CurTime() + 1
 			end
 		end
 	end
