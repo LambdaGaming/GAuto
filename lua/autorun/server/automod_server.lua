@@ -69,7 +69,7 @@ function AM_DestroyCheck( veh ) --Disables the engine and sets the vehicle on fi
 			local e = ents.Create( "env_explosion" )
 			e:SetPos( veh:LocalToWorld( veh:GetNWVector( "AM_EnginePos" ) ) )
 			e:Spawn()
-			e:SetKeyValue( "iMagnitude", 200 )
+			e:SetKeyValue( "iMagnitude", 50 )
 			e:Fire( "Explode", 0, 0 )
 		end
 		veh:SetNWBool( "AM_HasExploded", true )
@@ -379,11 +379,13 @@ hook.Add( "EntityTakeDamage", "AM_TakeDamage", function( ent, dmg )
 			end
 		end
 		if AM_ScalePlayerDamage then
+			if !ent:IsPlayer() then return end
 			if dmg:GetAttacker():IsVehicle() then
 				dmg:SetDamageType( DMG_VEHICLE )
 			end
-			if dmg:IsDamageType( DMG_VEHICLE ) then
-				dmg:ScaleDamage( 0.35 ) --Scales damage from not only vehicle drivers and passengers but also players who are hit by vehicles
+			if dmg:IsDamageType( DMG_VEHICLE ) or ( ent:InVehicle() and dmg:IsDamageType( DMG_BLAST ) ) then
+				dmg:ScaleDamage( 0.35 ) --Scales damage for vehicle drivers, passengers, players who are hit by vehicles, and players who are in the vehicle when it explodes
+				print(dmg:GetDamage())
 				return dmg
 			end
 		end
