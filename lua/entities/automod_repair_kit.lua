@@ -50,6 +50,9 @@ function ENT:StartTouch( ent )
 		local maxhealth = ent:GetNWInt( "AM_VehicleMaxHealth" )
 		local healthpercent = self:GetNWInt( "HealthPercent" )
 		if health >= maxhealth then return end
+		if health <= 0 then
+			ent:Fire( "turnon", "", 0.01 )
+		end
 		AM_AddHealth( ent, maxhealth * healthpercent )
 		AM_Spark( self )
 		self:EmitSound( "items/smallmedkit1.wav" )
