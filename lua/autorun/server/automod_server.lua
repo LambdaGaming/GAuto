@@ -412,16 +412,20 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 			if ply:InVehicle() then return end
 			if !IsValid( ent:GetDriver() ) then return end
 			local plypos = ent:WorldToLocal( ply:GetPos() ):Length()
-			local numpos = 0
+			local numpos = 1
 			for i = 1, table.Count( ent.seat ) do
 				local seatpos = ent:WorldToLocal( ent.seat[i]:GetPos() ):Length()
 				if seatpos and seatpos < plypos then --Checks to see what seat is closest to the player
 					plypos = seatpos
 					numpos = i
-					ply:EnterVehicle( ent.seat[numpos] )
-					ply.AM_SeatCooldown = CurTime() + 1 --Prevents players from sometimes teleporting to the last detected seat instead of the first
 				end
 			end
+			if IsValid( ent.seat[numpos]:GetDriver() ) then
+				ply:EnterVehicle( ent.seat[numpos + 1] ) --Cheap fix for players not being able to get in if there's more than 2 players in the car until I have time to redo this whole thing
+			else
+				ply:EnterVehicle( ent.seat[numpos] )
+			end
+			ply.AM_SeatCooldown = CurTime() + 1 --Prevents players from sometimes teleporting to the last detected seat instead of the first
 		end
 	end
 end )
