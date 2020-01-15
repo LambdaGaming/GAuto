@@ -90,8 +90,21 @@ function AM_SmokeCheck( veh )
 	end
 end
 
+function AM_ToggleGodMode( veh )
+	local enabled = veh:GetNWBool( "GodMode" )
+	if enabled then
+		veh:SetNWBool( "GodMode", false )
+		return
+	end
+	veh:SetNWBool( "GodMode", true )
+end
+
+function AM_GodModeEnabled( veh )
+	return veh:GetNWBool( "GodMode" )
+end
+
 function AM_TakeDamage( veh, dam ) --Takes away health from the vehicle, also runs the destroy check every time the health is set
-	if !AM_HealthEnabled then return end
+	if !AM_HealthEnabled or AM_GodModeEnabled( veh ) then return end
 	if dam < 0.5 then return end
 	local health = veh:GetNWInt( "AM_VehicleHealth" )
 	local maxhealth = veh:GetNWInt( "AM_VehicleMaxHealth" )
@@ -385,7 +398,6 @@ hook.Add( "EntityTakeDamage", "AM_TakeDamage", function( ent, dmg )
 			end
 			if dmg:IsDamageType( DMG_VEHICLE ) or ( ent:InVehicle() and dmg:IsDamageType( DMG_BLAST ) ) then
 				dmg:ScaleDamage( 0.35 ) --Scales damage for vehicle drivers, passengers, players who are hit by vehicles, and players who are in the vehicle when it explodes
-				print(dmg:GetDamage())
 				return dmg
 			end
 		end
