@@ -1,6 +1,4 @@
 
-if CLIENT then return end
-
 --Health and damage convars
 local AM_HealthEnabled = GetConVar( "AM_Config_HealthEnabled" ):GetBool()
 local AM_BulletDamageEnabled = GetConVar( "AM_Config_BulletDamageEnabled" ):GetBool()
@@ -17,6 +15,7 @@ local AM_SeatsEnabled = GetConVar( "AM_Config_SeatsEnabled" ):GetBool()
 local AM_HornEnabled = GetConVar( "AM_Config_HornEnabled" ):GetBool()
 local AM_AlarmEnabled = GetConVar( "AM_Config_LockAlarmEnabled" ):GetBool()
 local AM_TirePopEnabled = GetConVar( "AM_Config_TirePopEnabled" ):GetBool()
+local AM_TireHealth = GetConVar( "AM_Config_TireHealth" ):GetInt()
 
 
 function AM_HornSound( model ) --Finds the set horn sound for the specified model, returns a default sound if none is found
@@ -229,16 +228,37 @@ function AM_PopTire( veh, wheel )
 	end
 end
 
+function AM_PopCheck( dmg, veh )
+	if !AM_TirePopEnabled then return end
+	local pos = dmg:GetDamagePosition()
+	local dmgamount = dmg:GetDamage() * 500
+	local dist = 0
+	for i = 0, veh:GetWheelCount() - 1 do
+		local wheel = veh:GetWheel( i )
+		if IsValid( wheel ) then
+			dist = wheel:GetPos():DistToSqr( pos )
+			if dist <= 400 then --Only deal damage if the bullets hit within the wheel's diameter
+				veh.WheelHealth = veh.WheelHealth or {}
+				veh.WheelHealth[i] = ( veh.WheelHealth[i] or AM_TireHealth ) - dmgamount
+				if veh.WheelHealth[i] <= 0 then
+					AM_PopTire( veh, i )
+				end
+			end
+		end
+	end
+end
+
 function AM_RepairTire( veh )
 	if !AM_TirePopEnabled then return end
 	if IsValid( veh ) and veh:IsVehicle() then
 		local vehmodel = veh:GetModel()
 		if AM_Config_Blacklist[vehmodel] then return end
-		for i = 1, veh:GetWheelCount() do
+		for i = 0, veh:GetWheelCount() - 1 do
 			veh:SetSpringLength( 1, 500.3 )
 			if veh:GetNWInt( "AM_WheelPopped" ) > 0 then
-				veh:GetWheel( 1 ):SetDamping( 0, 0 )
+				veh:GetWheel( i ):SetDamping( 0, 0 )
 				veh:SetNWInt( "AM_WheelPopped", 0 )
+				veh.WheelHealth = {}
 			end
 		end
 	end
@@ -387,6 +407,7 @@ hook.Add( "EntityTakeDamage", "AM_TakeDamage", function( ent, dmg )
 		if ent:GetClass() == "prop_vehicle_jeep" then
 			if dmg:IsBulletDamage() and AM_BulletDamageEnabled then
 				AM_TakeDamage( ent, dmg:GetDamage() * 450 )
+				AM_PopCheck( dmg, ent )
 			else
 				AM_TakeDamage( ent, dmg:GetDamage() )
 			end

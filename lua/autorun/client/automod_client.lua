@@ -1,6 +1,20 @@
 
-local AM_HornKey = GetConVar( "AM_Control_HornKey" ):GetInt()
-local AM_LockKey = GetConVar( "AM_Control_LockKey" ):GetInt()
+CreateClientConVar( "AM_Control_HornKey", KEY_H, true, false, "Sets the key for the horn." )
+CreateClientConVar( "AM_Control_LockKey", KEY_N, true, false, "Sets the key for locking the doors." )
+
+hook.Add( "PopulateToolMenu", "AM_ControlMenu", function()
+	spawnmenu.AddToolMenuOption( "Options", "Automod", "AutomodControls", "Controls", "", "", function( panel )
+		panel:AddControl( "Header", { --This is deprecated but all default gmod tools still use it?
+			Description = "Change your Automod controls here."
+		} )
+		panel:AddControl( "Numpad", {
+			Label = "Horn Key",
+			Command = "AM_Control_HornKey",
+			Label2 = "Lock Key",
+			Command2 = "AM_Control_LockKey"
+		} ) 
+	end )
+end )
 
 net.Receive( "AM_Notify", function( len, ply )
 	local text = net.ReadString()
@@ -72,16 +86,17 @@ local seatbuttons = {
 	{ KEY_6, 6 },
 	{ KEY_7, 7 },
 	{ KEY_8, 8 },
-	{ KEY_9, 9 }
+	{ KEY_9, 9 },
+	{ KEY_0, 10 }
 }
 hook.Add( "PlayerButtonDown", "AM_KeyPressDown", function( ply, key )
 	if IsFirstTimePredicted() then
 		if ply:InVehicle() then
-			if key == AM_LockKey then
+			if key == GetConVar( "AM_Control_LockKey" ):GetInt() then
 				net.Start( "AM_VehicleLock" )
 				net.SendToServer()
 			end
-			if key == AM_HornKey then
+			if key == GetConVar( "AM_Control_HornKey" ):GetInt() then
 				net.Start( "AM_VehicleHorn" )
 				net.SendToServer()
 			end
@@ -99,7 +114,7 @@ end )
 hook.Add( "PlayerButtonUp", "AM_KeyPressUp", function( ply, key )
 	if IsFirstTimePredicted() then
 		if ply:InVehicle() then
-			if key == AM_HornKey then
+			if key == GetConVar( "AM_Control_HornKey" ):GetInt() then
 				net.Start( "AM_VehicleHornStop" )
 				net.SendToServer() --Not sure if this the most optimised way to do this
 			end

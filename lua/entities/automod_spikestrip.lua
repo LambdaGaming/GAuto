@@ -9,10 +9,10 @@ ENT.Spawnable = true
 ENT.AdminOnly = true
 ENT.Category = "Automod"
 
-function ENT:SpawnFunction( ply, tr )
+function ENT:SpawnFunction( ply, tr, name )
 	if !tr.Hit then return end
 	local SpawnPos = tr.HitPos + tr.HitNormal * 1
-	local ent = ents.Create( "automod_spikestrip" )
+	local ent = ents.Create( name )
 	ent:SetPos( SpawnPos )
 	ent:Spawn()
 	ent:Activate()
@@ -54,8 +54,9 @@ function ENT:Initialize()
 		end
 	end
 	local phys = self:GetPhysicsObject()
-	if (phys:IsValid()) then
+	if phys:IsValid() then
 		phys:Wake()
+		phys:EnableMotion( false )
 	end
 end
 
@@ -75,24 +76,37 @@ function ENT:Use( activator, caller )
 	end
 end
 
+local function NumWheelFix( numwheel ) --Quick fix until I can figure out why it's detecting the farthest wheel intead of the closest
+	if numwheel == 0 then
+		numwheel = 3
+	elseif numwheel == 1 then
+		numwheel = 2
+	elseif numwheel == 2 then
+		numwheel = 1
+	elseif numwheel == 3 then
+		numwheel = 0
+	end
+	return numwheel
+end
+
 function ENT:StartTouch( ent )
 	if self.SpikeCooldown and self.SpikeCooldown > CurTime() then return end
 	if IsValid( ent ) and ent:IsVehicle() then
 		local vehmodel = ent:GetModel()
 		if AM_Config_Blacklist[vehmodel] then return end
 		local numwheel = 0
-		for i = 1, ent:GetWheelCount() do
-			if !IsValid( ent:GetWheel( i ) ) then return end
-			local wheelpos = ent:GetWheel( i ):GetPos():Length()
-			local entpos = self:GetPos():Length()
-			if wheelpos and wheelpos < entpos then --Checks to see what wheel is closest to the strip since there's no easy way of finding out which wheel is actually touching
-				entpos = wheelpos
+		local lastpos = 0
+		for i = 0, ent:GetWheelCount() - 1 do
+			local wheel = ent:GetWheel( i )
+			if !IsValid( wheel ) then return end
+			local sqrpos = wheel:GetPos():DistToSqr( self:GetPos() )
+			if lastpos <= sqrpos then --Checks to see what wheel is closest to the strip since there's no easy way of finding out which wheel is actually touching
+				lastpos = sqrpos
 				numwheel = i
-				AM_PopTire( ent, numwheel ) --Currently always targets the front right wheel and not the others, even when the back wheels touch first, needs fixed
-				self.SpikeCooldown = CurTime() + 1
-				break
 			end
 		end
+		AM_PopTire( ent, NumWheelFix( numwheel ) )
+		self.SpikeCooldown = CurTime() + 1
 	end
 end
 

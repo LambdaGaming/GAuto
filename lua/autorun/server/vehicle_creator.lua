@@ -17,7 +17,7 @@ hook.Add( "PlayerSay", "AM_VehCreation", function( ply, text, len )
 			ply:ChatPrint( "ERROR: Cannot generate seats, no vehicle detected." )
 			return
 		end
-		if #findseats > 9 then --Only allows up to 9 seats since thats how many number keys there are
+		if #findseats > 10 then --Only allows up to 10 seats since thats how many number keys there are
 			ply:ChatPrint( "ERROR: Cannot generate seats, more than 9 seats are spawned." )
 			return
 		elseif #findseats < 1 then

@@ -32,7 +32,7 @@ function SWEP:PrimaryAttack()
     if self.Owner:GetPos():DistToSqr( tr.HitPos ) < 10000 then
 		if !self.SpawnedSpike then
 			local e = ents.Create( "automod_spikestrip" )
-			e:SetPos( tr.HitPos + Vector( 0, 0, 20 ) )
+			e:SetPos( tr.HitPos )
 			e:SetAngles( Angle( 0, self.Owner:GetAngles().y, 0 ) )
 			e:Spawn()
 			e:SetOwner( self.Owner )
