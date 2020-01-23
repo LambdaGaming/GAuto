@@ -236,7 +236,7 @@ hook.Add( "VehicleMove", "AM_VehicleThink", function( ply, veh, mv )
 				local maxdamping = math.Clamp( veh:GetWheel( wheelpopped ):GetDamping() + 0.01, 0, 40 ) --Simulates tire slowly losing air
 				veh:GetWheel( wheelpopped ):SetDamping( maxdamping, maxdamping )
 			end
-			if AM_FuelEnabled then
+			if AM_FuelEnabled and !veh:GetNWBool( "IsAutomodSeat" ) then
 				if veh.FuelCooldown and veh.FuelCooldown > CurTime() then return end
 				local fuellevel = veh:GetNWInt( "AM_FuelAmount" )
 				if fuellevel > 0 then
@@ -260,7 +260,7 @@ end )
 function AM_SetFuel( veh, amount )
 	local clampedamount = math.Clamp( amount, 0, AM_FuelAmount )
 	veh:SetNWInt( "AM_FuelAmount", clampedamount )
-	if amount > 0 then
+	if amount > 0 and veh.NoFuel then
 		veh.NoFuel = false
 		veh:Fire( "turnon", "", 0.01 )
 		if AM_GodModeEnabled( veh ) then AM_ToggleGodMode( veh ) end
@@ -461,13 +461,21 @@ hook.Add( "EntityTakeDamage", "AM_TakeDamage", function( ent, dmg )
 				AM_TakeDamage( ent, dmg:GetDamage() )
 			end
 		end
-		if AM_ScalePlayerDamage then
-			if !ent:IsPlayer() then return end
+		if ent:IsVehicle() and ent.seat then
+			for k,v in pairs( ent.seat ) do
+				local driver = v:GetDriver()
+				if IsValid( driver ) then
+					if AM_ScalePlayerDamage then dmg:ScaleDamage( 0.35 ) end
+					driver:TakeDamage( dmg:GetDamage() ) --Fix for passengers not taking damage
+				end
+			end
+		end
+		if AM_ScalePlayerDamage and ent:IsPlayer() then
 			if dmg:GetAttacker():IsVehicle() then
 				dmg:SetDamageType( DMG_VEHICLE )
 			end
 			if dmg:IsDamageType( DMG_VEHICLE ) or ( ent:InVehicle() and dmg:IsDamageType( DMG_BLAST ) ) then
-				dmg:ScaleDamage( 0.35 ) --Scales damage for vehicle drivers, passengers, players who are hit by vehicles, and players who are in the vehicle when it explodes
+				dmg:ScaleDamage( 0.35 ) --Scales damage for vehicle drivers and players who are hit by vehicles
 				return dmg
 			end
 		end

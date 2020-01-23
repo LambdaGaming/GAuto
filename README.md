@@ -11,12 +11,13 @@ Simple and lightweight vehicle system for Garry's Mod.
 	<li>Door locking. An alarm will sound if a player starts lockpicking a vehicle on DarkRP.</li>
 	<li>Tire popping with bullet damage and spike strips. Players can use the secondary fire of the repair tool to repair any damage done to tires. The spike strip can either be used as a SWEP or a separate entity.</li>
 	<li>Customizable controls.</li>
-	<li>Fuel system with dynamic fuel consumption rates. Idling will still use fuel but not as much as a full throttle. (Still needs a fuel tank SWEP and entity.)</li>
+	<li>Fuel system with dynamic fuel consumption rates. Idling will still use fuel but not as much as a full throttle.</li>
+	<li>Vehicle HUD that adapts it's position based on the current vehicles Photon support. Detailed features of the HUD are listed below.</li>
+	<li>Data tables for each vehicle that contain info about health, seat positions, horn sound, etc. are stored as linted JSON files to allow for easy editing. A vehicle creation function is also included to add Automod support to your own vehicles.</li>
 </ul>
 
 ## Planned Features:
 <ul>
-	<li>Better looking HUD that adapts it's position based on the current vehicles Photon support.</li>
 	<li>Cruise control.</li>
 </ul>
 

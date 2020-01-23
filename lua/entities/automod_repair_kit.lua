@@ -31,7 +31,7 @@ function ENT:Initialize()
 	if phys:IsValid() then
 		phys:Wake()
 	end
-	self:SetNWInt( "HealthPercent", 0.3 )
+	self.HealthPercent = 0.3
 end
 
 local function AM_Spark( ent )
@@ -48,7 +48,7 @@ function ENT:StartTouch( ent )
 	if ent:GetClass() == "prop_vehicle_jeep" then
 		local health = ent:GetNWInt( "AM_VehicleHealth" )
 		local maxhealth = ent:GetNWInt( "AM_VehicleMaxHealth" )
-		local healthpercent = self:GetNWInt( "HealthPercent" )
+		local healthpercent = self.HealthPercent
 		if health >= maxhealth then return end
 		if health <= 0 then
 			ent:Fire( "turnon", "", 0.01 )
