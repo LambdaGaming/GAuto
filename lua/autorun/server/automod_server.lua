@@ -16,7 +16,9 @@ local AM_HornEnabled = GetConVar( "AM_Config_HornEnabled" ):GetBool()
 local AM_AlarmEnabled = GetConVar( "AM_Config_LockAlarmEnabled" ):GetBool()
 local AM_TirePopEnabled = GetConVar( "AM_Config_TirePopEnabled" ):GetBool()
 local AM_TireHealth = GetConVar( "AM_Config_TireHealth" ):GetInt()
-
+local AM_FuelEnabled = GetConVar( "AM_Config_FuelEnabled" ):GetBool()
+local AM_FuelAmount = GetConVar( "AM_Config_FuelAmount" ):GetInt()
+local AM_NoFuelGod = GetConVar( "AM_Config_NoFuelGod" ):GetBool()
 
 function AM_HornSound( model ) --Finds the set horn sound for the specified model, returns a default sound if none is found
 	for k,v in pairs( AM_Vehicles ) do
@@ -127,7 +129,13 @@ function AM_AddHealth( veh, hp ) --Adds health to the vehicle, nothing special
 end
 
 util.AddNetworkString( "AM_Notify" )
-function AM_Notify( ply, text )
+function AM_Notify( ply, text, broadcast )
+	if broadcast then
+		net.Start( "AM_Notify" )
+		net.WriteString( text )
+		net.Broadcast()
+		return
+	end
 	net.Start( "AM_Notify" )
 	net.WriteString( text )
 	net.Send( ply )
@@ -209,15 +217,55 @@ function AM_LoadVehicle( model )
 	print( "[Automod] Successfully loaded '"..model.."' from Automod files." )
 end
 
-hook.Add( "VehicleMove", "AM_FlatTire", function( ply, veh, mv )
-	if IsValid( veh ) and veh:GetVelocity():Length() > 100 then
-		local wheelpopped = veh:GetNWInt( "AM_WheelPopped" )
-		if wheelpopped > 0 then
-			local maxdamping = math.Clamp( veh:GetWheel( wheelpopped ):GetDamping() + 0.01, 0, 40 ) --Simulates tire slowly losing air
-			veh:GetWheel( wheelpopped ):SetDamping( maxdamping, maxdamping )
+hook.Add( "VehicleMove", "AM_VehicleThink", function( ply, veh, mv )
+	if IsValid( veh ) then
+		local vel = veh:GetVelocity():Length()
+		if veh.NoFuel then return end
+		if !veh.FuelCooldown then veh.FuelCooldown = 0 end
+
+		local fuelloss = 0
+		if vel > 100 then
+			fuelloss = 1 --Vehicle uses more fuel while in motion, takes about 8.7 minutes of constant driving to empty a tank with these numbers
+		else
+			fuelloss = 0.1 --Vehicle uses less fuel while idle
+		end
+
+		if vel > 100 then
+			local wheelpopped = veh:GetNWInt( "AM_WheelPopped" )
+			if wheelpopped > 0 then
+				local maxdamping = math.Clamp( veh:GetWheel( wheelpopped ):GetDamping() + 0.01, 0, 40 ) --Simulates tire slowly losing air
+				veh:GetWheel( wheelpopped ):SetDamping( maxdamping, maxdamping )
+			end
+			if AM_FuelEnabled then
+				if veh.FuelCooldown and veh.FuelCooldown > CurTime() then return end
+				local fuellevel = veh:GetNWInt( "AM_FuelAmount" )
+				if fuellevel > 0 then
+					veh:SetNWInt( "AM_FuelAmount", fuellevel - fuelloss )
+					veh.FuelCooldown = CurTime() + 5
+					veh.NoFuel = false
+				else
+					if AM_NoFuelGod then
+						AM_ToggleGodMode( veh )
+					end
+					veh:Fire( "turnoff", "", 0.01 )
+					veh:EmitSound( "ambient/materials/cartrap_rope"..math.random( 1, 3 )..".wav" )
+					veh.NoFuel = true
+					AM_Notify( ply, "Your vehicle has run out of fuel!" )
+				end
+			end
 		end
 	end
 end )
+
+function AM_SetFuel( veh, amount )
+	local clampedamount = math.Clamp( amount, 0, AM_FuelAmount )
+	veh:SetNWInt( "AM_FuelAmount", clampedamount )
+	if amount > 0 then
+		veh.NoFuel = false
+		veh:Fire( "turnon", "", 0.01 )
+		if AM_GodModeEnabled( veh ) then AM_ToggleGodMode( veh ) end
+	end
+end
 
 function AM_PopTire( veh, wheel )
 	if !AM_TirePopEnabled then return end
@@ -231,7 +279,7 @@ end
 function AM_PopCheck( dmg, veh )
 	if !AM_TirePopEnabled then return end
 	local pos = dmg:GetDamagePosition()
-	local dmgamount = dmg:GetDamage() * 500
+	local dmgamount = dmg:GetDamage() * 300
 	local dist = 0
 	for i = 0, veh:GetWheelCount() - 1 do
 		local wheel = veh:GetWheel( i )
@@ -302,11 +350,12 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 			if AM_DoorLockEnabled then
 				ent:SetNWBool( "AM_DoorsLocked", false ) --Sets door lock status if the setting is enabled
 			end
+			if AM_FuelEnabled then
+				ent:SetNWInt( "AM_FuelAmount", AM_FuelAmount )
+			end
 			if AM_SeatsEnabled then
 				if !AM_Vehicles or !AM_Vehicles[vehmodel] then
-					for k,v in pairs( player.GetAll() ) do
-						AM_Notify( v, "Warning! The vehicle that was spawned is currently not supported by Automod!" )
-					end
+					AM_Notify( nil, "Warning! The vehicle that was spawned is currently not supported by Automod!", true )
 					return
 				end
 				if !AM_Vehicles[vehmodel].Seats then return end

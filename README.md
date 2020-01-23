@@ -10,12 +10,20 @@ Simple and lightweight vehicle system for Garry's Mod.
 	<li>Horns.</li>
 	<li>Door locking. An alarm will sound if a player starts lockpicking a vehicle on DarkRP.</li>
 	<li>Tire popping with bullet damage and spike strips. Players can use the secondary fire of the repair tool to repair any damage done to tires. The spike strip can either be used as a SWEP or a separate entity.</li>
-	<li>Customizable controls and server settings. (Still need to do server settings.)</li>
+	<li>Customizable controls.</li>
+	<li>Fuel system with dynamic fuel consumption rates. Idling will still use fuel but not as much as a full throttle. (Still needs a fuel tank SWEP and entity.)</li>
 </ul>
 
 ## Planned Features:
 <ul>
 	<li>Better looking HUD that adapts it's position based on the current vehicles Photon support.</li>
-	<li>Gas system with VFire support and dynamic gas level deduction rates.</li>
 	<li>Cruise control.</li>
+</ul>
+
+## Current HUD Features:
+Specific features for the vehicle HUD are listed here to avoid overcrowding the features list.
+<ul>
+	<li>Health is displayed as a fraction. It can be color-coded for certain situations. White indicates that the health is good. Green indicates that the vehicle is in god mode and cannot be damaged. Red indicates that the vehicle is at 25% health or less.</li>
+	<li>Door lock status is displayed below the vehicle's health. It can be one of two colors: Orange indicates that the vehicle is unlocked and white indicates that the vehicle is locked.</li>
+	<li>Fuel level is displayed below the door lock status as a color-coded progress bar. It can be a total of three colors: Green indicates the fuel level is 75% to 100%, orange indicates 26% to 74%, and red indicates 0% to 25%.</li>
 </ul>

@@ -16,3 +16,6 @@ CreateConVar( "AM_Config_LockEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "
 CreateConVar( "AM_Config_LockAlarmEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable the alarm going off when a player lockpicks a vehicle." )
 CreateConVar( "AM_Config_TirePopEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable a vehicles tires being able to be popped." )
 CreateConVar( "AM_Config_TireHealth", 10, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Amount of health each wheel has." )
+CreateConVar( "AM_Config_FuelEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable vehicle gas consumption." )
+CreateConVar( "AM_Config_FuelAmount", 100, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Amount of fuel vehicles spawn with." )
+CreateConVar( "AM_Config_NoFuelGod", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable vehicles enabling god mode when they run out of fuel." )

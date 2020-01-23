@@ -33,12 +33,16 @@ surface.CreateFont( "AM_HUDFont2", {
 	size = 14
 } )
 
+local AM_FuelAmount = GetConVar( "AM_Config_FuelAmount" ):GetInt()
+
 hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it works alongside photon and seat weaponizer mods
 	local ply = LocalPlayer()
 	if ply:InVehicle() then
 		local vehicle = ply:GetVehicle()
 		local vehhealth = vehicle:GetNWInt( "AM_VehicleHealth" )
 		local vehmaxhealth = vehicle:GetNWInt( "AM_VehicleMaxHealth" )
+		local fuellevel = vehicle:GetNWInt( "AM_FuelAmount" )
+		local godenabled = vehicle:GetNWBool( "GodMode" )
 		if vehicle:GetClass() == "prop_vehicle_jeep" then
 			draw.RoundedBox( 5, 1500, ScrH() - 155, 200, 150, Color( 5, 5, 5, 245 ) )
 			surface.SetFont( "AM_HUDFont1" )
@@ -46,32 +50,55 @@ hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it
 			if vehicle:GetNWBool( "AM_IsSmoking" ) then
 				surface.SetTextColor( 255, 0, 0, 255 )
 			else
-				surface.SetTextColor( 255, 255, 255, 255 )
+				surface.SetTextColor( color_white )
 			end
 
 			surface.SetTextPos( 1541, ScrH() - 155 )
+
+			if godenabled then
+				surface.SetTextColor( Color( 0, 255, 0 ) )
+			else
+				surface.SetTextColor( color_white )
+			end
 
 		    if vehicle:GetNWInt( "AM_VehicleMaxHealth" ) > 0 then
 			    surface.DrawText( "Health: "..math.Round( vehhealth ).."/"..vehmaxhealth )
 			else
 				surface.DrawText( "Health Disabled" )
 			end
+			surface.SetTextColor( color_white )
 			surface.SetTextPos( 1540, ScrH() - 135 )
 			if vehicle:GetNWBool( "AM_DoorsLocked" ) then
-				surface.SetTextColor( 255, 255, 255, 255 )
+				surface.SetTextColor( color_white )
 			    surface.DrawText( "Doors: Locked" )
 			else
 				surface.SetTextColor( 196, 145, 2, 255 )
 				surface.DrawText( "Doors: Unlocked" )
 			end
 
+			local fuel75 = AM_FuelAmount * 0.75
+			local fuel25 = AM_FuelAmount * 0.25
+			surface.SetDrawColor( color_white )
+			surface.DrawRect( 1545, ScrH() - 100, 105, 20 )
+			if fuellevel >= fuel75 then
+				surface.SetDrawColor( Color( 0, 255, 0 ) )
+			elseif fuellevel < fuel75 and fuellevel >= fuel25 then
+				surface.SetDrawColor( Color( 196, 145, 2 ) )
+			elseif fuellevel < fuel25 then
+				surface.SetDrawColor( Color( 255, 0, 0 ) )
+			end
+			surface.DrawRect( 1547, ScrH() - 95, fuellevel, 10 )
 			surface.SetFont( "AM_HUDFont2" )
-			surface.SetTextColor( 255, 255, 255, 255 )
-			surface.SetTextPos( 1500, ScrH() - 100 )
+			surface.SetTextColor( color_white )
+			surface.SetTextPos( 1568, ScrH() - 115 )
+			surface.DrawText( "Fuel Level:" )
+
+			
+			surface.SetTextPos( 1500, ScrH() - 70 )
 			surface.DrawText( "AUTOMOD BETA" )
-			surface.SetTextPos( 1500, ScrH() - 80 )
+			surface.SetTextPos( 1500, ScrH() - 50 )
 			surface.DrawText( "Suggestions are greatly appreciated!" )
-			surface.SetTextPos( 1500, ScrH() - 60 )
+			surface.SetTextPos( 1500, ScrH() - 30 )
 			surface.DrawText( "(This HUD is unfinished.)" )
 		end
 	end
