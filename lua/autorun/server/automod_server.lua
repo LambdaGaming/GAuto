@@ -19,6 +19,7 @@ local AM_TireHealth = GetConVar( "AM_Config_TireHealth" ):GetInt()
 local AM_FuelEnabled = GetConVar( "AM_Config_FuelEnabled" ):GetBool()
 local AM_FuelAmount = GetConVar( "AM_Config_FuelAmount" ):GetInt()
 local AM_NoFuelGod = GetConVar( "AM_Config_NoFuelGod" ):GetBool()
+local AM_CruiseEnabled = GetConVar( "AM_Config_CruiseEnabled" ):GetBool()
 
 function AM_HornSound( model ) --Finds the set horn sound for the specified model, returns a default sound if none is found
 	for k,v in pairs( AM_Vehicles ) do
@@ -542,19 +543,18 @@ end )
 util.AddNetworkString( "AM_VehicleLock" )
 net.Receive( "AM_VehicleLock", function( len, ply )
 	if IsFirstTimePredicted() then
-		if IsValid( ply ) and ply:IsPlayer() then
-			local veh = ply:GetVehicle()
-			if AM_Config_Blacklist[veh:GetModel()] then return end
-			if !veh:GetNWBool( "AM_DoorsLocked" ) then
-				AM_Notify( ply, "Vehicle locked." )
-				veh:Fire( "Lock", "", 0.01 )
-				veh:SetNWBool( "AM_DoorsLocked", true )
-				veh:SetNWEntity( "AM_LockOwner", ply )
-			else
-				AM_Notify( ply, "Vehicle unlocked." )
-				veh:Fire( "Unlock", "", 0.01 )
-				veh:SetNWBool( "AM_DoorsLocked", false )
-			end
+		local veh = ply:GetVehicle()
+		if !IsValid( veh ) then return end
+		if AM_Config_Blacklist[veh:GetModel()] then return end
+		if !veh:GetNWBool( "AM_DoorsLocked" ) then
+			AM_Notify( ply, "Vehicle locked." )
+			veh:Fire( "Lock", "", 0.01 )
+			veh:SetNWBool( "AM_DoorsLocked", true )
+			veh:SetNWEntity( "AM_LockOwner", ply )
+		else
+			AM_Notify( ply, "Vehicle unlocked." )
+			veh:Fire( "Unlock", "", 0.01 )
+			veh:SetNWBool( "AM_DoorsLocked", false )
 		end
 	end
 end )
@@ -562,13 +562,12 @@ end )
 util.AddNetworkString( "AM_VehicleHorn" )
 net.Receive( "AM_VehicleHorn", function( len, ply )
 	if AM_HornEnabled then
-		if IsValid( ply ) and ply:InVehicle() then
-			local veh = ply:GetVehicle()
-			if AM_Config_Blacklist[veh:GetModel()] then return end
-			veh.AM_CarHorn = CreateSound( veh, veh:GetNWString( "AM_HornSound" ) )
-			if veh.AM_CarHorn:IsPlaying() then return end
-			veh.AM_CarHorn:Play()
-		end
+		local veh = ply:GetVehicle()
+		if !IsValid( veh ) then return end
+		if AM_Config_Blacklist[veh:GetModel()] then return end
+		veh.AM_CarHorn = CreateSound( veh, veh:GetNWString( "AM_HornSound" ) )
+		if veh.AM_CarHorn:IsPlaying() then return end
+		veh.AM_CarHorn:Play()
 	end
 end )
 
@@ -580,9 +579,50 @@ net.Receive( "AM_VehicleHornStop", function( len, ply )
 	if veh.AM_CarHorn:IsPlaying() then veh.AM_CarHorn:Stop() end
 end )
 
+util.AddNetworkString( "AM_CruiseControl" )
+net.Receive( "AM_CruiseControl", function( len, ply )
+	if AM_CruiseEnabled then
+		local veh = ply:GetVehicle()
+		if !IsValid( veh ) then return end
+		local cruiseactive = veh:GetNWBool( "CruiseActive" )
+		if cruiseactive then
+			veh:SetNWBool( "CruiseActive", false )
+			AM_Notify( ply, "Cruise control is now disabled." )
+			return
+		end
+		veh:SetNWBool( "CruiseActive", true )
+		AM_Notify( ply, "Cruise control is now enabled." )
+		if veh:GetSpeed() == 0 then
+			veh.CruiseSpeed = 0.05
+		else
+			veh.CruiseSpeed = veh:GetThrottle() --Gonna use throttle for now, might do something to set the actual speed later
+		end
+	end
+end )
+
+hook.Add( "Think", "AM_CruiseThink", function()
+	for k,v in pairs( ents.FindByClass( "prop_vehicle_jeep" ) ) do
+		if !IsValid( v ) then return end
+		if v:GetNWBool( "CruiseActive" ) then
+			v:SetThrottle( v.CruiseSpeed )
+		end
+	end
+end )
+
+hook.Add( "KeyPress", "AM_CruiseDisable", function( ply, key )
+	if !IsFirstTimePredicted() then return end
+	if key == IN_BACK and ply:InVehicle() then
+		local veh = ply:GetVehicle()
+		if veh:GetNWBool( "CruiseActive" ) then
+			veh:SetNWBool( "CruiseActive", false )
+			AM_Notify( ply, "Cruise control is now disabled." )
+		end
+	end
+end )
+
 util.AddNetworkString( "AM_ChangeSeats" )
 net.Receive( "AM_ChangeSeats", function( len, ply )
-	local key = tonumber( net.ReadString() )
+	local key = net.ReadInt( 32 )
 	local veh = ply:GetVehicle()
 	local vehparent = veh:GetParent()
 	local driver = veh:GetDriver()

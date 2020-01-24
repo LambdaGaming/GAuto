@@ -1,6 +1,7 @@
 
 CreateClientConVar( "AM_Control_HornKey", KEY_H, true, false, "Sets the key for the horn." )
 CreateClientConVar( "AM_Control_LockKey", KEY_N, true, false, "Sets the key for locking the doors." )
+CreateClientConVar( "AM_Control_CruiseKey", KEY_B, true, false, "Sets the key for toggling cruise control." )
 
 hook.Add( "PopulateToolMenu", "AM_ControlMenu", function()
 	spawnmenu.AddToolMenuOption( "Options", "Automod", "AutomodControls", "Controls", "", "", function( panel )
@@ -12,7 +13,11 @@ hook.Add( "PopulateToolMenu", "AM_ControlMenu", function()
 			Command = "AM_Control_HornKey",
 			Label2 = "Lock Key",
 			Command2 = "AM_Control_LockKey"
-		} ) 
+		} )
+		panel:AddControl( "Numpad", {
+			Label = "Cruise Control Key",
+			Command = "AM_Control_CruiseKey"
+		} )
 	end )
 end )
 
@@ -169,10 +174,14 @@ hook.Add( "PlayerButtonDown", "AM_KeyPressDown", function( ply, key )
 				net.Start( "AM_VehicleHorn" )
 				net.SendToServer()
 			end
+			if key == GetConVar( "AM_Control_CruiseKey" ):GetInt() then
+				net.Start( "AM_CruiseControl" )
+				net.SendToServer()
+			end
 			for k,v in pairs( seatbuttons ) do
 				if key == v[1] then
 					net.Start( "AM_ChangeSeats" )
-					net.WriteString( tostring( v[2] ) ) --Converting it to a string here because using ints make weird things happen
+					net.WriteInt( v[2], 32 )
 					net.SendToServer()
 				end
 			end

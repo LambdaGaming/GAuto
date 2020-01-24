@@ -13,12 +13,13 @@ Simple and lightweight vehicle system for Garry's Mod.
 	<li>Customizable controls.</li>
 	<li>Fuel system with dynamic fuel consumption rates. Idling will still use fuel but not as much as a full throttle.</li>
 	<li>Vehicle HUD that adapts it's position based on the current vehicles Photon support. Detailed features of the HUD are listed below.</li>
+	<li>Cruise control. (Currently uses throttle instead of speed, which makes it a bit more sensitive. This will probably change later. Also needs a place on the vehicle HUD.)</li>
 	<li>Data tables for each vehicle that contain info about health, seat positions, horn sound, etc. are stored as linted JSON files to allow for easy editing. A vehicle creation function is also included to add Automod support to your own vehicles.</li>
 </ul>
 
 ## Planned Features:
 <ul>
-	<li>Cruise control.</li>
+	<li>Overhaul of the repair tool so it gradually repairs a vehicle instead of healing in increments of 10, and also shows the vehicle's health on a HUD.</li>
 </ul>
 
 ## Current HUD Features:
