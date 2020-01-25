@@ -24,6 +24,7 @@ Simple and lightweight vehicle system for Garry's Mod.
 
 ## Current HUD Features:
 Specific features for the vehicle HUD are listed here to avoid overcrowding the features list.
+<u>Note: All HUD elements for this addon were made for a resolution of 1920x1080. I tried my best to accommodate for most other resolutions but I can't guarantee that they will scale properly.</u>
 <ul>
 	<li>Health is displayed as a fraction. It can be color-coded for certain situations. White indicates that the health is good. Green indicates that the vehicle is in god mode and cannot be damaged. Red indicates that the vehicle is at 25% health or less.</li>
 	<li>Door lock status is displayed below the vehicle's health. It can be one of two colors: Orange indicates that the vehicle is unlocked and white indicates that the vehicle is locked.</li>

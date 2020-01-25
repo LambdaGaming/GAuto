@@ -119,7 +119,7 @@ hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it
 				surface.SetTextColor( color_white )
 			    surface.DrawText( "Doors: Locked" )
 			else
-				surface.SetTextColor( 196, 145, 2, 255 )
+				surface.SetTextColor( 196, 145, 2 )
 				surface.DrawText( "Doors: Unlocked" )
 			end
 
