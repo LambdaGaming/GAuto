@@ -13,7 +13,7 @@ Simple and lightweight vehicle system for Garry's Mod.
 	<li>Customizable controls.</li>
 	<li>Fuel system with dynamic fuel consumption rates. Idling will still use fuel but not as much as a full throttle.</li>
 	<li>Vehicle HUD that adapts it's position based on the current vehicles Photon support. Detailed features of the HUD are listed below.</li>
-	<li>Cruise control. (Currently uses throttle instead of speed, which makes it a bit more sensitive. This will probably change later. Also needs a place on the vehicle HUD.)</li>
+	<li>Cruise control. Throttle will always start out slow. Drivers can increase/decrease cruise speed by pressing forward/backward, and pressing jump or the cruise toggle key will disable cruise control.</li>
 	<li>Data tables for each vehicle that contain info about health, seat positions, horn sound, etc. are stored as linted JSON files to allow for easy editing. A vehicle creation function is also included to add Automod support to your own vehicles.</li>
 </ul>
 
@@ -27,5 +27,6 @@ Specific features for the vehicle HUD are listed here to avoid overcrowding the 
 <ul>
 	<li>Health is displayed as a fraction. It can be color-coded for certain situations. White indicates that the health is good. Green indicates that the vehicle is in god mode and cannot be damaged. Red indicates that the vehicle is at 25% health or less.</li>
 	<li>Door lock status is displayed below the vehicle's health. It can be one of two colors: Orange indicates that the vehicle is unlocked and white indicates that the vehicle is locked.</li>
-	<li>Fuel level is displayed below the door lock status as a color-coded progress bar. It can be a total of three colors: Green indicates the fuel level is 75% to 100%, orange indicates 26% to 74%, and red indicates 0% to 25%.</li>
+	<li>Cruise control status is displayed below the door lock status. It can be one of two colors: Green indicates that cruise control is currently active and white indicates that cruise control is disabled.</li>
+	<li>Fuel level is displayed below the cruise control status as a color-coded progress bar. It can be a total of three colors: Green indicates the fuel level is 75% to 100%, orange indicates 26% to 74%, and red indicates 0% to 25%.</li>
 </ul>

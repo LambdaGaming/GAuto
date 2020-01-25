@@ -2,6 +2,7 @@
 CreateClientConVar( "AM_Control_HornKey", KEY_H, true, false, "Sets the key for the horn." )
 CreateClientConVar( "AM_Control_LockKey", KEY_N, true, false, "Sets the key for locking the doors." )
 CreateClientConVar( "AM_Control_CruiseKey", KEY_B, true, false, "Sets the key for toggling cruise control." )
+CreateClientConVar( "AM_Config_CruiseMPH", 1, true, false, "Enable or disable displaying cruise speed in MPH. Disable to set to KPH." )
 
 hook.Add( "PopulateToolMenu", "AM_ControlMenu", function()
 	spawnmenu.AddToolMenuOption( "Options", "Automod", "AutomodControls", "Controls", "", "", function( panel )
@@ -18,6 +19,7 @@ hook.Add( "PopulateToolMenu", "AM_ControlMenu", function()
 			Label = "Cruise Control Key",
 			Command = "AM_Control_CruiseKey"
 		} )
+		panel:CheckBox( "Cruise Control: Display in MPH", "AM_Config_CruiseMPH" )
 	end )
 end )
 
@@ -45,9 +47,10 @@ local HUDPhoton = {
 	Background = { ScrW() - 180, ScrH() - 450 },
 	Health = { ScrW() - 140, ScrH() - 440 },
 	Lock = { ScrW() - 140, ScrH() - 410 },
-	FuelTitle = { ScrW() - 115, ScrH() - 380 },
-	FuelBackground = { ScrW() - 140, ScrH() - 367 },
-	Fuel = { ScrW() - 138, ScrH() - 362 },
+	Cruise = { ScrW() - 170, ScrH() - 380 },
+	FuelTitle = { ScrW() - 115, ScrH() - 350 },
+	FuelBackground = { ScrW() - 140, ScrH() - 337 },
+	Fuel = { ScrW() - 138, ScrH() - 332 },
 	AddonName = { ScrW() - 180, ScrH() - 280 },
 	AddonInfo = { ScrW() - 180, ScrH() - 265 }
 }
@@ -55,9 +58,10 @@ local HUDNoPhoton = {
 	Background = { ScrW() - 180, ScrH() - 200 },
 	Health = { ScrW() - 140, ScrH() - 190 },
 	Lock = { ScrW() - 140, ScrH() - 160 },
-	FuelTitle = { ScrW() - 115, ScrH() - 130 },
-	FuelBackground = { ScrW() - 140, ScrH() - 117 },
-	Fuel = { ScrW() - 138, ScrH() - 112 },
+	Cruise = { ScrW() - 170, ScrH() - 130 },
+	FuelTitle = { ScrW() - 115, ScrH() - 100 },
+	FuelBackground = { ScrW() - 140, ScrH() - 87 },
+	Fuel = { ScrW() - 138, ScrH() - 82 },
 	AddonName = { ScrW() - 180, ScrH() - 30 },
 	AddonInfo = { ScrW() - 180, ScrH() - 15 }
 }
@@ -81,6 +85,7 @@ hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it
 		local background = HUDPositions.Background
 		local health = HUDPositions.Health
 		local lock = HUDPositions.Lock
+		local cruise = HUDPositions.Cruise
 		local fueltitle = HUDPositions.FuelTitle
 		local fuelback = HUDPositions.FuelBackground
 		local fuel = HUDPositions.Fuel
@@ -116,6 +121,25 @@ hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it
 			else
 				surface.SetTextColor( 196, 145, 2, 255 )
 				surface.DrawText( "Doors: Unlocked" )
+			end
+
+			surface.SetTextColor( color_white )
+			surface.SetTextPos( cruise[1], cruise[2] )
+			if vehicle:GetNWBool( "CruiseActive" ) then
+				surface.SetTextColor( 0, 255, 0 )
+				local velocity = vehicle:GetVelocity():Length()
+				local speed = 0
+				local label = ""
+				if GetConVar( "AM_Config_CruiseMPH" ):GetBool() then
+					speed = math.Round( velocity * 3600 / 63360 * 0.75 )
+					label = "MPH"
+				else
+					speed = math.Round( velocity * 3600 * 0.0000254 * 0.75 )
+					label = "KPH"
+				end
+				surface.DrawText( "Cruise Control: "..speed.." "..label )
+			else
+				surface.DrawText( "Cruise Control: Disabled" )
 			end
 
 			local fuel75 = AM_FuelAmount * 0.75

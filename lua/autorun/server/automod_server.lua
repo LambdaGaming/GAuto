@@ -449,6 +449,10 @@ hook.Add( "PlayerLeaveVehicle", "AM_LeaveVehicle", function( ply, ent )
 			end
 		end )
 	end
+	if ent:GetNWBool( "CruiseActive" ) then
+		ent:SetNWBool( "CruiseActive", false )
+		AM_Notify( ply, "Cruise control is now disabled." )
+	end
 end )
 
 hook.Add( "EntityTakeDamage", "AM_TakeDamage", function( ent, dmg )
@@ -591,12 +595,8 @@ net.Receive( "AM_CruiseControl", function( len, ply )
 			return
 		end
 		veh:SetNWBool( "CruiseActive", true )
-		AM_Notify( ply, "Cruise control is now enabled." )
-		if veh:GetSpeed() == 0 then
-			veh.CruiseSpeed = 0.05
-		else
-			veh.CruiseSpeed = veh:GetThrottle() --Gonna use throttle for now, might do something to set the actual speed later
-		end
+		AM_Notify( ply, "Cruise control is now enabled. Press forward/backward to increase/decrease cruise speed." )
+		veh.CruiseSpeed = 0.05
 	end
 end )
 
@@ -609,13 +609,21 @@ hook.Add( "Think", "AM_CruiseThink", function()
 	end
 end )
 
-hook.Add( "KeyPress", "AM_CruiseDisable", function( ply, key )
+hook.Add( "KeyPress", "AM_CruiseController", function( ply, key )
 	if !IsFirstTimePredicted() then return end
-	if key == IN_BACK and ply:InVehicle() then
+	if ply:InVehicle() then
 		local veh = ply:GetVehicle()
 		if veh:GetNWBool( "CruiseActive" ) then
-			veh:SetNWBool( "CruiseActive", false )
-			AM_Notify( ply, "Cruise control is now disabled." )
+			if key == IN_JUMP then
+				veh:SetNWBool( "CruiseActive", false )
+				AM_Notify( ply, "Cruise control is now disabled." )
+			end
+			if key == IN_FORWARD then
+				veh.CruiseSpeed = math.Clamp( veh.CruiseSpeed + 0.10, 0.05, 1 )
+			end
+			if key == IN_BACK then
+				veh.CruiseSpeed = math.Clamp( veh.CruiseSpeed - 0.10, 0.05, 1 )
+			end
 		end
 	end
 end )
