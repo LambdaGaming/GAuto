@@ -51,7 +51,7 @@ function AM_EnginePos( model ) --Does the same as above but with the vehicle's e
 			end
 		end
 	end
-	return Vector( 0, 0, 0 )
+	return vector_origin
 end
 
 function AM_NumSeats( veh ) --Returns the number of passenger seats that are attached to the vehicle, currently not used for anything
@@ -73,6 +73,11 @@ function AM_DestroyCheck( veh ) --Disables the engine and sets the vehicle on fi
 			e:Spawn()
 			e:SetKeyValue( "iMagnitude", 50 )
 			e:Fire( "Explode", 0, 0 )
+			if AM_ExplodeRemoveEnabled then
+				timer.Simple( AM_ExplodeRemoveTime, function()
+					if IsValid( veh ) then veh:Remove() end
+				end )
+			end
 		end
 		veh:SetNWBool( "AM_HasExploded", true )
 	end
@@ -115,6 +120,7 @@ function AM_TakeDamage( veh, dam ) --Takes away health from the vehicle, also ru
 	veh:SetNWInt( "AM_VehicleHealth", newhp )
 	AM_DestroyCheck( veh )
 	AM_SmokeCheck( veh )
+	hook.Run( "AM_OnTakeDamage", veh, dam )
 end
 
 function AM_AddHealth( veh, hp ) --Adds health to the vehicle, nothing special
