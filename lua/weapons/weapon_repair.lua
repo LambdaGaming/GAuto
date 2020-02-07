@@ -64,7 +64,7 @@ if CLIENT then
 		local tr = ply:GetEyeTrace().Entity
 		local wep = ply:GetActiveWeapon()
 
-		if !IsValid( wep ) then return end
+		if !IsValid( wep ) or !IsValid( tr ) then return end
 
 		local wepclass = wep:GetClass()
 		local vehpos = ply:GetPos():DistToSqr( tr:GetPos() )
