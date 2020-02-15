@@ -243,6 +243,8 @@ hook.Add( "VehicleMove", "AM_VehicleThink", function( ply, veh, mv )
 				local maxdamping = math.Clamp( veh:GetWheel( wheelpopped ):GetDamping() + 0.01, 0, 40 ) --Simulates tire slowly losing air
 				veh:GetWheel( wheelpopped ):SetDamping( maxdamping, maxdamping )
 			end
+
+			if GAMEMODE_NAME == "hotpursuit" then return end --Disables fuel consumption in my Hot Pursuit gamemode
 			if AM_FuelEnabled and !veh:GetNWBool( "IsAutomodSeat" ) then
 				if veh.FuelCooldown and veh.FuelCooldown > CurTime() then return end
 				local fuellevel = veh:GetNWInt( "AM_FuelAmount" )
