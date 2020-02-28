@@ -17,11 +17,6 @@ Simple and lightweight vehicle system for Garry's Mod.
 	<li>Data tables for each vehicle that contain info about health, seat positions, horn sound, etc. are stored as linted JSON files to allow for easy editing. A vehicle creation function is also included to add Automod support to your own vehicles.</li>
 </ul>
 
-## Planned Features:
-<ul>
-	<li>Overhaul of the repair tool so it gradually repairs a vehicle instead of healing in increments of 10, and also shows the vehicle's health on a HUD.</li>
-</ul>
-
 ## Current HUD Features:
 Specific features for the vehicle HUD are listed here to avoid overcrowding the features list.
 <u>Note: All HUD elements for this addon were made for a resolution of 1920x1080. I tried my best to accommodate for most other resolutions but I can't guarantee that they will scale properly.</u>
