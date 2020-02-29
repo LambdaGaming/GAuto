@@ -232,9 +232,7 @@ hook.Add( "VehicleMove", "AM_VehicleThink", function( ply, veh, mv )
 
 		local fuelloss = 0
 		if vel > 100 then
-			fuelloss = 1 --Vehicle uses more fuel while in motion, takes about 8.7 minutes of constant driving to empty a tank with these numbers
-		else
-			fuelloss = 0.1 --Vehicle uses less fuel while idle
+			fuelloss = 0.5
 		end
 
 		if vel > 100 then
@@ -248,7 +246,7 @@ hook.Add( "VehicleMove", "AM_VehicleThink", function( ply, veh, mv )
 			if AM_FuelEnabled and !veh:GetNWBool( "IsAutomodSeat" ) then
 				if veh.FuelCooldown and veh.FuelCooldown > CurTime() then return end
 				local fuellevel = veh:GetNWInt( "AM_FuelAmount" )
-				if fuellevel > 0 then
+				if fuellevel > 0 and veh:GetThrottle() > 0 then
 					veh:SetNWInt( "AM_FuelAmount", fuellevel - fuelloss )
 					veh.FuelCooldown = CurTime() + 5
 					veh.NoFuel = false
