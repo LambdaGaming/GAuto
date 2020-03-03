@@ -227,12 +227,11 @@ end
 hook.Add( "VehicleMove", "AM_VehicleThink", function( ply, veh, mv )
 	if IsValid( veh ) then
 		local vel = veh:GetVelocity():Length()
-		if veh.NoFuel then return end
+		if veh.NoFuel or !IsValid( veh:GetDriver() ) then return end
 		if !veh.FuelCooldown then veh.FuelCooldown = 0 end
 
-		local fuelloss = 0
-		if vel > 100 then
-			fuelloss = 0.5
+		if vel > 100 and veh:GetThrottle() >= 0.1 then
+			veh.FuelLoss = 0.5
 		end
 
 		if vel > 100 then
@@ -246,8 +245,8 @@ hook.Add( "VehicleMove", "AM_VehicleThink", function( ply, veh, mv )
 			if AM_FuelEnabled and !veh:GetNWBool( "IsAutomodSeat" ) then
 				if veh.FuelCooldown and veh.FuelCooldown > CurTime() then return end
 				local fuellevel = veh:GetNWInt( "AM_FuelAmount" )
-				if fuellevel > 0 and veh:GetThrottle() > 0 then
-					veh:SetNWInt( "AM_FuelAmount", fuellevel - fuelloss )
+				if fuellevel > 0 then
+					veh:SetNWInt( "AM_FuelAmount", fuellevel - veh.FuelLoss )
 					veh.FuelCooldown = CurTime() + 5
 					veh.NoFuel = false
 				else
@@ -359,6 +358,7 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 			end
 			if AM_FuelEnabled then
 				ent:SetNWInt( "AM_FuelAmount", AM_FuelAmount )
+				ent.FuelLoss = 0
 			end
 			if AM_SeatsEnabled then
 				if !AM_Vehicles or !AM_Vehicles[vehmodel] then
@@ -638,9 +638,9 @@ util.AddNetworkString( "AM_ChangeSeats" )
 net.Receive( "AM_ChangeSeats", function( len, ply )
 	local key = net.ReadInt( 32 )
 	local veh = ply:GetVehicle()
+	if !IsValid( veh ) then return end
 	local vehparent = veh:GetParent()
 	local driver = veh:GetDriver()
-	if !IsValid( veh ) then return end
 	if veh:GetClass() == "prop_vehicle_jeep" then
 		if key == 1 then
 			AM_Notify( ply, "Seat change failed, you selected the seat you are already sitting in." )
