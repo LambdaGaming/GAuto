@@ -227,7 +227,7 @@ end
 hook.Add( "VehicleMove", "AM_VehicleThink", function( ply, veh, mv )
 	if IsValid( veh ) then
 		local vel = veh:GetVelocity():Length()
-		if veh.NoFuel or !IsValid( veh:GetDriver() ) then return end
+		if !veh.FuelInit or veh.NoFuel or !IsValid( veh:GetDriver() ) then return end
 		if !veh.FuelCooldown then veh.FuelCooldown = 0 end
 
 		if vel > 100 and veh:GetThrottle() >= 0.1 then
@@ -359,6 +359,7 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 			if AM_FuelEnabled then
 				ent:SetNWInt( "AM_FuelAmount", AM_FuelAmount )
 				ent.FuelLoss = 0
+				ent.FuelInit = true --Fix for some vehicles running out of fuel as soon as they spawn
 			end
 			if AM_SeatsEnabled then
 				if !AM_Vehicles or !AM_Vehicles[vehmodel] then
