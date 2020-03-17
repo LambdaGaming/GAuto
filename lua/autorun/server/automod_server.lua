@@ -523,7 +523,9 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 				end
 			end
 			if IsValid( ent.seat[numpos]:GetDriver() ) then
-				ply:EnterVehicle( ent.seat[numpos + 1] ) --Cheap fix for players not being able to get in if there's more than 2 players in the car until I have time to redo this whole thing
+				if IsValid( ent.seat[numpos + 1] ) then
+					ply:EnterVehicle( ent.seat[numpos + 1] ) --Cheap fix for players not being able to get in if there's more than 2 players in the car until I have time to redo this whole thing
+				end
 			else
 				ply:EnterVehicle( ent.seat[numpos] )
 			end
