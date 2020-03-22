@@ -694,3 +694,21 @@ net.Receive( "AM_ChangeSeats", function( len, ply )
 		end
 	end
 end )
+
+util.AddNetworkString( "AM_EngineToggle" )
+net.Receive( "AM_EngineToggle", function( len, ply )
+	if ply:InVehicle() then
+		local veh = ply:GetVehicle()
+		if !IsValid( veh ) then return end
+		if AM_Config_Blacklist[veh:GetModel()] then return end
+		if AM_HealthEnabled and veh:GetNWInt( "AM_VehicleHealth" ) <= 0 then return end --Don't want players turning the car back on when it's supposed to be damaged or out of fuel
+		if AM_FuelEnabled and veh:GetNWInt( "AM_FuelAmount" ) <= 0 then return end
+		if veh.EngineDisabled then
+			veh:Fire( "turnon", "", 0.01 )
+			veh.EngineDisabled = false
+		else
+			veh:Fire( "turnoff", "", 0.01 )
+			veh.EngineDisabled = true
+		end
+	end
+end )

@@ -2,6 +2,7 @@
 CreateClientConVar( "AM_Control_HornKey", KEY_H, true, false, "Sets the key for the horn." )
 CreateClientConVar( "AM_Control_LockKey", KEY_N, true, false, "Sets the key for locking the doors." )
 CreateClientConVar( "AM_Control_CruiseKey", KEY_B, true, false, "Sets the key for toggling cruise control." )
+CreateClientConVar( "AM_Control_EngineKey", KEY_P, true, false, "Sets the key for toggling the engine." )
 CreateClientConVar( "AM_Config_CruiseMPH", 1, true, false, "Enable or disable displaying cruise speed in MPH. Disable to set to KPH." )
 
 hook.Add( "PopulateToolMenu", "AM_ControlMenu", function()
@@ -17,7 +18,9 @@ hook.Add( "PopulateToolMenu", "AM_ControlMenu", function()
 		} )
 		panel:AddControl( "Numpad", {
 			Label = "Cruise Control Key",
-			Command = "AM_Control_CruiseKey"
+			Command = "AM_Control_CruiseKey",
+			Label2 = "Engine Toggle Key",
+			Command2 = "AM_Control_EngineKey"
 		} )
 		panel:CheckBox( "Cruise Control: Display in MPH", "AM_Config_CruiseMPH" )
 	end )
@@ -200,6 +203,10 @@ hook.Add( "PlayerButtonDown", "AM_KeyPressDown", function( ply, key )
 			end
 			if key == GetConVar( "AM_Control_CruiseKey" ):GetInt() then
 				net.Start( "AM_CruiseControl" )
+				net.SendToServer()
+			end
+			if key == GetConVar( "AM_Control_EngineKey" ):GetInt() then
+				net.Start( "AM_EngineToggle" )
 				net.SendToServer()
 			end
 			for k,v in pairs( seatbuttons ) do
