@@ -226,6 +226,7 @@ end
 
 hook.Add( "VehicleMove", "AM_VehicleThink", function( ply, veh, mv )
 	if IsValid( veh ) then
+		if AM_Config_Blacklist[veh:GetModel()] then return end
 		local vel = veh:GetVelocity():Length()
 		if !veh.FuelInit or veh.NoFuel or !IsValid( veh:GetDriver() ) then return end
 		if !veh.FuelCooldown then veh.FuelCooldown = 0 end
@@ -264,6 +265,7 @@ hook.Add( "VehicleMove", "AM_VehicleThink", function( ply, veh, mv )
 end )
 
 function AM_SetFuel( veh, amount )
+	if AM_Config_Blacklist[veh:GetModel()] then return end
 	local clampedamount = math.Clamp( amount, 0, AM_FuelAmount )
 	veh:SetNWInt( "AM_FuelAmount", clampedamount )
 	if amount > 0 and veh.NoFuel then
@@ -275,6 +277,7 @@ end
 
 function AM_PopTire( veh, wheel )
 	if !AM_TirePopEnabled then return end
+	if AM_Config_Blacklist[veh:GetModel()] then return end
 	if IsValid( veh ) and veh:IsVehicle() then
 		veh:SetSpringLength( wheel, 499 )
 		veh:EmitSound( "HL1/ambience/steamburst1.wav" )
@@ -284,6 +287,7 @@ end
 
 function AM_PopCheck( dmg, veh )
 	if !AM_TirePopEnabled then return end
+	if AM_Config_Blacklist[veh:GetModel()] then return end
 	local pos = dmg:GetDamagePosition()
 	local dmgamount = dmg:GetDamage() * 300
 	local dist = 0
@@ -464,6 +468,7 @@ end )
 
 hook.Add( "EntityTakeDamage", "AM_TakeDamage", function( ent, dmg )
 	if AM_HealthEnabled then
+		if AM_Config_Blacklist[ent:GetModel()] then return end
 		if ent:IsOnFire() then return end --Prevent car from constantly igniting itself if it's on fire
 		if ent:GetClass() == "prop_vehicle_jeep" then
 			if dmg:IsBulletDamage() and AM_BulletDamageEnabled then
@@ -496,6 +501,7 @@ end )
 
 hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 	if !IsValid( ply ) or !IsValid( ent ) then return end
+	if AM_Config_Blacklist[ent:GetModel()] then return end
 	if ent:GetClass() == "prop_vehicle_jeep" then
 		if ent.AM_ExitCooldown and ent.AM_ExitCooldown > CurTime() then return end
 		if ent.LockedNotifyCooldown and ent.LockedNotifyCooldown > CurTime() then return end
@@ -597,6 +603,7 @@ net.Receive( "AM_CruiseControl", function( len, ply )
 	if AM_CruiseEnabled then
 		local veh = ply:GetVehicle()
 		if !IsValid( veh ) then return end
+		if AM_Config_Blacklist[veh:GetModel()] then return end
 		local cruiseactive = veh:GetNWBool( "CruiseActive" )
 		if cruiseactive then
 			veh:SetNWBool( "CruiseActive", false )
@@ -642,6 +649,7 @@ net.Receive( "AM_ChangeSeats", function( len, ply )
 	local key = net.ReadInt( 32 )
 	local veh = ply:GetVehicle()
 	if !IsValid( veh ) then return end
+	if AM_Config_Blacklist[veh:GetModel()] then return end
 	local vehparent = veh:GetParent()
 	local driver = veh:GetDriver()
 	if veh:GetClass() == "prop_vehicle_jeep" then
