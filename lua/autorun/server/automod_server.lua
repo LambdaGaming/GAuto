@@ -519,7 +519,7 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 		end
 		if !ent:GetNWBool( "AM_DoorsLocked" ) and AM_SeatsEnabled then
 			if ply:InVehicle() then return end
-			if !IsValid( ent:GetDriver() ) then return end
+			if !IsValid( ent:GetDriver() ) or !ent.seat then return end
 			local plypos = ent:WorldToLocal( ply:GetPos() ):Length()
 			local numpos = 1
 			for i = 1, table.Count( ent.seat ) do
