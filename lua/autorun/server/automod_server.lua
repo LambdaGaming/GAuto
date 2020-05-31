@@ -480,6 +480,7 @@ hook.Add( "EntityTakeDamage", "AM_TakeDamage", function( ent, dmg )
 		end
 		if ent:IsVehicle() and ent.seat then
 			for k,v in pairs( ent.seat ) do
+				if !IsValid( v ) then return end
 				local driver = v:GetDriver()
 				if IsValid( driver ) then
 					if AM_ScalePlayerDamage then dmg:ScaleDamage( 0.35 ) end
@@ -522,6 +523,7 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 			local plypos = ent:WorldToLocal( ply:GetPos() ):Length()
 			local numpos = 1
 			for i = 1, table.Count( ent.seat ) do
+				if !IsValid( ent.seat[i] ) then return end
 				local seatpos = ent:WorldToLocal( ent.seat[i]:GetPos() ):Length()
 				if seatpos and seatpos < plypos then --Checks to see what seat is closest to the player
 					plypos = seatpos
