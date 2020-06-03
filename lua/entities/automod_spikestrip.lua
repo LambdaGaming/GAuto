@@ -91,21 +91,25 @@ end
 
 function ENT:StartTouch( ent )
 	if self.SpikeCooldown and self.SpikeCooldown > CurTime() then return end
-	if IsValid( ent ) and ent:IsVehicle() then
-		local vehmodel = ent:GetModel()
-		if AM_Config_Blacklist[vehmodel] then return end
-		local numwheel = 0
-		local lastpos = 0
-		for i = 0, ent:GetWheelCount() - 1 do
-			local wheel = ent:GetWheel( i )
-			if !IsValid( wheel ) then return end
-			local sqrpos = wheel:GetPos():DistToSqr( self:GetPos() )
-			if lastpos <= sqrpos then --Checks to see what wheel is closest to the strip since there's no easy way of finding out which wheel is actually touching
-				lastpos = sqrpos
-				numwheel = i
+	if IsValid( ent ) then
+		local class = ent:GetClass()
+		if class == "prop_vehicle_jeep" then
+			if IsBlacklisted( ent ) then return end
+			local numwheel = 0
+			local lastpos = 0
+			for i = 0, ent:GetWheelCount() - 1 do
+				local wheel = ent:GetWheel( i )
+				if !IsValid( wheel ) then return end
+				local sqrpos = wheel:GetPos():DistToSqr( self:GetPos() )
+				if lastpos <= sqrpos then --Checks to see what wheel is closest to the strip since there's no easy way of finding out which wheel is actually touching
+					lastpos = sqrpos
+					numwheel = i
+				end
 			end
+			AM_PopTire( ent, NumWheelFix( numwheel ) )
+		elseif class == "gmod_sent_vehicle_fphysics_wheel" then --Simfphy's support
+			ent:SetDamaged( true )
 		end
-		AM_PopTire( ent, NumWheelFix( numwheel ) )
 		self.SpikeCooldown = CurTime() + 1
 	end
 end
