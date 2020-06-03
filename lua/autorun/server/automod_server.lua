@@ -436,6 +436,7 @@ hook.Add( "PlayerLeaveVehicle", "AM_LeaveVehicle", function( ply, ent )
 	if AM_WheelLockEnabled then
 		local steering = ent:GetSteering()
 		timer.Simple( 0.01, function() --Small timer because it otherwise won't register
+			if !IsValid( ent ) then return end
 			if steering == 1 then
 				ent:SetSteering( 1, 1 )
 			elseif steering == -1 then
@@ -502,24 +503,18 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 			end
 		end
 		if !ent:GetNWBool( "AM_DoorsLocked" ) and AM_SeatsEnabled then
-			if ply:InVehicle() then return end
-			if !IsValid( ent:GetDriver() ) or !ent.seat then return end
-			local plypos = ent:WorldToLocal( ply:GetPos() ):Length()
-			local numpos = 1
-			for i = 1, table.Count( ent.seat ) do
-				if !IsValid( ent.seat[i] ) then return end
-				local seatpos = ent:WorldToLocal( ent.seat[i]:GetPos() ):Length()
-				if seatpos and seatpos < plypos then --Checks to see what seat is closest to the player
-					plypos = seatpos
-					numpos = i
-				end
+			if ply:InVehicle() or !ent.seat then return end
+			local starttime = CurTime()
+			local seatlist = { ent } --Throw the driver's seat in with the passenger seats incase the vehicle doesn't have a driver
+			for k,v in pairs( ent.seat ) do
+				table.insert( seatlist, v ) --FINALLY found a better working method, probably not the best but it works and I don't see a drop in performance so it's good enough
 			end
-			if IsValid( ent.seat[numpos]:GetDriver() ) then
-				if IsValid( ent.seat[numpos + 1] ) then
-					ply:EnterVehicle( ent.seat[numpos + 1] ) --Cheap fix for players not being able to get in if there's more than 2 players in the car until I have time to redo this whole thing
+			table.sort( seatlist, function( a, b ) return ply:WorldToLocal( a:GetPos() ):Length() < ply:WorldToLocal( b:GetPos() ):Length() end )
+			for i = 1, #seatlist do
+				if IsValid( seatlist[i] ) and !IsValid( seatlist[i]:GetDriver() ) then --Make sure the closest seat doesn't have a driver, and if it does, pick the next closest seat
+					ply:EnterVehicle( seatlist[i] )
+					break
 				end
-			else
-				ply:EnterVehicle( ent.seat[numpos] )
 			end
 			ply.AM_SeatCooldown = CurTime() + 1 --Prevents players from sometimes teleporting to the last detected seat instead of the first
 		end
@@ -644,7 +639,7 @@ net.Receive( "AM_ChangeSeats", function( len, ply )
 			AM_Notify( ply, "Seat change failed, you selected the seat you are already sitting in." )
 			return
 		else
-			if IsValid( veh.seat[realseat] ) then
+			if IsValid( veh.seat ) and IsValid( veh.seat[realseat] ) then
 				if !IsValid( veh.seat[realseat]:GetDriver() ) then
 					ply:ExitVehicle() --Have to quickly exit the vehicle then enter the new one, or the old vehicle will still think it has a driver
 					ply:EnterVehicle( veh.seat[realseat] )
