@@ -407,21 +407,9 @@ end
 hook.Add( "KeyPress", "AM_KeyPressServer", function( ply, key )
 	if ply:InVehicle() then
 		local veh = ply:GetVehicle()
-		if veh:GetNWBool( "IsAutomodSeat" ) then --Fix to get players out of passenger seats. Without this, players will enter the closest passenger seat without a way of getting out
-			if key == IN_USE then
-				ply:ExitVehicle()
-				ply.AM_SeatCooldown = CurTime() + 1
-			end
-		end
-		if IsBlacklisted( veh ) then return end
-		if AM_WheelLockEnabled then
-			if key == IN_MOVELEFT then
-				veh.laststeer = -1
-			elseif key == IN_MOVERIGHT then
-				veh.laststeer = 1
-			elseif key == IN_FORWARD or key == IN_BACK then
-				veh.laststeer =  0
-			end
+		if veh:GetNWBool( "IsAutomodSeat" ) and key == IN_USE then --Fix to get players out of passenger seats. Without this, players will enter the closest passenger seat without a way of getting out
+			ply:ExitVehicle()
+			ply.AM_SeatCooldown = CurTime() + 1
 		end
 	end
 end )
@@ -431,7 +419,6 @@ hook.Add( "CanPlayerEnterVehicle", "AM_CanEnterVehicle", function( ply, veh, rol
 end )
 
 hook.Add( "PlayerEnteredVehicle", "AM_EnteredVehicle", function( ply, veh, role )
-	veh.laststeer = 0 --Resets the steering wheel straight when the player enters
 	if veh:GetNWBool( "IsAutomodSeat" ) then veh:SetCameraDistance( 5 ) end --Sets camera distance relatively close to the default driver's seat distance
 end )
 
@@ -447,22 +434,19 @@ hook.Add( "PlayerLeaveVehicle", "AM_LeaveVehicle", function( ply, ent )
 		end
 	end
 	if AM_WheelLockEnabled then
+		local steering = ent:GetSteering()
 		timer.Simple( 0.01, function() --Small timer because it otherwise won't register
-			if ent.laststeer == 1 then
-				if ent:GetSteering() == -1 then return end
+			if steering == 1 then
 				ent:SetSteering( 1, 1 )
-			elseif ent.laststeer == -1 then
-				if ent:GetSteering() == 1 then return end
+			elseif steering == -1 then
 				ent:SetSteering( -1, 1 )
-			elseif ent.laststeer == 0 then
-				if ent:GetSteering() == 0 then return end
+			elseif steering == 0 then
 				ent:SetSteering( 0, 0 )
 			end
 		end )
 	end
 	if ent:GetNWBool( "CruiseActive" ) then
 		ent:SetNWBool( "CruiseActive", false )
-		AM_Notify( ply, "Cruise control is now disabled." )
 	end
 end )
 
