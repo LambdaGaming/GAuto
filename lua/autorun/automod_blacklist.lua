@@ -47,3 +47,15 @@ AM_Config_Blacklist = {
 	["models/sentry/trailers/stortrailer.mdl"] = true,
 	["models/sentry/trailers/tanker.mdl"] = true
 }
+
+function IsBlacklisted( veh )
+	local class = veh:GetClass()
+	local model = veh:GetModel()
+	if class == "prop_vehicle_jeep" and AM_Config_Blacklist[model] then
+		return true
+	end
+	if veh.fphysSeat then --Avoid interference with Simfphy's
+		return true
+	end
+	return false
+end

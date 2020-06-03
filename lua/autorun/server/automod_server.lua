@@ -226,7 +226,7 @@ end
 
 hook.Add( "VehicleMove", "AM_VehicleThink", function( ply, veh, mv )
 	if IsValid( veh ) then
-		if AM_Config_Blacklist[veh:GetModel()] then return end
+		if IsBlacklisted( veh ) then return end
 		local vel = veh:GetVelocity():Length()
 		if !veh.FuelInit or veh.NoFuel or !IsValid( veh:GetDriver() ) then return end
 		if !veh.FuelCooldown then veh.FuelCooldown = 0 end
@@ -265,7 +265,7 @@ hook.Add( "VehicleMove", "AM_VehicleThink", function( ply, veh, mv )
 end )
 
 function AM_SetFuel( veh, amount )
-	if AM_Config_Blacklist[veh:GetModel()] then return end
+	if IsBlacklisted( veh ) then return end
 	local clampedamount = math.Clamp( amount, 0, AM_FuelAmount )
 	veh:SetNWInt( "AM_FuelAmount", clampedamount )
 	if amount > 0 and veh.NoFuel then
@@ -277,7 +277,7 @@ end
 
 function AM_PopTire( veh, wheel )
 	if !AM_TirePopEnabled then return end
-	if AM_Config_Blacklist[veh:GetModel()] then return end
+	if IsBlacklisted( veh ) then return end
 	if IsValid( veh ) and veh:IsVehicle() then
 		veh:SetSpringLength( wheel, 499 )
 		veh:EmitSound( "HL1/ambience/steamburst1.wav" )
@@ -287,7 +287,7 @@ end
 
 function AM_PopCheck( dmg, veh )
 	if !AM_TirePopEnabled then return end
-	if AM_Config_Blacklist[veh:GetModel()] then return end
+	if IsBlacklisted( veh ) then return end
 	local pos = dmg:GetDamagePosition()
 	local dmgamount = dmg:GetDamage() * 300
 	local dist = 0
@@ -310,7 +310,7 @@ function AM_RepairTire( veh )
 	if !AM_TirePopEnabled then return end
 	if IsValid( veh ) and veh:IsVehicle() then
 		local vehmodel = veh:GetModel()
-		if AM_Config_Blacklist[vehmodel] then return end
+		if IsBlacklisted( veh ) then return end
 		for i = 0, veh:GetWheelCount() - 1 do
 			veh:SetSpringLength( 1, 500.3 )
 			if veh:GetNWInt( "AM_WheelPopped" ) > 0 then
@@ -328,7 +328,7 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 		if !IsValid( ent ) then return end
 		local vehmodel = ent:GetModel()
 		if ent:IsVehicle() and ent:GetClass() == "prop_vehicle_jeep" then
-			if AM_Config_Blacklist[vehmodel] then return end --Prevents blacklisted models from being affected
+			if IsBlacklisted( ent ) then return end --Prevents blacklisted models from being affected
 			if !AM_Vehicles[vehmodel] then
 				print( "[Automod] Vehicle table not found. Attempting to load from file..." )
 				AM_LoadVehicle( vehmodel ) --Tries to load the vehicle from file if it doesn't exist in memory
@@ -413,7 +413,7 @@ hook.Add( "KeyPress", "AM_KeyPressServer", function( ply, key )
 				ply.AM_SeatCooldown = CurTime() + 1
 			end
 		end
-		if AM_Config_Blacklist[veh:GetModel()] then return end
+		if IsBlacklisted( veh ) then return end
 		if AM_WheelLockEnabled then
 			if key == IN_MOVELEFT then
 				veh.laststeer = -1
@@ -437,7 +437,7 @@ end )
 
 hook.Add( "PlayerLeaveVehicle", "AM_LeaveVehicle", function( ply, ent )
 	ent.AM_ExitCooldown = CurTime() + 1
-	if AM_Config_Blacklist[ent:GetModel()] then return end
+	if IsBlacklisted( ent ) then return end
 	if AM_BrakeLockEnabled then
 		if ply:KeyDown( IN_JUMP ) then --Activates the parking brake if the player is holding the jump button when they exit
 			ent:Fire( "HandBrakeOn", "", 0.01 )
@@ -468,7 +468,7 @@ end )
 
 hook.Add( "EntityTakeDamage", "AM_TakeDamage", function( ent, dmg )
 	if AM_HealthEnabled then
-		if AM_Config_Blacklist[ent:GetModel()] then return end
+		if IsBlacklisted( ent ) then return end
 		if ent:IsOnFire() then return end --Prevent car from constantly igniting itself if it's on fire
 		if ent:GetClass() == "prop_vehicle_jeep" then
 			if dmg:IsBulletDamage() and AM_BulletDamageEnabled then
@@ -502,7 +502,7 @@ end )
 
 hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 	if !IsValid( ply ) or !IsValid( ent ) then return end
-	if AM_Config_Blacklist[ent:GetModel()] then return end
+	if IsBlacklisted( ent ) then return end
 	if ent:GetClass() == "prop_vehicle_jeep" then
 		if ent.AM_ExitCooldown and ent.AM_ExitCooldown > CurTime() then return end
 		if ent.LockedNotifyCooldown and ent.LockedNotifyCooldown > CurTime() then return end
@@ -544,7 +544,7 @@ end )
 
 hook.Add( "lockpickStarted", "AM_Lockpick", function( ply, ent, trace )
 	if !AM_AlarmEnabled then return end
-	if AM_Config_Blacklist[ent:GetModel()] then return end
+	if IsBlacklisted( ent ) then return end
 	if ent:IsVehicle() and ent:GetClass() == "prop_vehicle_jeep" then
 		ent:EmitSound( "automod/alarm.mp3" )
 	end
@@ -552,7 +552,7 @@ end )
 
 hook.Add( "onLockpickCompleted", "AM_LockpickFinish", function( ply, success, ent )
 	if !AM_AlarmEnabled then return end
-	if AM_Config_Blacklist[ent:GetModel()] then return end
+	if IsBlacklisted( ent ) then return end
 	if ent:IsVehicle() and ent:GetClass() == "prop_vehicle_jeep" then
 		if success then
 			ent:SetNWBool( "AM_DoorsLocked", false )
@@ -566,7 +566,7 @@ net.Receive( "AM_VehicleLock", function( len, ply )
 	if IsFirstTimePredicted() then
 		local veh = ply:GetVehicle()
 		if !IsValid( veh ) then return end
-		if AM_Config_Blacklist[veh:GetModel()] then return end
+		if IsBlacklisted( veh ) then return end
 		if !veh:GetNWBool( "AM_DoorsLocked" ) then
 			AM_Notify( ply, "Vehicle locked." )
 			veh:Fire( "Lock", "", 0.01 )
@@ -585,7 +585,7 @@ net.Receive( "AM_VehicleHorn", function( len, ply )
 	if AM_HornEnabled then
 		local veh = ply:GetVehicle()
 		if !IsValid( veh ) then return end
-		if AM_Config_Blacklist[veh:GetModel()] then return end
+		if IsBlacklisted( veh ) then return end
 		veh.AM_CarHorn = CreateSound( veh, veh:GetNWString( "AM_HornSound" ) )
 		if veh.AM_CarHorn:IsPlaying() then return end
 		veh.AM_CarHorn:Play()
@@ -605,7 +605,7 @@ net.Receive( "AM_CruiseControl", function( len, ply )
 	if AM_CruiseEnabled then
 		local veh = ply:GetVehicle()
 		if !IsValid( veh ) then return end
-		if AM_Config_Blacklist[veh:GetModel()] then return end
+		if IsBlacklisted( veh ) then return end
 		local cruiseactive = veh:GetNWBool( "CruiseActive" )
 		if cruiseactive then
 			veh:SetNWBool( "CruiseActive", false )
@@ -651,19 +651,20 @@ net.Receive( "AM_ChangeSeats", function( len, ply )
 	local key = net.ReadInt( 32 )
 	local veh = ply:GetVehicle()
 	if !IsValid( veh ) then return end
-	if AM_Config_Blacklist[veh:GetModel()] then return end
+	if IsBlacklisted( veh ) then return end
 	local vehparent = veh:GetParent()
 	local driver = veh:GetDriver()
+	local realseat = key - 1 --Need to subtract 1 since the driver's seat doesn't count as a passenger seat
 	if veh:GetClass() == "prop_vehicle_jeep" then
 		if key == 1 then
 			AM_Notify( ply, "Seat change failed, you selected the seat you are already sitting in." )
 			return
 		else
-			if IsValid( veh.seat[key - 1] ) then --Need to subtract 1 here since the driver's seat doesn't count as a passenger seat
-				if !IsValid( veh.seat[key - 1]:GetDriver() ) then
+			if IsValid( veh.seat[realseat] ) then
+				if !IsValid( veh.seat[realseat]:GetDriver() ) then
 					ply:ExitVehicle() --Have to quickly exit the vehicle then enter the new one, or the old vehicle will still think it has a driver
-					ply:EnterVehicle( veh.seat[key - 1] )
-					ply:SetEyeAngles( Angle( veh.seat[key - 1]:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) ) --Fix for the seats setting random eye angles
+					ply:EnterVehicle( veh.seat[realseat] )
+					ply:SetEyeAngles( Angle( veh.seat[realseat]:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) ) --Fix for the seats setting random eye angles
 				else
 					AM_Notify( ply, "Seat change failed, selected seat is already taken." )
 					return
@@ -685,15 +686,15 @@ net.Receive( "AM_ChangeSeats", function( len, ply )
 				return
 			end
 		end
-		if vehparent.seat[key - 1] == veh then
+		if vehparent.seat[realseat] == veh then
 			AM_Notify( ply, "Seat change failed, you selected the seat you are already sitting in." )
 			return
 		end
-		if IsValid( vehparent ) and IsValid( vehparent.seat[key - 1] ) then	
-			if !IsValid( vehparent.seat[key - 1]:GetDriver() ) then
+		if IsValid( vehparent ) and IsValid( vehparent.seat[realseat] ) then	
+			if !IsValid( vehparent.seat[realseat]:GetDriver() ) then
 				ply:ExitVehicle()
-				ply:EnterVehicle( vehparent.seat[key - 1] )
-				ply:SetEyeAngles( Angle( vehparent.seat[key - 1]:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) )
+				ply:EnterVehicle( vehparent.seat[realseat] )
+				ply:SetEyeAngles( Angle( vehparent.seat[realseat]:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) )
 			else
 				AM_Notify( ply, "Seat change failed, selected seat is already taken." )
 				return
@@ -710,7 +711,7 @@ net.Receive( "AM_EngineToggle", function( len, ply )
 	if ply:InVehicle() then
 		local veh = ply:GetVehicle()
 		if !IsValid( veh ) then return end
-		if AM_Config_Blacklist[veh:GetModel()] then return end
+		if IsBlacklisted( veh ) then return end
 		if AM_HealthEnabled and veh:GetNWInt( "AM_VehicleHealth" ) <= 0 then return end --Don't want players turning the car back on when it's supposed to be damaged or out of fuel
 		if AM_FuelEnabled and veh:GetNWInt( "AM_FuelAmount" ) <= 0 then return end
 		if veh.EngineDisabled then
