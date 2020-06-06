@@ -490,6 +490,7 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 	if IsBlacklisted( ent ) then return end
 	if ent:GetClass() == "prop_vehicle_jeep" then
 		if ent.AM_ExitCooldown and ent.AM_ExitCooldown > CurTime() then return end
+		if ply.AM_SeatCooldown and ply.AM_SeatCooldown > CurTime() then return end
 		if ent.LockedNotifyCooldown and ent.LockedNotifyCooldown > CurTime() then return end
 		if ent:GetNWBool( "AM_DoorsLocked" ) then
 			if ent:GetNWEntity( "AM_LockOwner" ) == ply then
@@ -506,6 +507,7 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 			if ply:InVehicle() or !ent.seat then return end
 			local starttime = CurTime()
 			local seatlist = { ent } --Throw the driver's seat in with the passenger seats incase the vehicle doesn't have a driver
+			local foundseat = false
 			for k,v in pairs( ent.seat ) do
 				table.insert( seatlist, v ) --FINALLY found a better working method, probably not the best but it works and I don't see a drop in performance so it's good enough
 			end
@@ -513,8 +515,12 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 			for i = 1, #seatlist do
 				if IsValid( seatlist[i] ) and !IsValid( seatlist[i]:GetDriver() ) then --Make sure the closest seat doesn't have a driver, and if it does, pick the next closest seat
 					ply:EnterVehicle( seatlist[i] )
+					foundseat = true
 					break
 				end
+			end
+			if !foundseat then
+				AM_Notify( ply, "All seats in this vehicle are occupied." )
 			end
 			ply.AM_SeatCooldown = CurTime() + 1 --Prevents players from sometimes teleporting to the last detected seat instead of the first
 		end
