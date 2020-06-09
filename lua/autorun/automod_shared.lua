@@ -20,3 +20,4 @@ CreateConVar( "AM_Config_FuelEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "
 CreateConVar( "AM_Config_FuelAmount", 100, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Amount of fuel vehicles spawn with." )
 CreateConVar( "AM_Config_NoFuelGod", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable vehicles enabling god mode when they run out of fuel." )
 CreateConVar( "AM_Config_CruiseEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable players being able to activate cruise control." )
+CreateConVar( "AM_Config_HealthOverride", 0, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Amount of health every vehicle spawns with no matter what. Set to 0 to disable." )

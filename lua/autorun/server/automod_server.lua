@@ -20,6 +20,7 @@ local AM_FuelEnabled = GetConVar( "AM_Config_FuelEnabled" ):GetBool()
 local AM_FuelAmount = GetConVar( "AM_Config_FuelAmount" ):GetInt()
 local AM_NoFuelGod = GetConVar( "AM_Config_NoFuelGod" ):GetBool()
 local AM_CruiseEnabled = GetConVar( "AM_Config_CruiseEnabled" ):GetBool()
+local AM_HealthOverride = GetConVar( "AM_Config_HealthOverride" ):GetInt()
 
 function AM_HornSound( model ) --Finds the set horn sound for the specified model, returns a default sound if none is found
 	for k,v in pairs( AM_Vehicles ) do
@@ -242,7 +243,6 @@ hook.Add( "VehicleMove", "AM_VehicleThink", function( ply, veh, mv )
 				veh:GetWheel( wheelpopped ):SetDamping( maxdamping, maxdamping )
 			end
 
-			if GAMEMODE_NAME == "hotpursuit" then return end --Disables fuel consumption in my Hot Pursuit gamemode
 			if AM_FuelEnabled and !veh:GetNWBool( "IsAutomodSeat" ) then
 				if veh.FuelCooldown and veh.FuelCooldown > CurTime() then return end
 				local fuellevel = veh:GetNWInt( "AM_FuelAmount" )
@@ -334,8 +334,13 @@ hook.Add( "OnEntityCreated", "AM_InitVehicle", function( ent )
 				AM_LoadVehicle( vehmodel ) --Tries to load the vehicle from file if it doesn't exist in memory
 			end
 			if AM_HealthEnabled then
-				ent:SetNWInt( "AM_VehicleHealth", AM_VehicleHealth( vehmodel ) ) --Sets vehicle health if the health system is enabled
-				ent:SetNWInt( "AM_VehicleMaxHealth", AM_VehicleHealth( vehmodel ) )
+				if AM_HealthOverride > 0 then
+					ent:SetNWInt( "AM_VehicleHealth", AM_HealthOverride )
+					ent:SetNWInt( "AM_VehicleMaxHealth", AM_HealthOverride )
+				else
+					ent:SetNWInt( "AM_VehicleHealth", AM_VehicleHealth( vehmodel ) ) --Sets vehicle health if the health system is enabled
+					ent:SetNWInt( "AM_VehicleMaxHealth", AM_VehicleHealth( vehmodel ) )
+				end
 				ent:SetNWBool( "AM_IsSmoking", false )
 				ent:SetNWBool( "AM_HasExploded", false )
 				ent:SetNWVector( "AM_EnginePos", AM_EnginePos( vehmodel ) )

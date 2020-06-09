@@ -69,6 +69,12 @@ local HUDNoPhoton = {
 	AddonInfo = { ScrW() - 180, ScrH() - 15 }
 }
 
+local function CalcPercentage( y, x )
+	local p = y / x
+	local realp = p * 100
+	return realp
+end
+
 hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it works alongside photon and seat weaponizer mods
 	local ply = LocalPlayer()
 	if ply:InVehicle() then
@@ -145,19 +151,19 @@ hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it
 				surface.DrawText( "Cruise Control: Disabled" )
 			end
 
-			local fuel75 = AM_FuelAmount * 0.75
+			local fuel50 = AM_FuelAmount * 0.5
 			local fuel25 = AM_FuelAmount * 0.25
 			surface.SetDrawColor( color_white )
 			if AM_FuelEnabled then
 				surface.DrawRect( fuelback[1], fuelback[2], 105, 20 )
-				if fuellevel >= fuel75 then
+				if fuellevel >= fuel50 then
 					surface.SetDrawColor( 0, 255, 0 )
-				elseif fuellevel < fuel75 and fuellevel >= fuel25 then
+				elseif fuellevel < fuel50 and fuellevel >= fuel25 then
 					surface.SetDrawColor( 196, 145, 2 )
 				elseif fuellevel < fuel25 then
 					surface.SetDrawColor( 255, 0, 0 )
 				end
-				surface.DrawRect( fuel[1], fuel[2], math.Clamp( fuellevel, 0, 100 ), 10 )
+				surface.DrawRect( fuel[1], fuel[2], CalcPercentage( fuellevel, AM_FuelAmount ), 10 )
 			else
 				surface.SetTextColor( color_white )
 				surface.SetTextPos( fuel[1], fuel[2] )
@@ -168,7 +174,6 @@ hook.Add( "HUDPaint", "AM_HUDStuff", function() --Main HUD, needs adjusted so it
 			surface.SetTextColor( color_white )
 			surface.SetTextPos( fueltitle[1], fueltitle[2] )
 			surface.DrawText( "Fuel Level:" )
-
 			
 			surface.SetTextPos( name[1], name[2] )
 			surface.DrawText( "Automod - By [λG] O.P. Gλmer" )
