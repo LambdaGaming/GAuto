@@ -650,7 +650,7 @@ net.Receive( "AM_ChangeSeats", function( len, ply )
 			AM_Notify( ply, "Seat change failed, you selected the seat you are already sitting in." )
 			return
 		else
-			if IsValid( veh.seat ) and IsValid( veh.seat[realseat] ) then
+			if veh.seat and IsValid( veh.seat[realseat] ) then
 				if !IsValid( veh.seat[realseat]:GetDriver() ) then
 					ply:ExitVehicle() --Have to quickly exit the vehicle then enter the new one, or the old vehicle will still think it has a driver
 					ply:EnterVehicle( veh.seat[realseat] )
@@ -680,7 +680,7 @@ net.Receive( "AM_ChangeSeats", function( len, ply )
 			AM_Notify( ply, "Seat change failed, you selected the seat you are already sitting in." )
 			return
 		end
-		if IsValid( vehparent ) and IsValid( vehparent.seat[realseat] ) then	
+		if IsValid( vehparent ) and vehparent.seat and IsValid( vehparent.seat[realseat] ) then	
 			if !IsValid( vehparent.seat[realseat]:GetDriver() ) then
 				ply:ExitVehicle()
 				ply:EnterVehicle( vehparent.seat[realseat] )
