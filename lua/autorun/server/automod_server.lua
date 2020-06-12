@@ -419,10 +419,6 @@ hook.Add( "KeyPress", "AM_KeyPressServer", function( ply, key )
 	end
 end )
 
-hook.Add( "CanPlayerEnterVehicle", "AM_CanEnterVehicle", function( ply, veh, role )
-	if ply.AM_SeatCooldown and ply.AM_SeatCooldown > CurTime() then return false end --Cooldown to make sure players don't unlock their car the instant they exit it
-end )
-
 hook.Add( "PlayerEnteredVehicle", "AM_EnteredVehicle", function( ply, veh, role )
 	if veh:GetNWBool( "IsAutomodSeat" ) then veh:SetCameraDistance( 5 ) end --Sets camera distance relatively close to the default driver's seat distance
 end )
@@ -495,8 +491,6 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 	if IsBlacklisted( ent ) then return end
 	if ent:GetClass() == "prop_vehicle_jeep" then
 		if ent.AM_ExitCooldown and ent.AM_ExitCooldown > CurTime() then return end
-		if ply.AM_SeatCooldown and ply.AM_SeatCooldown > CurTime() then return end
-		if ent.LockedNotifyCooldown and ent.LockedNotifyCooldown > CurTime() then return end
 		if ent:GetNWBool( "AM_DoorsLocked" ) then
 			if ent:GetNWEntity( "AM_LockOwner" ) == ply then
 				ent:Fire( "Unlock", "", 0.01 )
@@ -504,6 +498,7 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 				ent:SetNWEntity( "AM_LockOwner", nil )
 				AM_Notify( ply, "Vehicle unlocked." )
 			else
+				if ent.LockedNotifyCooldown and ent.LockedNotifyCooldown > CurTime() then return end
 				AM_Notify( ply, "This vehicle is locked." )
 				ent.LockedNotifyCooldown = CurTime() + 1
 			end
@@ -527,8 +522,8 @@ hook.Add( "PlayerUse", "AM_PlayerUseVeh", function( ply, ent )
 			if !foundseat then
 				AM_Notify( ply, "All seats in this vehicle are occupied." )
 			end
-			ply.AM_SeatCooldown = CurTime() + 1 --Prevents players from sometimes teleporting to the last detected seat instead of the first
 		end
+		ply.AM_SeatCooldown = CurTime() + 1 --Prevents players from sometimes teleporting to the last detected seat instead of the first
 	end
 end )
 
