@@ -3,6 +3,7 @@ CreateClientConVar( "AM_Control_HornKey", KEY_H, true, false, "Sets the key for 
 CreateClientConVar( "AM_Control_LockKey", KEY_N, true, false, "Sets the key for locking the doors." )
 CreateClientConVar( "AM_Control_CruiseKey", KEY_B, true, false, "Sets the key for toggling cruise control." )
 CreateClientConVar( "AM_Control_EngineKey", KEY_P, true, false, "Sets the key for toggling the engine." )
+CreateClientConVar( "AM_Control_EjectModifier", KEY_LALT, true, false, "Sets the modifier key that needs to be held while pressing a number key to kick a passenger out." )
 CreateClientConVar( "AM_Config_CruiseMPH", 1, true, false, "Enable or disable displaying cruise speed in MPH. Disable to set to KPH." )
 
 hook.Add( "PopulateToolMenu", "AM_ControlMenu", function()
@@ -22,11 +23,21 @@ hook.Add( "PopulateToolMenu", "AM_ControlMenu", function()
 			Label2 = "Engine Toggle Key",
 			Command2 = "AM_Control_EngineKey"
 		} )
+		panel:AddControl( "Numpad", {
+			Label = "Eject Modifier Key",
+			Command = "AM_Control_EjectModifier"
+		} )
 		panel:CheckBox( "Cruise Control: Display in MPH", "AM_Config_CruiseMPH" )
 	end )
 end )
 
-net.Receive( "AM_Notify", function( len, ply )
+function AM_Notify( text )
+	local textcolor1 = Color( 180, 0, 0, 255 )
+	local textcolor2 = color_white
+	chat.AddText( textcolor1, "[Automod]: ", textcolor2, text )
+end
+
+net.Receive( "AM_Notify", function()
 	local text = net.ReadString()
 	local textcolor1 = Color( 180, 0, 0, 255 )
 	local textcolor2 = color_white
@@ -216,9 +227,19 @@ hook.Add( "PlayerButtonDown", "AM_KeyPressDown", function( ply, key )
 			end
 			for k,v in pairs( seatbuttons ) do
 				if key == v[1] then
-					net.Start( "AM_ChangeSeats" )
-					net.WriteInt( v[2], 32 )
-					net.SendToServer()
+					if input.IsKeyDown( GetConVar( "AM_Control_EjectModifier" ):GetInt() ) then
+						if key == KEY_1 then
+							AM_Notify( "You can't eject yourself!" )
+							return
+						end
+						net.Start( "AM_EjectPassenger" )
+						net.WriteInt( v[2], 32 )
+						net.SendToServer()
+					else
+						net.Start( "AM_ChangeSeats" )
+						net.WriteInt( v[2], 32 )
+						net.SendToServer()
+					end
 				end
 			end
 		end

@@ -691,6 +691,31 @@ net.Receive( "AM_ChangeSeats", function( len, ply )
 	end
 end )
 
+util.AddNetworkString( "AM_EjectPassenger" )
+net.Receive( "AM_EjectPassenger", function( len, ply )
+	local key = net.ReadInt( 32 )
+	local veh = ply:GetVehicle()
+	local realseat = key - 1
+	if !IsValid( veh ) then return end
+	if IsBlacklisted( veh ) then return end
+	if veh:GetClass() == "prop_vehicle_jeep" then
+		if veh.seat and IsValid( veh.seat[realseat] ) then
+			local passenger = veh.seat[realseat]:GetDriver()
+			if IsValid( passenger ) then
+				passenger:ExitVehicle()
+				AM_Notify( ply, "Ejected "..passenger:Nick().." from the vehicle." )
+				AM_Notify( passenger, "You have been ejected from the vehicle by "..ply:Nick().."." )
+			else
+				AM_Notify( ply, "Passenger ejection failed, selected seat doesn't have a passenger." )
+			end
+		else
+			AM_Notify( ply, "Passenger ejection failed, selected seat doesn't exist." )
+		end
+	else
+		AM_Notify( ply, "Passenger ejection failed, only the driver can eject passengers." )
+	end
+end )
+
 util.AddNetworkString( "AM_EngineToggle" )
 net.Receive( "AM_EngineToggle", function( len, ply )
 	if ply:InVehicle() then
