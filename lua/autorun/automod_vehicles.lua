@@ -1,4 +1,6 @@
 
+AM_Vehicles = {} --Initializes the vehicle table, don't touch
+
 --Template vehicle table
 --[[
 AM_Vehicles[""] = {

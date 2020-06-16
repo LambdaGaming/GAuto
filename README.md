@@ -16,6 +16,7 @@ Lightweight vehicle system for Garry's Mod.
 - Data tables for each vehicle that contain info about health, seat positions, horn sound, etc. are stored as linted JSON files to allow for easy editing. A vehicle creation function is also included to add Automod support to your own vehicles.
 - Manual vehicle engine toggle.
 - Passenger ejection.
+- Partial support for other addons. Vehicles will ignite when their health reaches 0 if VFire is installed and the spike strip will also pop tires of Simfphy's vehicles.
 
 ## Current HUD Features:
 Specific features for the vehicle HUD are listed here to avoid overcrowding the features list.
