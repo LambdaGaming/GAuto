@@ -64,7 +64,7 @@ hook.Add( "PlayerEnteredVehicle", "AM_EnteredVehicle", AM_EnteredVehicle )
 
 local function AM_LeaveVehicle( ply, ent )
 	ent.AM_ExitCooldown = CurTime() + 1
-	if IsBlacklisted( ent ) then return end
+	if IsBlacklisted( ent ) or ent:GetNWBool( "IsAutomodSeat" ) then return end
 	if AM_BrakeLockEnabled then
 		if ply:KeyDown( IN_JUMP ) then --Activates the parking brake if the player is holding the jump button when they exit
 			ent:Fire( "HandBrakeOn", "", 0.01 )
