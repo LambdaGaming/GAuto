@@ -5,7 +5,7 @@ local AM_HealthEnabled = GetConVar( "AM_Config_HealthEnabled" ):GetBool()
 local AM_FuelEnabled = GetConVar( "AM_Config_FuelEnabled" ):GetBool()
 
 util.AddNetworkString( "AM_VehicleLock" )
-local function AM_Vehiclelock( len, ply )
+local function AM_VehicleLock( len, ply )
 	if IsFirstTimePredicted() then
 		local veh = ply:GetVehicle()
 		if !IsValid( veh ) then return end
