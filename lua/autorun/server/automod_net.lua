@@ -51,7 +51,7 @@ local function AM_CruiseControl( len, ply )
 	if AM_CruiseEnabled then
 		local veh = ply:GetVehicle()
 		if !IsValid( veh ) then return end
-		if IsBlacklisted( veh ) then return end
+		if IsBlacklisted( veh ) or veh.EngineDisabled then return end
 		local cruiseactive = veh:GetNWBool( "CruiseActive" )
 		if cruiseactive then
 			veh:SetNWBool( "CruiseActive", false )
