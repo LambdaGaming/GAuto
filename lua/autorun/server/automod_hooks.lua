@@ -57,6 +57,13 @@ local function AM_KeyPressServer( ply, key )
 end
 hook.Add( "KeyPress", "AM_KeyPressServer", AM_KeyPressServer )
 
+local function AM_CanEnterVehicle( ply, veh, role )
+	if ply.AM_SeatCooldown and ply.AM_SeatCooldown > CurTime() and !ply.IsSwitching then
+		return false --Cooldown to make sure players don't unlock their car the instant they exit it
+	end 
+end
+hook.Add( "CanPlayerEnterVehicle", "AM_CanEnterVehicle", AM_CanEnterVehicle )
+
 local function AM_EnteredVehicle( ply, veh, role )
 	if veh:GetNWBool( "IsAutomodSeat" ) then veh:SetCameraDistance( 5 ) end --Sets camera distance relatively close to the default driver's seat distance
 end

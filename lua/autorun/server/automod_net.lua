@@ -81,9 +81,11 @@ local function AM_ChangeSeats( len, ply )
 		else
 			if veh.seat and IsValid( veh.seat[realseat] ) then
 				if !IsValid( veh.seat[realseat]:GetDriver() ) then
+					ply.IsSwitching = true --Fix for players getting kicked out while the seat cooldown is in effect
 					ply:ExitVehicle() --Have to quickly exit the vehicle then enter the new one, or the old vehicle will still think it has a driver
 					ply:EnterVehicle( veh.seat[realseat] )
 					ply:SetEyeAngles( Angle( veh.seat[realseat]:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) ) --Fix for the seats setting random eye angles
+					ply.IsSwitching = false
 				else
 					AM_Notify( ply, "Seat change failed, selected seat is already taken." )
 					return
@@ -96,9 +98,11 @@ local function AM_ChangeSeats( len, ply )
 	else
 		if key == 1 then
 			if !IsValid( vehparent:GetDriver() ) then
+				ply.IsSwitching = true
 				ply:ExitVehicle()
 				ply:EnterVehicle( vehparent )
 				ply:SetEyeAngles( Angle( vehparent:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) )
+				ply.IsSwitching = false
 				return
 			else
 				AM_Notify( ply, "Seat change failed, selected seat is already taken." )
@@ -111,9 +115,11 @@ local function AM_ChangeSeats( len, ply )
 		end
 		if IsValid( vehparent ) and vehparent.seat and IsValid( vehparent.seat[realseat] ) then	
 			if !IsValid( vehparent.seat[realseat]:GetDriver() ) then
+				ply.IsSwitching = true
 				ply:ExitVehicle()
 				ply:EnterVehicle( vehparent.seat[realseat] )
 				ply:SetEyeAngles( Angle( vehparent.seat[realseat]:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) )
+				ply.IsSwitching = false
 			else
 				AM_Notify( ply, "Seat change failed, selected seat is already taken." )
 				return
