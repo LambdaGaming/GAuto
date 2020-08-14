@@ -131,7 +131,7 @@ function AM_RepairTire( veh )
 		local vehmodel = veh:GetModel()
 		if IsBlacklisted( veh ) then return end
 		for i = 0, veh:GetWheelCount() - 1 do
-			veh:SetSpringLength( 1, 500.3 )
+			veh:SetSpringLength( i, 500.3 )
 			if veh:GetNWInt( "AM_WheelPopped" ) > 0 then
 				veh:GetWheel( i ):SetDamping( 0, 0 )
 				veh:SetNWInt( "AM_WheelPopped", 0 )
