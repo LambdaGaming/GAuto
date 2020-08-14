@@ -141,7 +141,7 @@ function AM_RepairTire( veh )
 	end
 end
 
-local function AM_TakeDamage( ent, dmg )
+local function AM_ProcessDamage( ent, dmg )
 	if AM_HealthEnabled then
 		if IsBlacklisted( ent ) then return end
 		if ent:IsOnFire() then return end --Prevent car from constantly igniting itself if it's on fire
@@ -174,4 +174,4 @@ local function AM_TakeDamage( ent, dmg )
 		end
 	end
 end
-hook.Add( "EntityTakeDamage", "AM_TakeDamage", AM_TakeDamage )
+hook.Add( "EntityTakeDamage", "AM_TakeDamage", AM_ProcessDamage )
