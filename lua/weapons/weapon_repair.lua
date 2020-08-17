@@ -34,10 +34,6 @@ function SWEP:PrimaryAttack()
 			AM_AddHealth( tr, 1 )
 			self:SendWeaponAnim( ACT_VM_SWINGMISS )
 			self.Owner:SetAnimation( PLAYER_ATTACK1 )
-			local snd = CreateSound( self, "ambient/materials/dinnerplates"..math.random( 1, 5 )..".wav" )
-			if !snd:IsPlaying() then
-				snd:Play()
-			end
 		end
 	end
 	self:SetNextPrimaryFire( CurTime() + 0.1 )
@@ -54,6 +50,21 @@ function SWEP:SecondaryAttack()
 		AM_Notify( self.Owner, "Vehicle tires repaired." )
 	end
 	self:SetNextSecondaryFire( CurTime() + 0.5 )
+end
+
+function SWEP:Think()
+	if self.Owner:KeyDown( IN_ATTACK ) then
+		if self.snd and self.sndcooldown and self.sndcooldown > CurTime() then return end
+		self.snd = CreateSound( self, "ambient/materials/dinnerplates"..math.random( 1, 5 )..".wav" )
+		if !self.snd:IsPlaying() then
+			self.snd:Play()
+			self.sndcooldown = CurTime() + 1
+		end
+	else
+		if self.snd and self.snd:IsPlaying() then
+			self.snd:Stop()
+		end
+	end
 end
 
 if CLIENT then

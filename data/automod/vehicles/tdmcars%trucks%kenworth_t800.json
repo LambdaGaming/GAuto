@@ -6,6 +6,6 @@
 			"pos": "[17 78 76]"
 		}
 	],
-	"HornSound": "automod/truckhorn.mp3",
+	"HornSound": "automod/truckhorn.wav",
 	"MaxHealth": 150.0
 }
