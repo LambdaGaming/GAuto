@@ -106,7 +106,6 @@ local function AM_InitVehicle( ent )
 					local formula = realspeed / 98
 					if formula <= 1 or realspeed < 500 then return end
 					AM_TakeDamage( veh, formula )
-					veh.DamageCooldown = CurTime() + 1
 				end )
 			end
 			if AM_HornEnabled then
