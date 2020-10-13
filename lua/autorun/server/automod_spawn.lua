@@ -89,19 +89,24 @@ local function AM_InitVehicle( ent )
 				ent:SetNWBool( "AM_IsSmoking", false )
 				ent:SetNWBool( "AM_HasExploded", false )
 				ent:SetNWVector( "AM_EnginePos", AM_EnginePos( vehmodel ) )
-				ent:AddCallback( "PhysicsCollide", function( ent, data )
-					local speed = data.Speed
+				ent:AddCallback( "PhysicsCollide", function( veh, data )
+					local realspeed = data.Speed
+					local speed = data.OurOldVelocity
 					local hitent = data.HitEntity
-					if IsValid( hitent:GetPhysicsObject() ) and hitent:GetPhysicsObject():GetMass() < 300 and !hitent:IsWorld() then
+					if IsValid( hitent:GetPhysicsObject() ) and !hitent:IsWorld() then
+						local formula = ( speed:Length() * ( hitent:GetPhysicsObject():GetMass() / 2 ) ) / 100000
+						if formula <= 1 then return end
+						AM_TakeDamage( veh, formula )
+						veh.DamageCooldown = CurTime() + 1
 						return
 					end
-					if constraint.FindConstraintEntity( hitent, "Weld" ) == ent or constraint.FindConstraintEntity( hitent, "Rope" ) == ent then
+					if constraint.FindConstraintEntity( hitent, "Weld" ) == veh or constraint.FindConstraintEntity( hitent, "Rope" ) == veh then --Prevent roped and welded entities from causing damage
 						return
 					end
-					if speed > 500 then
-						if hitent:IsPlayer() or hitent:IsNPC() then return end
-						AM_TakeDamage( ent, speed / 98 )
-					end
+					local formula = realspeed / 98
+					if formula <= 1 or realspeed < 500 then return end
+					AM_TakeDamage( veh, formula )
+					veh.DamageCooldown = CurTime() + 1
 				end )
 			end
 			if AM_HornEnabled then

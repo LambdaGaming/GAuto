@@ -59,7 +59,7 @@ function AM_GodModeEnabled( veh )
 end
 
 function AM_TakeDamage( veh, dam ) --Takes away health from the vehicle, also runs the destroy check every time the health is set
-	if !AM_HealthEnabled or AM_GodModeEnabled( veh ) then return end
+	if !AM_HealthEnabled or AM_GodModeEnabled( veh ) or ( veh.DamageCooldown and veh.DamageCooldown > CurTime() ) then return end
 	if dam < 0.5 then return end
 	local health = veh:GetNWInt( "AM_VehicleHealth" )
 	local maxhealth = veh:GetNWInt( "AM_VehicleMaxHealth" )
