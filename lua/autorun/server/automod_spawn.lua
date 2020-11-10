@@ -146,6 +146,7 @@ local function AM_InitVehicle( ent )
 					ent:DeleteOnRemove( ent.seat[i] )
 					ent.seat[i]:SetNWBool( "IsAutomodSeat", true )
 					ent.seat[i].VehicleTable = {} --Prevents photon from spamming console when it can't find each seat's VehicleTable
+					ent.seat[i].ID = i --Useful for identifying the seat without having to use loops
 				end
 			end
 		end
