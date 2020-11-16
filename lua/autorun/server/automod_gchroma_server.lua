@@ -43,6 +43,11 @@ local function AM_GChromaLeaveVehicle( ply, ent )
 				GChroma_SetDeviceColorEx( driver, GCHROMA_DEVICE_KEYBOARD, GCHROMA_COLOR_WHITE, _G["GCHROMA_KEY_"..ent.ID + 1], 0 )
 			end
 		else
+			if GChroma_PlayerModule_Loaded then
+				net.Start( "GChromaPlayerInit" )
+				net.Send( ply )
+				return
+			end
 			GChroma_ResetDevice( ply, GCHROMA_DEVICE_ALL )
 		end
 	end
