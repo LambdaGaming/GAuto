@@ -10,7 +10,7 @@ local function AM_InitGChroma()
 		for k,v in pairs( keys ) do
 			GChroma_SetDeviceColorEx( chroma, GCHROMA_DEVICE_KEYBOARD, GCHROMA_COLOR_WHITE, v, 0 )
 		end
-		GChroma_CreateEffect( chroma, false, true )
+		GChroma_CreateEffect( chroma, true )
 	end
 end
 net.Receive( "AM_InitGChroma", AM_InitGChroma )
