@@ -27,3 +27,6 @@ __Note: All HUD elements for this addon were made for a resolution of 1920x1080.
 - Door lock status is displayed below the vehicle's health. It can be one of two colors: Orange indicates that the vehicle is unlocked and white indicates that the vehicle is locked.
  -Cruise control status is displayed below the door lock status. It can be one of two colors: Green indicates that cruise control is currently active and white indicates that cruise control is disabled.
 - Fuel level is displayed below the cruise control status as a color-coded progress bar. It can be a total of three colors: Green indicates the fuel level is 50% to 100%, orange indicates 26% to 49%, and red indicates 0% to 25%.
+
+## Issues & Pull Requests
+ If you would like to contribute to this repository by creating an issue or pull request, please refer to the [contributing guidelines.](https://lambdagaming.github.io/contributing.html)
