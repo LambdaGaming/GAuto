@@ -2,9 +2,10 @@ util.AddNetworkString( "AM_InitGChroma" )
 local function AM_InitGChroma( ply, veh )
 	if GChroma_Loaded then
 		if !veh:GetNWBool( "IsAutomodSeat" ) and veh.seat then
-			local tbl = {}
-			table.insert( tbl, GChroma_ResetDevice( GCHROMA_DEVICE_ALL ) )
-			table.insert( tbl, GChroma_SetDeviceColor( GCHROMA_DEVICE_ALL, Vector( 25, 25, 25 ) ) )
+			local tbl = {
+				GChroma_ResetDevice( GCHROMA_DEVICE_ALL ),
+				GChroma_SetDeviceColor( GCHROMA_DEVICE_ALL, Vector( 25, 25, 25 ) )
+			}
 			for k,v in pairs( veh.seat ) do
 				local color
 				if IsValid( v:GetDriver() ) then
@@ -45,8 +46,7 @@ local function AM_GChromaLeaveVehicle( ply, ent )
 			local parent = ent:GetParent()
 			local driver = parent:GetDriver()
 			if IsValid( driver ) and GChroma_Loaded then
-				local tbl = {}
-				table.insert( tbl, GChroma_SetDeviceColorEx( GCHROMA_DEVICE_KEYBOARD, GCHROMA_COLOR_WHITE, _G["GCHROMA_KEY_"..ent.ID + 1], 0 ) )
+				local tbl = { GChroma_SetDeviceColorEx( GCHROMA_DEVICE_KEYBOARD, GCHROMA_COLOR_WHITE, _G["GCHROMA_KEY_"..ent.ID + 1], 0 ) }
 				GChroma_SendFunctions( driver, tbl )
 			end
 		else
@@ -55,8 +55,7 @@ local function AM_GChromaLeaveVehicle( ply, ent )
 				net.Send( ply )
 				return
 			end
-			local tbl = {}
-			table.insert( tbl, GChroma_ResetDevice( GCHROMA_DEVICE_ALL ) )
+			local tbl = { GChroma_ResetDevice( GCHROMA_DEVICE_ALL ) }
 			GChroma_SendFunctions( ply, tbl )
 		end
 	end
