@@ -76,37 +76,21 @@ function ENT:Use( activator, caller )
 	end
 end
 
-local function NumWheelFix( numwheel ) --Quick fix until I can figure out why it's detecting the farthest wheel intead of the closest
-	if numwheel == 0 then
-		numwheel = 3
-	elseif numwheel == 1 then
-		numwheel = 2
-	elseif numwheel == 2 then
-		numwheel = 1
-	elseif numwheel == 3 then
-		numwheel = 0
-	end
-	return numwheel
-end
-
 function ENT:StartTouch( ent )
 	if self.SpikeCooldown and self.SpikeCooldown > CurTime() then return end
 	if IsValid( ent ) then
 		local class = ent:GetClass()
 		if class == "prop_vehicle_jeep" then
 			if IsBlacklisted( ent ) then return end
-			local numwheel = 0
-			local lastpos = 0
+			local wheelpos = {}
 			for i = 0, ent:GetWheelCount() - 1 do
 				local wheel = ent:GetWheel( i )
 				if !IsValid( wheel ) then return end
 				local sqrpos = wheel:GetPos():DistToSqr( self:GetPos() )
-				if lastpos <= sqrpos then --Checks to see what wheel is closest to the strip since there's no easy way of finding out which wheel is actually touching
-					lastpos = sqrpos
-					numwheel = i
-				end
+				table.insert( wheelpos, { i, sqrpos } )
 			end
-			AM_PopTire( ent, NumWheelFix( numwheel ) )
+			table.sort( wheelpos, function( a, b ) return a[2] < b[2] end ) --Checks to see what wheel is closest to the strip since there's no easy way of finding out which wheel is actually touching
+			AM_PopTire( ent, wheelpos[1][1] )
 		elseif class == "gmod_sent_vehicle_fphysics_wheel" then --Simfphy's support
 			ent:SetDamaged( true )
 		end
