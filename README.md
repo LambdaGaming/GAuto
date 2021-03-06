@@ -16,7 +16,10 @@ Lightweight vehicle system for Garry's Mod.
 - Data tables for each vehicle that contain info about health, seat positions, horn sound, etc. are stored as linted JSON files to allow for easy editing. A vehicle creation function is also included to add Automod support to your own vehicles.
 - Manual vehicle engine toggle.
 - Passenger ejection.
-- Partial support for other addons. Vehicles will ignite when their health reaches 0 if VFire is installed and the spike strip will also pop tires of Simfphy's vehicles.
+- Support for other addons: 
+  - Vehicles will ignite when their health reaches 0 if VFire is installed.
+  - Simfphy's vehicles are affected by the spike strip.
+  - GChroma support that highlights Automod hot keys.
 
 ## Current HUD Features:
 Specific features for the vehicle HUD are listed here to avoid overcrowding the features list.
@@ -25,8 +28,8 @@ __Note: All HUD elements for this addon were made for a resolution of 1920x1080.
 
 - Health is displayed as a fraction. It can be color-coded for certain situations. White indicates that the health is good. Green indicates that the vehicle is in god mode and cannot be damaged. Red indicates that the vehicle is at 25% health or less.
 - Door lock status is displayed below the vehicle's health. It can be one of two colors: Orange indicates that the vehicle is unlocked and white indicates that the vehicle is locked.
- -Cruise control status is displayed below the door lock status. It can be one of two colors: Green indicates that cruise control is currently active and white indicates that cruise control is disabled.
-- Fuel level is displayed below the cruise control status as a color-coded progress bar. It can be a total of three colors: Green indicates the fuel level is 50% to 100%, orange indicates 26% to 49%, and red indicates 0% to 25%.
+- Cruise control status is displayed below the door lock status. It can be one of two colors: Green indicates that cruise control is currently active and white indicates that cruise control is disabled.
+- Fuel level is displayed below the cruise control status as a color-coded progress bar. It can be a total of three colors: Green indicates the fuel level is 100%-50%, orange indicates 49%-26%, and red indicates 25%-0%.
 
 ## Issues & Pull Requests
  If you would like to contribute to this repository by creating an issue or pull request, please refer to the [contributing guidelines.](https://lambdagaming.github.io/contributing.html)
