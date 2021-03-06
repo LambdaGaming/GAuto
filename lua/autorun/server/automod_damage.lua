@@ -95,26 +95,33 @@ function AM_SetFuel( veh, amount )
 end
 
 function AM_PopTire( veh, wheel )
-	if !AM_TirePopEnabled then return end
-	if IsBlacklisted( veh ) then return end
+	if !AM_TirePopEnabled or IsBlacklisted( veh ) then return end
 	if IsValid( veh ) and veh:IsVehicle() then
+		if veh.WheelHealth and veh.WheelHealth[wheel] and veh.WheelHealth[wheel] <= 0 then
+			return --Don't try to pop a tire that's already popped
+		end
 		veh:SetSpringLength( wheel, 499 )
 		veh:EmitSound( "HL1/ambience/steamburst1.wav" )
 		veh:SetNWInt( "AM_WheelPopped", wheel )
+		veh.WheelHealth = veh.WheelHealth or {}
+		veh.WheelHealth[wheel] = 0
 	end
 end
 
 function AM_PopCheck( dmg, veh )
-	if !AM_TirePopEnabled then return end
-	if IsBlacklisted( veh ) then return end
+	if !AM_TirePopEnabled or IsBlacklisted( veh ) then return end
 	local pos = dmg:GetDamagePosition()
 	local dmgamount = dmg:GetDamage() * 300
-	local dist = 0
 	for i = 0, veh:GetWheelCount() - 1 do
 		local wheel = veh:GetWheel( i )
 		if IsValid( wheel ) then
-			dist = wheel:GetPos():DistToSqr( pos )
-			if dist <= 400 then --Only deal damage if the bullets hit within the wheel's diameter
+			if veh.WheelHealth and veh.WheelHealth[i] and veh.WheelHealth[i] <= 0 then
+				return --Don't try to pop a tire that's already popped
+			end
+			local dist = wheel:GetPos():DistToSqr( pos )
+			local diameter = veh:GetWheelBaseHeight( i )
+			local diametersqr = diameter * diameter
+			if dist <= diametersqr then --Only deal damage if the bullets hit within the wheel's diameter
 				veh.WheelHealth = veh.WheelHealth or {}
 				veh.WheelHealth[i] = ( veh.WheelHealth[i] or AM_TireHealth ) - dmgamount
 				if veh.WheelHealth[i] <= 0 then
@@ -131,7 +138,7 @@ function AM_RepairTire( veh )
 		local vehmodel = veh:GetModel()
 		if IsBlacklisted( veh ) then return end
 		for i = 0, veh:GetWheelCount() - 1 do
-			veh:SetSpringLength( i, 500.3 )
+			veh:SetSpringLength( i, 500.1 )
 			if veh:GetNWInt( "AM_WheelPopped" ) > 0 then
 				veh:GetWheel( i ):SetDamping( 0, 0 )
 				veh:SetNWInt( "AM_WheelPopped", 0 )
