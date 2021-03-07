@@ -1,5 +1,5 @@
 local function AM_InitGChroma()
-	if gchroma.Loaded then
+	if gchroma then
 		local keys = {
 			gchroma.KeyConvert( GetConVar( "AM_Control_HornKey" ):GetInt() ),
 			gchroma.KeyConvert( GetConVar( "AM_Control_LockKey" ):GetInt() ),

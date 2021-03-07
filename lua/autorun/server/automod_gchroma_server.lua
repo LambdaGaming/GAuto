@@ -1,6 +1,6 @@
 util.AddNetworkString( "AM_InitGChroma" )
 local function AM_InitGChroma( ply, veh )
-	if gchroma.Loaded then
+	if gchroma then
 		if !veh:GetNWBool( "IsAutomodSeat" ) and veh.seat then
 			local tbl = {
 				gchroma.ResetDevice( GCHROMA_DEVICE_ALL ),
@@ -24,11 +24,11 @@ local function AM_InitGChroma( ply, veh )
 end
 
 local function AM_GChromaEnteredVehicle( ply, veh, role )
-	if gchroma.Loaded then
+	if gchroma then
 		if veh:GetNWBool( "IsAutomodSeat" ) then
 			local parent = veh:GetParent()
 			local driver = parent:GetDriver()
-			if IsValid( driver ) and gchroma.Loaded then
+			if IsValid( driver ) then
 				local tbl = {}
 				table.insert( tbl, gchroma.SetDeviceColorEx( GCHROMA_DEVICE_KEYBOARD, GCHROMA_COLOR_RED, _G["GCHROMA_KEY_"..veh.ID + 1], 0 ) )
 				gchroma.SendFunctions( driver, tbl )
@@ -41,11 +41,11 @@ end
 hook.Add( "PlayerEnteredVehicle", "AM_GChromaEnteredVehicle", AM_GChromaEnteredVehicle )
 
 local function AM_GChromaLeaveVehicle( ply, ent )
-	if gchroma.Loaded then
+	if gchroma then
 		if ent:GetNWBool( "IsAutomodSeat" ) then
 			local parent = ent:GetParent()
 			local driver = parent:GetDriver()
-			if IsValid( driver ) and gchroma.Loaded then
+			if IsValid( driver ) then
 				local tbl = { gchroma.SetDeviceColorEx( GCHROMA_DEVICE_KEYBOARD, GCHROMA_COLOR_WHITE, _G["GCHROMA_KEY_"..ent.ID + 1], 0 ) }
 				gchroma.SendFunctions( driver, tbl )
 			end
