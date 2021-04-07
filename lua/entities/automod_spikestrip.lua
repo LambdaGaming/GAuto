@@ -20,22 +20,13 @@ function ENT:SpawnFunction( ply, tr, name )
 end
 
 function ENT:Initialize()
-    self:SetModel( "models/props_wasteland/dockplank01b.mdl" )
+    self:SetModel( "models/fwhykay/hot_pursuit/props/spike_strip/police_spike.mdl" )
 	self:SetMoveType( MOVETYPE_NONE )
 	self:SetSolid( SOLID_VPHYSICS )
-	self:SetMaterial( "models/debug/debugwhite" )
-	self:SetColor( Color( 109, 109, 109 ) )
 
 	if SERVER then
 		self:PhysicsInit( SOLID_VPHYSICS )
 		self:SetUseType( SIMPLE_USE )
-
-		local e = ents.Create( "prop_dynamic" )
-		e:SetModel( "models/props_phx/mechanics/slider2.mdl" )
-		e:SetPos( self:GetPos() )
-		e:SetAngles( self:GetAngles() + Angle( 0, 90, 0 ) )
-		e:SetParent( self )
-		e:Spawn()
 
 		if DarkRP then --RP support that removes the spikestrip after 10 minutes to prevent abuse, should work with any DarkRP-based gamemode even if it's name was changed
 			if !timer.Exists( "Spike_Remove_Timer"..self:EntIndex() ) then

@@ -100,9 +100,21 @@ function AM_PopTire( veh, wheel )
 		if veh.WheelHealth and veh.WheelHealth[wheel] and veh.WheelHealth[wheel] <= 0 then
 			return --Don't try to pop a tire that's already popped
 		end
-		veh:SetSpringLength( wheel, 499 )
+
+		--Simulates the tire slowly losing air
+		local spring = 500.1
+		local deflatesound = CreateSound( veh, "ambient/gas/steam2.wav" )
+		deflatesound:Play()
+		deflatesound:ChangeVolume( 0.8 )
+		deflatesound:FadeOut( 12 )
+		timer.Create( "AM_PopTimer"..veh:EntIndex()..wheel, 1, 12, function()
+			if spring > 499 and IsValid( veh ) then
+				spring = spring - 0.1
+				veh:SetSpringLength( wheel, spring )
+			end
+		end )
+
 		veh:EmitSound( "HL1/ambience/steamburst1.wav" )
-		veh:SetNWInt( "AM_WheelPopped", wheel )
 		veh.WheelHealth = veh.WheelHealth or {}
 		veh.WheelHealth[wheel] = 0
 	end
@@ -139,11 +151,8 @@ function AM_RepairTire( veh )
 		if IsBlacklisted( veh ) then return end
 		for i = 0, veh:GetWheelCount() - 1 do
 			veh:SetSpringLength( i, 500.1 )
-			if veh:GetNWInt( "AM_WheelPopped" ) > 0 then
-				veh:GetWheel( i ):SetDamping( 0, 0 )
-				veh:SetNWInt( "AM_WheelPopped", 0 )
-				veh.WheelHealth = {}
-			end
+			veh:GetWheel( i ):SetDamping( 0, 0 )
+			veh.WheelHealth = {}
 		end
 	end
 end

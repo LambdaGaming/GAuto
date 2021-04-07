@@ -13,19 +13,13 @@ local function AM_VehicleThink( ply, veh, mv )
 		if !veh.FuelInit or veh.NoFuel or !IsValid( veh:GetDriver() ) then return end
 		if !veh.FuelCooldown then veh.FuelCooldown = 0 end
 
-		if vel > 100 and veh:GetThrottle() >= 0.1 then
-			veh.FuelLoss = 0.5
-		end
-
 		if vel > 100 then
-			local wheelpopped = veh:GetNWInt( "AM_WheelPopped" )
-			if wheelpopped > 0 then
-				local maxdamping = math.Clamp( veh:GetWheel( wheelpopped ):GetDamping() + 0.01, 0, 40 ) --Simulates tire slowly losing air
-				veh:GetWheel( wheelpopped ):SetDamping( maxdamping, maxdamping )
-			end
-
 			if AM_FuelEnabled and !veh:GetNWBool( "IsAutomodSeat" ) then
 				if veh.FuelCooldown and veh.FuelCooldown > CurTime() then return end
+				if veh:GetThrottle() >= 0.1 then
+					veh.FuelLoss = 0.5
+				end
+
 				local fuellevel = veh:GetNWInt( "AM_FuelAmount" )
 				if fuellevel > 0 then
 					veh:SetNWInt( "AM_FuelAmount", fuellevel - veh.FuelLoss )
