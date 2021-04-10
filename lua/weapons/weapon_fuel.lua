@@ -26,7 +26,8 @@ SWEP.Secondary.Automatic = false
 function SWEP:PrimaryAttack()
 	if !IsFirstTimePredicted() or CLIENT then return end
 	local tr = self.Owner:GetEyeTrace().Entity
-	if tr:GetClass() == "prop_vehicle_jeep" and self.Owner:GetPos():DistToSqr( tr:GetPos() ) < 40000 then
+	local pos = tr:GetPos()
+	if tr:GetClass() == "prop_vehicle_jeep" and self.Owner:GetPos():DistToSqr( pos ) < 40000 then
 		local fuel = tr:GetNWInt( "AM_FuelAmount" )
 		if fuel < 100 then
 			AM_SetFuel( tr, fuel + 1 )
@@ -59,9 +60,10 @@ if CLIENT then
 		if !IsValid( wep ) or !IsValid( tr ) then return end
 
 		local wepclass = wep:GetClass()
-		local vehpos = ply:GetPos():DistToSqr( tr:GetPos() )
+		local pos = tr:GetPos()
+		local vehpos = ply:GetPos():DistToSqr( pos )
 		local maxfuel = 100
-		if !IsValid( tr ) or !tr:IsVehicle() or ply:InVehicle() or wepclass != "weapon_fuel" or vehpos > 40000 then return end
+		if !tr:IsVehicle() or ply:InVehicle() or wepclass != "weapon_fuel" or vehpos > 40000 then return end
 		if maxfuel > 0 then
 			local fuel = tr:GetNWInt( "AM_FuelAmount" )
 			local fuel25 = maxfuel * 0.25

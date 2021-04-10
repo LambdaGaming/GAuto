@@ -43,10 +43,11 @@ function SWEP:SecondaryAttack()
 	if !IsFirstTimePredicted() or CLIENT then return end
 	local tr = self.Owner:GetEyeTrace().Entity
 	if tr:GetClass() == "prop_vehicle_jeep" and self.Owner:GetPos():DistToSqr( tr:GetPos() ) < 40000 then
+		local rand = math.random( 1, 3 )
 		AM_RepairTire( tr )
 		self:SendWeaponAnim( ACT_VM_SWINGMISS )
 	    self.Owner:SetAnimation( PLAYER_ATTACK1 )
-		tr:EmitSound( "physics/rubber/rubber_tire_impact_hard"..math.random( 1, 3 )..".wav" )
+		tr:EmitSound( "physics/rubber/rubber_tire_impact_hard"..rand..".wav" )
 		AM_Notify( self.Owner, "Vehicle tires repaired." )
 	end
 	self:SetNextSecondaryFire( CurTime() + 0.5 )
@@ -55,7 +56,8 @@ end
 function SWEP:Think()
 	if self.Owner:KeyDown( IN_ATTACK ) then
 		if self.snd and self.sndcooldown and self.sndcooldown > CurTime() then return end
-		self.snd = CreateSound( self, "ambient/materials/dinnerplates"..math.random( 1, 5 )..".wav" )
+		local rand = math.random( 1, 5 )
+		self.snd = CreateSound( self, "ambient/materials/dinnerplates"..rand..".wav" )
 		if !self.snd:IsPlaying() then
 			self.snd:Play()
 			self.sndcooldown = CurTime() + 1

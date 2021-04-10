@@ -9,8 +9,6 @@ surface.CreateFont( "AM_HUDFont2", {
 	size = 14
 } )
 
-local AM_FuelAmount = GetConVar( "AM_Config_FuelAmount" ):GetInt()
-local AM_FuelEnabled = GetConVar( "AM_Config_FuelEnabled" ):GetBool()
 local HUDPositions = {}
 local HUDPhoton = {
 	Background = { ScrW() - 180, ScrH() - 520 },
@@ -50,6 +48,8 @@ local function AM_HUDStuff()
 		local fuellevel = vehicle:GetNWInt( "AM_FuelAmount" )
 		local godenabled = vehicle:GetNWBool( "GodMode" )
 		local issmoking = vehicle:GetNWBool( "AM_IsSmoking" )
+		local AM_FuelAmount = GetConVar( "AM_Config_FuelAmount" ):GetInt()
+		local AM_FuelEnabled = GetConVar( "AM_Config_FuelEnabled" ):GetBool()
 
 		if vehicle.VehicleName then --Detects if the vehicle has Photon support or not
 			HUDPositions = HUDPhoton
@@ -84,7 +84,8 @@ local function AM_HUDStuff()
 			end
 
 		    if vehmaxhealth > 0 then
-			    surface.DrawText( "Health: "..math.Round( vehhealth ).."/"..vehmaxhealth )
+				local roundedhealth = math.Round( vehhealth )
+			    surface.DrawText( "Health: "..roundedhealth.."/"..vehmaxhealth )
 			else
 				surface.DrawText( "Health Disabled" )
 			end

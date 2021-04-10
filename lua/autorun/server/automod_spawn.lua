@@ -1,12 +1,3 @@
-
-local AM_HealthEnabled = GetConVar( "AM_Config_HealthEnabled" ):GetBool()
-local AM_HealthOverride = GetConVar( "AM_Config_HealthOverride" ):GetInt()
-local AM_HornEnabled = GetConVar( "AM_Config_HornEnabled" ):GetBool()
-local AM_DoorLockEnabled = GetConVar( "AM_Config_LockEnabled" ):GetBool()
-local AM_FuelEnabled = GetConVar( "AM_Config_FuelEnabled" ):GetBool()
-local AM_FuelAmount = GetConVar( "AM_Config_FuelAmount" ):GetInt()
-local AM_SeatsEnabled = GetConVar( "AM_Config_SeatsEnabled" ):GetBool()
-
 function AM_HornSound( model ) --Finds the set horn sound for the specified model, returns a default sound if none is found
 	for k,v in pairs( AM_Vehicles ) do
 		if k == model then
@@ -68,12 +59,17 @@ function AM_LoadVehicle( model )
 end
 
 local function AM_InitVehicle( ent )
-	if !IsValid( ent ) then return end
 	timer.Simple( 0.1, function() --Small timer because the model isn't seen the instant this hook is called
-		if !IsValid( ent ) then return end
+		if AM_IsBlackListed( ent ) then return end --Prevents blacklisted models from being affected
 		local vehmodel = ent:GetModel()
 		if ent:IsVehicle() and ent:GetClass() == "prop_vehicle_jeep" then
-			if IsBlacklisted( ent ) then return end --Prevents blacklisted models from being affected
+			local AM_HealthEnabled = GetConVar( "AM_Config_HealthEnabled" ):GetBool()
+			local AM_HealthOverride = GetConVar( "AM_Config_HealthOverride" ):GetInt()
+			local AM_HornEnabled = GetConVar( "AM_Config_HornEnabled" ):GetBool()
+			local AM_DoorLockEnabled = GetConVar( "AM_Config_LockEnabled" ):GetBool()
+			local AM_FuelEnabled = GetConVar( "AM_Config_FuelEnabled" ):GetBool()
+			local AM_FuelAmount = GetConVar( "AM_Config_FuelAmount" ):GetInt()
+			local AM_SeatsEnabled = GetConVar( "AM_Config_SeatsEnabled" ):GetBool()
 			if !AM_Vehicles[vehmodel] then
 				print( "[Automod] Vehicle table not found. Attempting to load from file..." )
 				AM_LoadVehicle( vehmodel ) --Tries to load the vehicle from file if it doesn't exist in memory

@@ -29,14 +29,16 @@ end
 function SWEP:PrimaryAttack()
 	if !IsFirstTimePredicted() or CLIENT then return end
 	local tr = self.Owner:GetEyeTrace()
-    if self.Owner:GetPos():DistToSqr( tr.HitPos ) < 10000 then
+	local hitpos = tr.HitPos
+    if self.Owner:GetPos():DistToSqr( hitpos ) < 10000 then
 		if !self.SpawnedSpike then
+			local rand = math.random( 1, 3 )
 			local e = ents.Create( "automod_spikestrip" )
-			e:SetPos( tr.HitPos )
+			e:SetPos( hitpos )
 			e:SetAngles( Angle( 0, self.Owner:GetAngles().y, 0 ) )
 			e:Spawn()
 			e:SetOwner( self.Owner )
-			e:EmitSound( "physics/metal/metal_grate_impact_soft"..math.random( 1, 3 )..".wav" )
+			e:EmitSound( "physics/metal/metal_grate_impact_soft"..rand..".wav" )
 			AM_Notify( self.Owner, "You have placed your spikestrip." )
 			self:Remove()
 		end

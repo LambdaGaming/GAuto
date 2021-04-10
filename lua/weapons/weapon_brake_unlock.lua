@@ -25,13 +25,15 @@ SWEP.Secondary.Automatic = false
 function SWEP:PrimaryAttack()
 	if !IsFirstTimePredicted() then return end
     local tr = self.Owner:GetEyeTrace().Entity
-	if self.Owner:GetPos():DistToSqr( tr:GetPos() ) > 90000 then return end
+	local pos = tr:GetPos()
+	if self.Owner:GetPos():DistToSqr( pos ) > 90000 then return end
     if tr:GetClass() == "prop_vehicle_jeep" then
+		local rand = math.random( 1, 3 )
     	if SERVER then
     		tr:Fire( "HandBrakeOff", "", 0.01 )
     		self.Owner:ChatPrint( "Brakes released." )
     	end
-    	tr:EmitSound( "physics/metal/metal_box_impact_soft"..math.random( 1, 3 )..".wav" )
+    	tr:EmitSound( "physics/metal/metal_box_impact_soft"..rand..".wav" )
     end
     self:SetNextPrimaryFire( CurTime() + 1 )
 end

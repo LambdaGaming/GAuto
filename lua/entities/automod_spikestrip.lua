@@ -29,8 +29,9 @@ function ENT:Initialize()
 		self:SetUseType( SIMPLE_USE )
 
 		if DarkRP then --RP support that removes the spikestrip after 10 minutes to prevent abuse, should work with any DarkRP-based gamemode even if it's name was changed
-			if !timer.Exists( "Spike_Remove_Timer"..self:EntIndex() ) then
-				timer.Create( "Spike_Remove_Timer"..self:EntIndex(), 600, 1, function()
+			local index = self:EntIndex()
+			if !timer.Exists( "Spike_Remove_Timer"..index ) then
+				timer.Create( "Spike_Remove_Timer"..index, 600, 1, function()
 					if !IsValid( self:GetOwner() ) then --Checks to see if the player is still on the server
 						self:Remove()
 						return
@@ -63,34 +64,36 @@ function ENT:Use( activator, caller )
 		AM_Notify( activator, "You have collected your spikestrip." )
 		self:Remove()
 	else
-		AM_Notify( activator, "This spikestrip is owned by "..self:GetOwner():Nick().." and will be automatically removed in "..string.ToMinutesSeconds( timer.TimeLeft( "Spike_Remove_Timer"..self:EntIndex() ) ).."." )
+		local nick = self:GetOwner():Nick()
+		local index = self:EntIndex()
+		local time = string.ToMinutesSeconds( timer.TimeLeft( "Spike_Remove_Timer"..index ) )
+		AM_Notify( activator, "This spikestrip is owned by "..nick.." and will be automatically removed in "..time.."." )
 	end
 end
 
 function ENT:StartTouch( ent )
 	if self.SpikeCooldown and self.SpikeCooldown > CurTime() then return end
-	if IsValid( ent ) then
-		local class = ent:GetClass()
-		if class == "prop_vehicle_jeep" then
-			if IsBlacklisted( ent ) then return end
-			local wheelpos = {}
-			for i = 0, ent:GetWheelCount() - 1 do
-				local wheel = ent:GetWheel( i )
-				if !IsValid( wheel ) then return end
-				local sqrpos = wheel:GetPos():DistToSqr( self:GetPos() )
-				table.insert( wheelpos, { i, sqrpos } )
-			end
-			table.sort( wheelpos, function( a, b ) return a[2] < b[2] end ) --Checks to see what wheel is closest to the strip since there's no easy way of finding out which wheel is actually touching
-			AM_PopTire( ent, wheelpos[1][1] )
-		elseif class == "gmod_sent_vehicle_fphysics_wheel" then --Simfphy's support
-			ent:SetDamaged( true )
+	if AM_IsBlackListed( ent ) then return end
+	local class = ent:GetClass()
+	if class == "prop_vehicle_jeep" then
+		local wheelpos = {}
+		for i = 0, ent:GetWheelCount() - 1 do
+			local wheel = ent:GetWheel( i )
+			if !IsValid( wheel ) then return end
+			local sqrpos = wheel:GetPos():DistToSqr( self:GetPos() )
+			table.insert( wheelpos, { i, sqrpos } )
 		end
-		self.SpikeCooldown = CurTime() + 1
+		table.sort( wheelpos, function( a, b ) return a[2] < b[2] end ) --Checks to see what wheel is closest to the strip since there's no easy way of finding out which wheel is actually touching
+		AM_PopTire( ent, wheelpos[1][1] )
+	elseif class == "gmod_sent_vehicle_fphysics_wheel" then --Simfphy's support
+		ent:SetDamaged( true )
 	end
+	self.SpikeCooldown = CurTime() + 1
 end
 
 function ENT:OnRemove()
-	if timer.Exists( "Spike_Remove_Timer"..self:EntIndex() ) then timer.Remove( "Spike_Remove_Timer"..self:EntIndex() ) end
+	local index = self:EntIndex()
+	if timer.Exists( "Spike_Remove_Timer"..index ) then timer.Remove( "Spike_Remove_Timer"..index ) end
 end
 
 if CLIENT then

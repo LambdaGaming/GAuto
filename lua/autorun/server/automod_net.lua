@@ -1,15 +1,8 @@
-
-local AM_HornEnabled = GetConVar( "AM_Config_HornEnabled" ):GetBool()
-local AM_CruiseEnabled = GetConVar( "AM_Config_CruiseEnabled" ):GetBool()
-local AM_HealthEnabled = GetConVar( "AM_Config_HealthEnabled" ):GetBool()
-local AM_FuelEnabled = GetConVar( "AM_Config_FuelEnabled" ):GetBool()
-
 util.AddNetworkString( "AM_VehicleLock" )
 local function AM_VehicleLock( len, ply )
 	if IsFirstTimePredicted() then
 		local veh = ply:GetVehicle()
-		if !IsValid( veh ) then return end
-		if IsBlacklisted( veh ) then return end
+		if AM_IsBlackListed( veh ) then return end
 		if !veh:GetNWBool( "AM_DoorsLocked" ) then
 			AM_Notify( ply, "Vehicle locked." )
 			veh:Fire( "Lock", "", 0.01 )
@@ -26,13 +19,14 @@ net.Receive( "AM_VehicleLock", AM_VehicleLock )
 
 util.AddNetworkString( "AM_VehicleHorn" )
 local function AM_VehicleHorn( len, ply )
+	local AM_HornEnabled = GetConVar( "AM_Config_HornEnabled" ):GetBool()
 	if AM_HornEnabled then
 		local veh = ply:GetVehicle()
-		if !IsValid( veh ) then return end
-		if IsBlacklisted( veh ) then return end
+		if AM_IsBlackListed( veh ) then return end
 		veh.AM_CarHorn = CreateSound( veh, veh:GetNWString( "AM_HornSound" ) )
-		if veh.AM_CarHorn:IsPlaying() then return end
-		veh.AM_CarHorn:Play()
+		if !veh.AM_CarHorn:IsPlaying() then
+			veh.AM_CarHorn:Play()
+		end
 	end
 end
 net.Receive( "AM_VehicleHorn", AM_VehicleHorn )
@@ -48,10 +42,10 @@ net.Receive( "AM_VehicleHornStop", AM_VehicleHornStop )
 
 util.AddNetworkString( "AM_CruiseControl" )
 local function AM_CruiseControl( len, ply )
+	local AM_CruiseEnabled = GetConVar( "AM_Config_CruiseEnabled" ):GetBool()
 	if AM_CruiseEnabled then
 		local veh = ply:GetVehicle()
-		if !IsValid( veh ) then return end
-		if IsBlacklisted( veh ) or veh.EngineDisabled then return end
+		if AM_IsBlackListed( veh ) or veh.EngineDisabled then return end
 		local cruiseactive = veh:GetNWBool( "CruiseActive" )
 		if cruiseactive then
 			veh:SetNWBool( "CruiseActive", false )
@@ -69,8 +63,7 @@ util.AddNetworkString( "AM_ChangeSeats" )
 local function AM_ChangeSeats( len, ply )
 	local key = net.ReadInt( 32 )
 	local veh = ply:GetVehicle()
-	if !IsValid( veh ) then return end
-	if IsBlacklisted( veh ) then return end
+	if AM_IsBlackListed( veh ) then return end
 	local vehparent = veh:GetParent()
 	local driver = veh:GetDriver()
 	local realseat = key - 1 --Need to subtract 1 since the driver's seat doesn't count as a passenger seat
@@ -137,15 +130,16 @@ local function AM_EjectPassenger( len, ply )
 	local key = net.ReadInt( 32 )
 	local veh = ply:GetVehicle()
 	local realseat = key - 1
-	if !IsValid( veh ) then return end
-	if IsBlacklisted( veh ) then return end
+	if AM_IsBlackListed( veh ) then return end
 	if veh:GetClass() == "prop_vehicle_jeep" then
 		if veh.seat and IsValid( veh.seat[realseat] ) then
 			local passenger = veh.seat[realseat]:GetDriver()
 			if IsValid( passenger ) then
+				local nick = ply:Nick()
+				local passengernick = passenger:Nick()
 				passenger:ExitVehicle()
-				AM_Notify( ply, "Ejected "..passenger:Nick().." from the vehicle." )
-				AM_Notify( passenger, "You have been ejected from the vehicle by "..ply:Nick().."." )
+				AM_Notify( ply, "Ejected "..passengernick.." from the vehicle." )
+				AM_Notify( passenger, "You have been ejected from the vehicle by "..nick.."." )
 			else
 				AM_Notify( ply, "Passenger ejection failed, selected seat doesn't have a passenger." )
 			end
@@ -162,8 +156,9 @@ util.AddNetworkString( "AM_EngineToggle" )
 local function AM_EngineToggle( len, ply )
 	if ply:InVehicle() then
 		local veh = ply:GetVehicle()
-		if !IsValid( veh ) then return end
-		if IsBlacklisted( veh ) then return end
+		local AM_HealthEnabled = GetConVar( "AM_Config_HealthEnabled" ):GetBool()
+		local AM_FuelEnabled = GetConVar( "AM_Config_FuelEnabled" ):GetBool()
+		if AM_IsBlackListed( veh ) then return end
 		if AM_HealthEnabled and veh:GetNWInt( "AM_VehicleHealth" ) <= 0 then return end --Don't want players turning the car back on when it's supposed to be damaged or out of fuel
 		if AM_FuelEnabled and veh:GetNWInt( "AM_FuelAmount" ) <= 0 then return end
 		if veh.EngineDisabled then

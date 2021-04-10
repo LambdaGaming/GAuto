@@ -1,18 +1,11 @@
-
-local AM_FuelEnabled = GetConVar( "AM_Config_FuelEnabled" ):GetBool()
-local AM_NoFuelGod = GetConVar( "AM_Config_NoFuelGod" ):GetBool()
-local AM_WheelLockEnabled = GetConVar( "AM_Config_WheelLockEnabled" ):GetBool()
-local AM_SeatsEnabled = GetConVar( "AM_Config_SeatsEnabled" ):GetBool()
-local AM_AlarmEnabled = GetConVar( "AM_Config_LockAlarmEnabled" ):GetBool()
-local AM_BrakeLockEnabled = GetConVar( "AM_Config_BrakeLockEnabled" ):GetBool()
-
 local function AM_VehicleThink( ply, veh, mv )
-	if IsValid( veh ) then
-		if IsBlacklisted( veh ) then return end
-		local vel = veh:GetVelocity():Length()
-		if !veh.FuelInit or veh.NoFuel or !IsValid( veh:GetDriver() ) then return end
+	if AM_IsBlackListed( veh ) then return end
+	local vel = veh:GetVelocity():Length()
+	if veh.FuelInit and !veh.NoFuel and IsValid( veh:GetDriver() ) then
+		local AM_FuelEnabled = GetConVar( "AM_Config_FuelEnabled" ):GetBool()
+		local AM_NoFuelGod = GetConVar( "AM_Config_NoFuelGod" ):GetBool()
+		
 		if !veh.FuelCooldown then veh.FuelCooldown = 0 end
-
 		if vel > 100 then
 			if AM_FuelEnabled and !veh:GetNWBool( "IsAutomodSeat" ) then
 				if veh.FuelCooldown and veh.FuelCooldown > CurTime() then return end
@@ -26,11 +19,12 @@ local function AM_VehicleThink( ply, veh, mv )
 					veh.FuelCooldown = CurTime() + 5
 					veh.NoFuel = false
 				else
+					local rand = math.random( 1, 3 )
 					if AM_NoFuelGod then
 						AM_ToggleGodMode( veh )
 					end
 					veh:Fire( "turnoff", "", 0.01 )
-					veh:EmitSound( "ambient/materials/cartrap_rope"..math.random( 1, 3 )..".wav" )
+					veh:EmitSound( "ambient/materials/cartrap_rope"..rand..".wav" )
 					veh.NoFuel = true
 					AM_Notify( ply, "Your vehicle has run out of fuel!" )
 				end
@@ -65,7 +59,9 @@ hook.Add( "PlayerEnteredVehicle", "AM_EnteredVehicle", AM_EnteredVehicle )
 
 local function AM_LeaveVehicle( ply, ent )
 	ent.AM_ExitCooldown = CurTime() + 1
-	if IsBlacklisted( ent ) or ent:GetNWBool( "IsAutomodSeat" ) then return end
+	if AM_IsBlackListed( ent ) or ent:GetNWBool( "IsAutomodSeat" ) then return end
+	local AM_WheelLockEnabled = GetConVar( "AM_Config_WheelLockEnabled" ):GetBool()
+	local AM_BrakeLockEnabled = GetConVar( "AM_Config_BrakeLockEnabled" ):GetBool()
 	if AM_BrakeLockEnabled then
 		if ply:KeyDown( IN_JUMP ) then --Activates the parking brake if the player is holding the jump button when they exit
 			ent:Fire( "HandBrakeOn", "", 0.01 )
@@ -94,9 +90,9 @@ end
 hook.Add( "PlayerLeaveVehicle", "AM_LeaveVehicle", AM_LeaveVehicle )
 
 local function AM_PlayerUseVeh( ply, ent )
-	if !IsValid( ply ) or !IsValid( ent ) then return end
-	if IsBlacklisted( ent ) then return end
+	if !IsValid( ply ) or AM_IsBlackListed( ent ) then return end
 	if ent:GetClass() == "prop_vehicle_jeep" then
+		local AM_SeatsEnabled = GetConVar( "AM_Config_SeatsEnabled" ):GetBool()
 		if ent.AM_ExitCooldown and ent.AM_ExitCooldown > CurTime() then return end
 		if ent:GetNWBool( "AM_DoorsLocked" ) then
 			if ent:GetNWEntity( "AM_LockOwner" ) == ply then
@@ -136,8 +132,8 @@ end
 hook.Add( "PlayerUse", "AM_PlayerUseVeh", AM_PlayerUseVeh )
 
 local function AM_Lockpick( ply, ent, trace )
-	if !AM_AlarmEnabled then return end
-	if IsBlacklisted( ent ) then return end
+	local AM_AlarmEnabled = GetConVar( "AM_Config_LockAlarmEnabled" ):GetBool()
+	if !AM_AlarmEnabled or AM_IsBlackListed( ent ) then return end
 	if ent:IsVehicle() and ent:GetClass() == "prop_vehicle_jeep" then
 		ent:EmitSound( "automod/alarm.mp3" )
 	end
@@ -145,8 +141,8 @@ end
 hook.Add( "lockpickStarted", "AM_Lockpick", AM_Lockpick )
 
 local function AM_LockpickFinish( ply, success, ent )
-	if !AM_AlarmEnabled then return end
-	if IsBlacklisted( ent ) then return end
+	local AM_AlarmEnabled = GetConVar( "AM_Config_LockAlarmEnabled" ):GetBool()
+	if !AM_AlarmEnabled or AM_IsBlackListed( ent ) then return end
 	if ent:IsVehicle() and ent:GetClass() == "prop_vehicle_jeep" then
 		if success then
 			ent:SetNWBool( "AM_DoorsLocked", false )

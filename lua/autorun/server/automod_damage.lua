@@ -1,16 +1,8 @@
-
-local AM_ExplosionEnabled = GetConVar( "AM_Config_DamageExplosionEnabled" ):GetBool()
-local AM_ExplodeRemoveEnabled = GetConVar( "AM_Config_ExplodeRemoveEnabled" ):GetBool()
-local AM_ExplodeRemoveTime = GetConVar( "AM_Config_ExplodeRemoveTime" ):GetInt()
-local AM_HealthEnabled = GetConVar( "AM_Config_HealthEnabled" ):GetBool()
-local AM_FuelAmount = GetConVar( "AM_Config_FuelAmount" ):GetInt()
-local AM_TirePopEnabled = GetConVar( "AM_Config_TirePopEnabled" ):GetBool()
-local AM_TireHealth = GetConVar( "AM_Config_TireHealth" ):GetInt()
-local AM_BulletDamageEnabled = GetConVar( "AM_Config_BulletDamageEnabled" ):GetBool()
-local AM_ScalePlayerDamage = GetConVar( "AM_Config_ScalePlayerDamage" ):GetBool()
-
 function AM_DestroyCheck( veh ) --Disables the engine and sets the vehicle on fire if it's health is 0
 	if veh:GetNWInt( "AM_VehicleHealth" ) <= 0 and !veh:GetNWBool( "AM_HasExploded" ) then
+		local AM_ExplosionEnabled = GetConVar( "AM_Config_DamageExplosionEnabled" ):GetBool()
+		local AM_ExplodeRemoveEnabled = GetConVar( "AM_Config_ExplodeRemoveEnabled" ):GetBool()
+		local AM_ExplodeRemoveTime = GetConVar( "AM_Config_ExplodeRemoveTime" ):GetInt()
 		veh:Fire( "turnoff", "", 0.01 )
 		if vFireInstalled then --Only ignites the vehicle if VFire is installed since otherwise it looks weird
 			veh:Ignite()
@@ -59,16 +51,17 @@ function AM_GodModeEnabled( veh )
 end
 
 function AM_TakeDamage( veh, dam ) --Takes away health from the vehicle, also runs the destroy check every time the health is set
-	if !AM_HealthEnabled or AM_GodModeEnabled( veh ) or ( veh.DamageCooldown and veh.DamageCooldown > CurTime() ) then return end
-	if dam < 0.5 then return end
-	local health = veh:GetNWInt( "AM_VehicleHealth" )
-	local maxhealth = veh:GetNWInt( "AM_VehicleMaxHealth" )
-	local roundhp = math.Round( health - dam )
-	local newhp = math.Clamp( roundhp, 0, maxhealth )
-	veh:SetNWInt( "AM_VehicleHealth", newhp )
-	AM_DestroyCheck( veh )
-	AM_SmokeCheck( veh )
-	hook.Run( "AM_OnTakeDamage", veh, dam )
+	local AM_HealthEnabled = GetConVar( "AM_Config_HealthEnabled" ):GetBool()
+	if AM_HealthEnabled and AM_GodModeEnabled( veh ) and dam > 0.5 and ( veh.DamageCooldown and veh.DamageCooldown > CurTime() ) then
+		local health = veh:GetNWInt( "AM_VehicleHealth" )
+		local maxhealth = veh:GetNWInt( "AM_VehicleMaxHealth" )
+		local roundhp = math.Round( health - dam )
+		local newhp = math.Clamp( roundhp, 0, maxhealth )
+		veh:SetNWInt( "AM_VehicleHealth", newhp )
+		AM_DestroyCheck( veh )
+		AM_SmokeCheck( veh )
+		hook.Run( "AM_OnTakeDamage", veh, dam )
+	end
 end
 
 function AM_AddHealth( veh, hp ) --Adds health to the vehicle, nothing special
@@ -84,7 +77,8 @@ function AM_AddHealth( veh, hp ) --Adds health to the vehicle, nothing special
 end
 
 function AM_SetFuel( veh, amount )
-	if IsBlacklisted( veh ) then return end
+	if AM_IsBlackListed( veh ) then return end
+	local AM_FuelAmount = GetConVar( "AM_Config_FuelAmount" ):GetInt()
 	local clampedamount = math.Clamp( amount, 0, AM_FuelAmount )
 	veh:SetNWInt( "AM_FuelAmount", clampedamount )
 	if amount > 0 and veh.NoFuel then
@@ -95,8 +89,8 @@ function AM_SetFuel( veh, amount )
 end
 
 function AM_PopTire( veh, wheel )
-	if !AM_TirePopEnabled or IsBlacklisted( veh ) then return end
-	if IsValid( veh ) and veh:IsVehicle() then
+	local AM_TirePopEnabled = GetConVar( "AM_Config_TirePopEnabled" ):GetBool()
+	if AM_TirePopEnabled and !AM_IsBlackListed( veh ) and veh:IsVehicle() then
 		if veh.WheelHealth and veh.WheelHealth[wheel] and veh.WheelHealth[wheel] <= 0 then
 			return --Don't try to pop a tire that's already popped
 		end
@@ -104,10 +98,11 @@ function AM_PopTire( veh, wheel )
 		--Simulates the tire slowly losing air
 		local spring = 500.1
 		local deflatesound = CreateSound( veh, "ambient/gas/steam2.wav" )
+		local index = veh:EntIndex()
 		deflatesound:Play()
 		deflatesound:ChangeVolume( 0.8 )
 		deflatesound:FadeOut( 12 )
-		timer.Create( "AM_PopTimer"..veh:EntIndex()..wheel, 1, 12, function()
+		timer.Create( "AM_PopTimer"..index..wheel, 1, 12, function()
 			if spring > 499 and IsValid( veh ) then
 				spring = spring - 0.1
 				veh:SetSpringLength( wheel, spring )
@@ -121,23 +116,26 @@ function AM_PopTire( veh, wheel )
 end
 
 function AM_PopCheck( dmg, veh )
-	if !AM_TirePopEnabled or IsBlacklisted( veh ) then return end
-	local pos = dmg:GetDamagePosition()
-	local dmgamount = dmg:GetDamage() * 300
-	for i = 0, veh:GetWheelCount() - 1 do
-		local wheel = veh:GetWheel( i )
-		if IsValid( wheel ) then
-			if veh.WheelHealth and veh.WheelHealth[i] and veh.WheelHealth[i] <= 0 then
-				return --Don't try to pop a tire that's already popped
-			end
-			local dist = wheel:GetPos():DistToSqr( pos )
-			local diameter = veh:GetWheelBaseHeight( i )
-			local diametersqr = diameter * diameter
-			if dist <= diametersqr then --Only deal damage if the bullets hit within the wheel's diameter
-				veh.WheelHealth = veh.WheelHealth or {}
-				veh.WheelHealth[i] = ( veh.WheelHealth[i] or AM_TireHealth ) - dmgamount
-				if veh.WheelHealth[i] <= 0 then
-					AM_PopTire( veh, i )
+	local AM_TirePopEnabled = GetConVar( "AM_Config_TirePopEnabled" ):GetBool()
+	local AM_TireHealth = GetConVar( "AM_Config_TireHealth" ):GetInt()
+	if AM_TirePopEnabled and !AM_IsBlackListed( veh ) then
+		local pos = dmg:GetDamagePosition()
+		local dmgamount = dmg:GetDamage() * 300
+		for i = 0, veh:GetWheelCount() - 1 do
+			local wheel = veh:GetWheel( i )
+			if IsValid( wheel ) then
+				if veh.WheelHealth and veh.WheelHealth[i] and veh.WheelHealth[i] <= 0 then
+					return --Don't try to pop a tire that's already popped
+				end
+				local dist = wheel:GetPos():DistToSqr( pos )
+				local diameter = veh:GetWheelBaseHeight( i )
+				local diametersqr = diameter * diameter
+				if dist <= diametersqr then --Only deal damage if the bullets hit within the wheel's diameter
+					veh.WheelHealth = veh.WheelHealth or {}
+					veh.WheelHealth[i] = ( veh.WheelHealth[i] or AM_TireHealth ) - dmgamount
+					if veh.WheelHealth[i] <= 0 then
+						AM_PopTire( veh, i )
+					end
 				end
 			end
 		end
@@ -145,10 +143,9 @@ function AM_PopCheck( dmg, veh )
 end
 
 function AM_RepairTire( veh )
-	if !AM_TirePopEnabled then return end
-	if IsValid( veh ) and veh:IsVehicle() then
+	local AM_TirePopEnabled = GetConVar( "AM_Config_TirePopEnabled" ):GetBool()
+	if AM_TirePopEnabled and !AM_IsBlackListed( veh ) and veh:IsVehicle() then
 		local vehmodel = veh:GetModel()
-		if IsBlacklisted( veh ) then return end
 		for i = 0, veh:GetWheelCount() - 1 do
 			veh:SetSpringLength( i, 500.1 )
 			veh:GetWheel( i ):SetDamping( 0, 0 )
@@ -158,9 +155,11 @@ function AM_RepairTire( veh )
 end
 
 local function AM_ProcessDamage( ent, dmg )
+	local AM_HealthEnabled = GetConVar( "AM_Config_HealthEnabled" ):GetBool()
+	local AM_BulletDamageEnabled = GetConVar( "AM_Config_BulletDamageEnabled" ):GetBool()
+	local AM_ScalePlayerDamage = GetConVar( "AM_Config_ScalePlayerDamage" ):GetBool()
 	if AM_HealthEnabled then
-		if IsBlacklisted( ent ) then return end
-		if ent:IsOnFire() then return end --Prevent car from constantly igniting itself if it's on fire
+		if AM_IsBlackListed( ent ) or ent:IsOnFire() then return end --Prevent car from constantly igniting itself if it's on fire
 		if ent:GetClass() == "prop_vehicle_jeep" then
 			if dmg:IsBulletDamage() and AM_BulletDamageEnabled then
 				AM_TakeDamage( ent, dmg:GetDamage() * 450 )

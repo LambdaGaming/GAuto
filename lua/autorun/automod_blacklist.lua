@@ -48,7 +48,8 @@ AM_Config_Blacklist = {
 	["models/sentry/trailers/tanker.mdl"] = true
 }
 
-function IsBlacklisted( veh )
+function AM_IsBlackListed( veh )
+	if !IsValid( veh ) then return true end --Return blacklisted if the vehicle isn't valid to avoid running IsValid twice
 	local class = veh:GetClass()
 	local model = veh:GetModel()
 	if class == "prop_vehicle_jeep" and AM_Config_Blacklist[model] then
