@@ -52,7 +52,8 @@ end
 
 function AM_TakeDamage( veh, dam ) --Takes away health from the vehicle, also runs the destroy check every time the health is set
 	local AM_HealthEnabled = GetConVar( "AM_Config_HealthEnabled" ):GetBool()
-	if AM_HealthEnabled and AM_GodModeEnabled( veh ) and dam > 0.5 and ( veh.DamageCooldown and veh.DamageCooldown > CurTime() ) then
+	if AM_HealthEnabled and !AM_GodModeEnabled( veh ) and dam > 0.5 then
+		if veh.DamageCooldown and veh.DamageCooldown > CurTime() then return end
 		local health = veh:GetNWInt( "AM_VehicleHealth" )
 		local maxhealth = veh:GetNWInt( "AM_VehicleMaxHealth" )
 		local roundhp = math.Round( health - dam )
