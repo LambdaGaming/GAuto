@@ -54,7 +54,7 @@ local function AM_CruiseControl( len, ply )
 		end
 		veh:SetNWBool( "CruiseActive", true )
 		AM_Notify( ply, "Cruise control is now enabled. Press forward/backward to increase/decrease cruise speed." )
-		veh.CruiseSpeed = 0.05
+		veh:SetNWInt( "CruiseSpeed", 0.05 )
 	end
 end
 net.Receive( "AM_CruiseControl", AM_CruiseControl )

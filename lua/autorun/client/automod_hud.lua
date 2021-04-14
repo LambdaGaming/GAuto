@@ -11,7 +11,7 @@ surface.CreateFont( "AM_HUDFont2", {
 
 local HUDPositions = {}
 local HUDPhoton = {
-	Background = { ScrW() - 180, ScrH() - 520 },
+	Background = { ScrW() - 182, ScrH() - 520 },
 	Health = { ScrW() - 140, ScrH() - 510 },
 	Lock = { ScrW() - 140, ScrH() - 480 },
 	Cruise = { ScrW() - 170, ScrH() - 450 },
@@ -22,7 +22,7 @@ local HUDPhoton = {
 	AddonInfo = { ScrW() - 180, ScrH() - 335 }
 }
 local HUDNoPhoton = {
-	Background = { ScrW() - 180, ScrH() - 200 },
+	Background = { ScrW() - 182, ScrH() - 200 },
 	Health = { ScrW() - 140, ScrH() - 190 },
 	Lock = { ScrW() - 140, ScrH() - 160 },
 	Cruise = { ScrW() - 170, ScrH() - 130 },
@@ -39,6 +39,7 @@ local function CalcPercentage( y, x )
 	return realp
 end
 
+local color_gray = Color( 30, 30, 30, 254 )
 local function AM_HUDStuff()
 	local ply = LocalPlayer()
 	if ply:InVehicle() then
@@ -67,7 +68,7 @@ local function AM_HUDStuff()
 		local name = HUDPositions.AddonName
 		local info = HUDPositions.AddonInfo
 		if vehicle:GetClass() == "prop_vehicle_jeep" then
-			draw.RoundedBox( 5, background[1], background[2], 180, 200, Color( 30, 30, 30, 254 ) )
+			draw.RoundedBoxEx( 5, background[1], background[2], 182, 200, color_gray, true, false, true, false )
 			surface.SetFont( "AM_HUDFont1" )
 
 			if issmoking or vehhealth <= vehmaxhealth * 0.25 then
@@ -100,11 +101,12 @@ local function AM_HUDStuff()
 			end
 
 			surface.SetTextColor( color_white )
-			surface.SetTextPos( cruise[1], cruise[2] )
 			if vehicle:GetNWBool( "CruiseActive" ) then
 				surface.SetTextColor( 0, 255, 0 )
 				local velocity = vehicle:GetVelocity():Length()
 				local speed = 0
+				local throttle = vehicle:GetNWInt( "CruiseSpeed" )
+				local realthrottle = math.Round( throttle * 100 )
 				local label = ""
 				if GetConVar( "AM_Config_CruiseMPH" ):GetBool() then
 					speed = math.Round( velocity * 3600 / 63360 * 0.75 )
@@ -113,8 +115,10 @@ local function AM_HUDStuff()
 					speed = math.Round( velocity * 3600 * 0.0000254 * 0.75 )
 					label = "KPH"
 				end
-				surface.DrawText( "Cruise Control: "..speed.." "..label )
+				surface.SetTextPos( cruise[1] + 28, cruise[2] )
+				surface.DrawText( "CC: "..speed.." "..label.." ("..realthrottle.."%)" )
 			else
+				surface.SetTextPos( cruise[1], cruise[2] )
 				surface.DrawText( "Cruise Control: Disabled" )
 			end
 

@@ -156,7 +156,7 @@ local function AM_CruiseThink()
 	for k,v in pairs( ents.FindByClass( "prop_vehicle_jeep" ) ) do
 		if !IsValid( v ) then return end
 		if v:GetNWBool( "CruiseActive" ) then
-			v:SetThrottle( v.CruiseSpeed )
+			v:SetThrottle( v:GetNWInt( "CruiseSpeed" ) )
 		end
 	end
 end
@@ -167,15 +167,17 @@ local function AM_CruiseController( ply, key )
 	if ply:InVehicle() then
 		local veh = ply:GetVehicle()
 		if veh:GetNWBool( "CruiseActive" ) then
+			local speed = veh:GetNWInt( "CruiseSpeed" )
 			if key == IN_JUMP then
 				veh:SetNWBool( "CruiseActive", false )
+				veh:SetNWInt( "CruiseSpeed", 0 )
 				AM_Notify( ply, "Cruise control is now disabled." )
 			end
 			if key == IN_FORWARD then
-				veh.CruiseSpeed = math.Clamp( veh.CruiseSpeed + 0.10, 0.05, 1 )
+				veh:SetNWInt( "CruiseSpeed", math.Clamp( speed + 0.10, 0.05, 1 ) )
 			end
 			if key == IN_BACK then
-				veh.CruiseSpeed = math.Clamp( veh.CruiseSpeed - 0.10, 0.05, 1 )
+				veh:SetNWInt( "CruiseSpeed", math.Clamp( speed - 0.10, 0.05, 1 ) )
 			end
 		end
 	end

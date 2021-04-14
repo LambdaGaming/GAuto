@@ -1,7 +1,7 @@
 
-CreateClientConVar( "AM_Control_HornKey", KEY_H, true, false, "Sets the key for the horn." )
+CreateClientConVar( "AM_Control_HornKey", KEY_J, true, false, "Sets the key for the horn." )
 CreateClientConVar( "AM_Control_LockKey", KEY_N, true, false, "Sets the key for locking the doors." )
-CreateClientConVar( "AM_Control_CruiseKey", KEY_B, true, false, "Sets the key for toggling cruise control." )
+CreateClientConVar( "AM_Control_CruiseKey", KEY_V, true, false, "Sets the key for toggling cruise control." )
 CreateClientConVar( "AM_Control_EngineKey", KEY_P, true, false, "Sets the key for toggling the engine." )
 CreateClientConVar( "AM_Control_EjectModifier", KEY_LALT, true, false, "Sets the modifier key that needs to be held while pressing a number key to kick a passenger out." )
 CreateClientConVar( "AM_Config_CruiseMPH", 1, true, false, "Enable or disable displaying cruise speed in MPH. Disable to set to KPH." )
