@@ -52,10 +52,10 @@ local function AM_PhysicsCollide( veh, data )
 	if IsValid( hitent:GetPhysicsObject() ) and hitent:GetPhysicsObject():GetMass() < 300 and !hitent:IsWorld() then
 		return
 	end
-	if constraint.FindConstraintEntity( hitent, "Weld" ) == veh or constraint.FindConstraintEntity( hitent, "Rope" ) == veh then --Prevent roped and welded entities from causing damage
-		return
+	for k,v in pairs( constraint.GetTable( veh ) ) do
+		if v.Ent1 == hitent then return end --Prevents objects that may be part of the vehicle from damaging it
 	end
-	local formula = speed / 98
+	local formula = speed / 98 --Not at all realistic especially since mass isn't a factor, but it provides a good balance between too spongy and too fragile
 	if speed > 500 then
 		if hitent:IsPlayer() or hitent:IsNPC() then return end
 		AM_TakeDamage( veh, formula )
