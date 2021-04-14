@@ -1,32 +1,20 @@
 function AM_HornSound( model ) --Finds the set horn sound for the specified model, returns a default sound if none is found
-	for k,v in pairs( AM_Vehicles ) do
-		if k == model then
-			if v.HornSound then
-				return v.HornSound
-			end
-		end
+	if AM_Vehicles[model] and AM_Vehicles[model].HornSound then
+		return AM_Vehicles[model].HornSound
 	end
 	return "automod/carhorn.wav"
 end
 
 function AM_VehicleHealth( model ) --Does the same as above but with the vehicle's health
-	for k,v in pairs( AM_Vehicles ) do
-		if k == model then
-			if v.MaxHealth then
-				return v.MaxHealth
-			end
-		end
+	if AM_Vehicles[model] and AM_Vehicles[model].MaxHealth then
+		return AM_Vehicles[model].MaxHealth
 	end
 	return 100
 end
 
 function AM_EnginePos( model ) --Does the same as above but with the vehicle's engine position
-	for k,v in pairs( AM_Vehicles ) do
-		if k == model then
-			if v.EnginePos then
-				return v.EnginePos
-			end
-		end
+	if AM_Vehicles[model] and AM_Vehicles[model].EnginePos then
+		return AM_Vehicles[model].EnginePos
 	end
 	return vector_origin
 end
@@ -58,6 +46,22 @@ function AM_LoadVehicle( model )
 	print( "[Automod] Successfully loaded '"..model.."' from Automod files." )
 end
 
+local function AM_PhysicsCollide( veh, data )
+	local speed = data.Speed
+	local hitent = data.HitEntity
+	if IsValid( hitent:GetPhysicsObject() ) and hitent:GetPhysicsObject():GetMass() < 300 and !hitent:IsWorld() then
+		return
+	end
+	if constraint.FindConstraintEntity( hitent, "Weld" ) == veh or constraint.FindConstraintEntity( hitent, "Rope" ) == veh then --Prevent roped and welded entities from causing damage
+		return
+	end
+	local formula = speed / 98
+	if speed > 500 then
+		if hitent:IsPlayer() or hitent:IsNPC() then return end
+		AM_TakeDamage( veh, formula )
+	end
+end
+
 local function AM_InitVehicle( ent )
 	timer.Simple( 0.1, function() --Small timer because the model isn't seen the instant this hook is called
 		if AM_IsBlackListed( ent ) then return end --Prevents blacklisted models from being affected
@@ -85,21 +89,7 @@ local function AM_InitVehicle( ent )
 				ent:SetNWBool( "AM_IsSmoking", false )
 				ent:SetNWBool( "AM_HasExploded", false )
 				ent:SetNWVector( "AM_EnginePos", AM_EnginePos( vehmodel ) )
-				ent:AddCallback( "PhysicsCollide", function( veh, data )
-					local speed = data.Speed
-					local hitent = data.HitEntity
-					if IsValid( hitent:GetPhysicsObject() ) and hitent:GetPhysicsObject():GetMass() < 300 and !hitent:IsWorld() then
-						return
-					end
-					if constraint.FindConstraintEntity( hitent, "Weld" ) == veh or constraint.FindConstraintEntity( hitent, "Rope" ) == veh then --Prevent roped and welded entities from causing damage
-						return
-					end
-					local formula = speed / 98
-					if speed > 500 then
-						if hitent:IsPlayer() or hitent:IsNPC() then return end
-						AM_TakeDamage( veh, formula )
-					end
-				end )
+				ent:AddCallback( "PhysicsCollide", AM_PhysicsCollide )
 			end
 			if AM_HornEnabled then
 				ent:SetNWString( "AM_HornSound", AM_HornSound( vehmodel ) ) --Sets horn sound of the setting is enabled
