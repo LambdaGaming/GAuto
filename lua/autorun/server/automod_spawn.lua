@@ -1,3 +1,5 @@
+local color_red = Color( 255, 0, 0 )
+
 function AM_HornSound( model ) --Finds the set horn sound for the specified model, returns a default sound if none is found
 	if AM_Vehicles[model] and AM_Vehicles[model].HornSound then
 		return AM_Vehicles[model].HornSound
@@ -20,7 +22,6 @@ function AM_EnginePos( model ) --Does the same as above but with the vehicle's e
 end
 
 function AM_LoadVehicle( model )
-	local color_red = Color( 255, 0, 0 )
 	if !model then
 		MsgC( color_red, "[Automod] ERROR: Invalid argument for AM_LoadVehicle()." )
 		return
@@ -60,6 +61,27 @@ local function AM_PhysicsCollide( veh, data )
 		if hitent:IsPlayer() or hitent:IsNPC() then return end
 		AM_TakeDamage( veh, formula )
 	end
+end
+
+function AM_SpawnSeat( index, ent, pos, ang )
+	ent.seat[index] = ents.Create( "prop_vehicle_prisoner_pod" )
+	ent.seat[index]:SetModel( "models/nova/airboat_seat.mdl" )
+	ent.seat[index]:SetParent( ent ) --Sets the vehicle as the parent, very important for later
+	ent.seat[index]:SetPos( ent:LocalToWorld( pos ) ) --Gotta keep the vectors local to the vehicle so the seats always spawn in the right place, no matter where the vehicle is on the map
+	ent.seat[index]:SetAngles( ent:LocalToWorldAngles( ang ) )
+	ent.seat[index]:Spawn()
+	ent.seat[index]:SetKeyValue( "limitview", 0 ) --Disables the limited view that you get with the default prisoner pods
+	ent.seat[index]:SetVehicleEntryAnim( false ) --Doesn't do anything when switching seats, but does run the animation when you press your use key on a passenger seat
+	ent.seat[index]:SetNoDraw( true ) --Turns the seats invisible so it looks like you're actually sitting in the car
+	ent.seat[index]:SetNotSolid( true ) --We probably don't need this but i'm putting it here anyway incase of some weird physics freakout
+	ent.seat[index]:DrawShadow( false ) --Disables the shadow for the same reason as the nodraw
+	table.Merge( ent.seat[index], { HandleAnimation = function( _, ply )
+		return ply:SelectWeightedSequence( ACT_HL2MP_SIT ) --Sets the animation to the sitting animation, taken from the Gmod wiki
+	end } )
+	ent:DeleteOnRemove( ent.seat[index] )
+	ent.seat[index]:SetNWBool( "IsAutomodSeat", true )
+	ent.seat[index].VehicleTable = {} --Prevents photon from spamming console when it can't find each seat's VehicleTable
+	ent.seat[index].ID = index --Useful for identifying the seat without having to use loops
 end
 
 local function AM_InitVehicle( ent )
@@ -104,7 +126,7 @@ local function AM_InitVehicle( ent )
 			end
 			if AM_SeatsEnabled then
 				if !AM_Vehicles or !AM_Vehicles[vehmodel] then
-					AM_Notify( nil, "Warning! The vehicle that was spawned is currently not supported by Automod!", true )
+					MsgC( color_red, "\n[Automod] Warning! The model '"..vehmodel.."' is unsupported. Basic features will still work but passenger seats will not spawn and engines will not smoke.\n" )
 					return
 				end
 				if !AM_Vehicles[vehmodel].Seats then return end
@@ -112,24 +134,7 @@ local function AM_InitVehicle( ent )
 				local numseats = table.Count( vehseats )
 				ent.seat = {}
 				for i=1, numseats do
-					ent.seat[i] = ents.Create( "prop_vehicle_prisoner_pod" )
-					ent.seat[i]:SetModel( "models/nova/airboat_seat.mdl" )
-					ent.seat[i]:SetParent( ent ) --Sets the vehicle as the parent, very important for later
-					ent.seat[i]:SetPos( ent:LocalToWorld( vehseats[i].pos ) ) --Gotta keep the vectors local to the vehicle so the seats always spawn in the right place, no matter where the vehicle is on the map
-					ent.seat[i]:SetAngles( ent:LocalToWorldAngles( vehseats[i].ang ) )
-					ent.seat[i]:Spawn()
-					ent.seat[i]:SetKeyValue( "limitview", 0 ) --Disables the limited view that you get with the default prisoner pods
-					ent.seat[i]:SetVehicleEntryAnim( false ) --Doesn't do anything when switching seats, but does run the animation when you press your use key on a passenger seat
-					ent.seat[i]:SetNoDraw( true ) --Turns the seats invisible so it looks like you're actually sitting in the car
-					ent.seat[i]:SetNotSolid( true ) --We probably don't need this but i'm putting it here anyway incase of some weird physics freakout
-					ent.seat[i]:DrawShadow( false ) --Disables the shadow for the same reason as the nodraw
-					table.Merge( ent.seat[i], { HandleAnimation = function( _, ply )
-						return ply:SelectWeightedSequence( ACT_HL2MP_SIT ) --Sets the animation to the sitting animation, taken from the Gmod wiki
-					end } )
-					ent:DeleteOnRemove( ent.seat[i] )
-					ent.seat[i]:SetNWBool( "IsAutomodSeat", true )
-					ent.seat[i].VehicleTable = {} --Prevents photon from spamming console when it can't find each seat's VehicleTable
-					ent.seat[i].ID = i --Useful for identifying the seat without having to use loops
+					AM_SpawnSeat( i, ent, vehseats[i].pos, vehseats[i].ang )
 				end
 			end
 		end
