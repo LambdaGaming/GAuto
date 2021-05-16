@@ -89,6 +89,7 @@ local function AM_ChangeSeats( len, ply )
 			end
 		end
 	else
+		if !IsValid( vehparent ) then return end
 		if key == 1 then
 			if !IsValid( vehparent:GetDriver() ) then
 				ply.IsSwitching = true
