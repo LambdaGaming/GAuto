@@ -1,7 +1,7 @@
 
 AddCSLuaFile()
 
-SWEP.PrintName = "Brake Release Tool"
+SWEP.PrintName = "Vehicle Management Tool"
 SWEP.Category = "Automod"
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
@@ -31,9 +31,24 @@ function SWEP:PrimaryAttack()
 		local rand = math.random( 1, 3 )
     	if SERVER then
     		tr:Fire( "HandBrakeOff", "", 0.01 )
-    		self.Owner:ChatPrint( "Brakes released." )
+    		AM_Notify( self.Owner, "Brakes released." )
     	end
     	tr:EmitSound( "physics/metal/metal_box_impact_soft"..rand..".wav" )
+    end
+    self:SetNextPrimaryFire( CurTime() + 1 )
+end
+
+local rotate = Angle( 0, 180, 0 )
+function SWEP:SecondaryAttack()
+	if !IsFirstTimePredicted() then return end
+    local tr = self.Owner:GetEyeTrace().Entity
+	local pos = tr:GetPos()
+	if self.Owner:GetPos():DistToSqr( pos ) > 90000 then return end
+    if tr:GetClass() == "prop_vehicle_jeep" then
+		if SERVER then
+			tr:SetAngles( tr:GetAngles() + rotate )
+			AM_Notify( self.Owner, "Vehicle rotated." )
+		end
     end
     self:SetNextPrimaryFire( CurTime() + 1 )
 end
