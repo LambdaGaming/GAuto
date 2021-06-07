@@ -16,13 +16,13 @@ local function AM_SmokeThink()
 	local findjeep = ents.FindByClass( "prop_vehicle_jeep" )
 	for k,v in pairs( findjeep ) do
 		local model = v:GetModel()
-		if !AM_Vehicles[model] then return end
+		local enginepos = v:GetNWVector( "AM_EnginePos" )
+		if enginepos == angle_zero then return end
 		if v:GetNWBool( "AM_IsSmoking" ) then
 			local carpos = v:GetPos()
 			local plypos = ply:GetPos()
 			if plypos:DistToSqr( carpos ) < 4000000 then --Only displays particles if the player is within a certain distance of the vehicle, helps with optimization
 				local rand = math.random( 1, 9 )
-				local enginepos = v:GetNWVector( "AM_EnginePos" )
 				local pos = v:LocalToWorld( enginepos )
 				local smoke = ParticleEmitter( pos ):Add( "particle/smokesprites_000"..rand, pos )
 				local dietime = math.Rand( 0.6, 1.3 )
