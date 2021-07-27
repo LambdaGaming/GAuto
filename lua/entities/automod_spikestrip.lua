@@ -20,7 +20,7 @@ function ENT:SpawnFunction( ply, tr, name )
 end
 
 function ENT:Initialize()
-    self:SetModel( "models/fwhykay/hot_pursuit/props/spike_strip/police_spike.mdl" )
+    self:SetModel( "models/props_phx/mechanics/slider2.mdl" )
 	self:SetMoveType( MOVETYPE_NONE )
 	self:SetSolid( SOLID_VPHYSICS )
 
