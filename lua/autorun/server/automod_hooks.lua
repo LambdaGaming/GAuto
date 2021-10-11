@@ -108,6 +108,10 @@ local function AM_PlayerUseVeh( ply, ent )
 		end
 		if !ent:GetNWBool( "AM_DoorsLocked" ) and AM_SeatsEnabled then
 			if ply:InVehicle() or !ent.seat then return end
+			if GetConVar( "AM_Config_DriverSeat" ):GetBool() and !IsValid( ent:GetDriver() ) then
+				ply:EnterVehicle( ent )
+				return
+			end
 			local starttime = CurTime()
 			local seatlist = { ent } --Throw the driver's seat in with the passenger seats incase the vehicle doesn't have a driver
 			local foundseat = false

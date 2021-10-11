@@ -17,3 +17,4 @@ CreateConVar( "AM_Config_FuelAmount", 100, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, 
 CreateConVar( "AM_Config_NoFuelGod", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable vehicles enabling god mode when they run out of fuel." )
 CreateConVar( "AM_Config_CruiseEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable players being able to activate cruise control." )
 CreateConVar( "AM_Config_HealthOverride", 0, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Amount of health every vehicle spawns with no matter what. Set to 0 to disable." )
+CreateConVar( "AM_Config_DriverSeat", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable entering the drivers seat if it's not taken, even if it's not the closest." )
