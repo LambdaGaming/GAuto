@@ -52,8 +52,14 @@ function AM_IsBlackListed( veh )
 	if !IsValid( veh ) then return true end --Return blacklisted if the vehicle isn't valid to avoid running IsValid twice
 	local class = veh:GetClass()
 	local model = veh:GetModel()
-	if class == "prop_vehicle_jeep" and AM_Config_Blacklist[model] then
-		return true
+	if class == "prop_vehicle_jeep" then
+		if AM_Config_Blacklist[model] then
+			return true
+		end
+	else
+		if !veh:GetNWBool( "IsAutomodSeat" ) then
+			return true
+		end
 	end
 	if veh.fphysSeat then --Avoid interference with Simfphy's
 		return true
