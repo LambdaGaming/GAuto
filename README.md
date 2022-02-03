@@ -1,5 +1,5 @@
 # Automod
-Lightweight vehicle system for Garry's Mod. Currently, not many vehicles are supported outside of popular creators including TDM, SGM, and LW, which is why this addon is not on the workshop yet. Eventually, I plan on adding a system that will allow vehicle creators to easily add support through their vehicle's script file, but for now I will gladly accept any pull requests for adding support for more vehicles as long as the json files are properly configured.
+Lightweight vehicle system for Garry's Mod. Currently, not many vehicles are supported outside of popular creators including TDM, SGM, and LW, which is the main reason why this addon is not on the workshop. Eventually, I plan on adding a system that will allow vehicle creators to easily add support through their vehicle's script file, but for now I will gladly accept any pull requests for adding support for more vehicles as long as the json files are properly configured.
 
 ## Features:
 - Vehicle health system

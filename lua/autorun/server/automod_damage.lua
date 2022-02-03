@@ -184,7 +184,7 @@ local function AM_ProcessDamage( ent, dmg )
 				dmg:SetDamageType( DMG_VEHICLE )
 			end
 			if dmg:IsDamageType( DMG_VEHICLE ) or ( ent:InVehicle() and dmg:IsDamageType( DMG_BLAST ) ) then
-				dmg:ScaleDamage( 0.35 ) --Scales damage for vehicle drivers and players who are hit by vehicles
+				dmg:ScaleDamage( 0.35 ) --Scales damage for drivers, passengers, and players who are hit by vehicles
 				return dmg
 			end
 		end
