@@ -1,4 +1,3 @@
-
 AddCSLuaFile()
 
 ENT.Type = "anim"
@@ -20,14 +19,12 @@ function ENT:SpawnFunction( ply, tr, name )
 end
 
 function ENT:Initialize()
-    self:SetModel( "models/props_phx/mechanics/slider2.mdl" )
+    self:SetModel( GetConVar( "AM_Config_SpikeModel" ):GetString() )
 	self:SetMoveType( MOVETYPE_NONE )
 	self:SetSolid( SOLID_VPHYSICS )
-
 	if SERVER then
 		self:PhysicsInit( SOLID_VPHYSICS )
 		self:SetUseType( SIMPLE_USE )
-
 		if DarkRP then --RP support that removes the spikestrip after 10 minutes to prevent abuse, should work with any DarkRP-based gamemode even if it's name was changed
 			local index = self:EntIndex()
 			if !timer.Exists( "Spike_Remove_Timer"..index ) then
@@ -38,7 +35,7 @@ function ENT:Initialize()
 					end
 					if self:GetOwner():isCP() then --Makes sure the player is still a cop so a civi doesn't get a free spikestrip
 						self:GetOwner():Give( "weapon_spiketrap" )
-						AM_Notify( self:GetOwner(), "Your spikestrip has been removed. It has been put back into your weapon slot." )
+						AM_Notify( self:GetOwner(), "Your spikestrip has been returned to you." )
 					end
 					self:Remove()
 				end )
@@ -55,7 +52,7 @@ end
 function ENT:Use( activator, caller )
 	if self:GetOwner() == activator then
 		if DarkRP and !activator:isCP() then --Prevents former cops from taking back their old strips as a civi
-			AM_Notify( activator, "You are no longer a cop, your old spikestrip will be removed." )
+			AM_Notify( activator, "You are no longer a cop. Your old spikestrip will be removed." )
 			self:Remove()
 			return
 		end

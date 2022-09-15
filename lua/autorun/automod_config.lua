@@ -18,3 +18,4 @@ CreateConVar( "AM_Config_NoFuelGod", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "En
 CreateConVar( "AM_Config_CruiseEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable players being able to activate cruise control." )
 CreateConVar( "AM_Config_HealthOverride", 0, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Amount of health every vehicle spawns with no matter what. Set to 0 to disable." )
 CreateConVar( "AM_Config_DriverSeat", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable entering the drivers seat if it's not taken, even if it's not the closest." )
+CreateConVar( "AM_Config_SpikeModel", "models/props_phx/mechanics/slider2.mdl", { FCVAR_ARCHIVE }, "The model of the spikestrip." )
