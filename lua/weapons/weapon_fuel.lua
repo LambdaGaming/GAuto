@@ -7,7 +7,7 @@ SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.Base = "weapon_base"
 SWEP.Author = "Lambda Gaming"
-SWEP.Slot = 3
+SWEP.Slot = 2
 
 SWEP.ViewModel = ""
 SWEP.WorldModel = "models/props_junk/gascan001a.mdl"
