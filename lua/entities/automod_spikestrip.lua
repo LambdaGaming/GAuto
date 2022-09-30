@@ -34,7 +34,7 @@ function ENT:Initialize()
 						return
 					end
 					if self:GetOwner():isCP() then --Makes sure the player is still a cop so a civi doesn't get a free spikestrip
-						self:GetOwner():Give( "weapon_spiketrap" )
+						self:GetOwner():Give( "weapon_spikestrip" )
 						AM_Notify( self:GetOwner(), "Your spikestrip has been returned to you." )
 					end
 					self:Remove()
