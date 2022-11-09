@@ -8,6 +8,12 @@ ENT.Spawnable = true
 ENT.AdminOnly = true
 ENT.Category = "Automod"
 
+local vehicles = {
+	["prop_vehicle_jeep"] = true,
+	["prop_vehicle_jeep_old"] = true,
+	["jeep_owned_by_reckless_driver_kleiner"] = true
+}
+
 function ENT:SpawnFunction( ply, tr, name )
 	if !tr.Hit then return end
 	local SpawnPos = tr.HitPos + tr.HitNormal * 1
@@ -72,7 +78,7 @@ function ENT:StartTouch( ent )
 	if self.SpikeCooldown and self.SpikeCooldown > CurTime() then return end
 	if AM_IsBlackListed( ent ) then return end
 	local class = ent:GetClass()
-	if class == "prop_vehicle_jeep" then
+	if vehicles[class] then
 		local wheelpos = {}
 		for i = 0, ent:GetWheelCount() - 1 do
 			local wheel = ent:GetWheel( i )
