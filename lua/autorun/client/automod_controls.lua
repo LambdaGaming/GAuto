@@ -91,7 +91,7 @@ local function AM_KeyPressUp( ply, key )
 		if ply:InVehicle() then
 			if key == GetConVar( "AM_Control_HornKey" ):GetInt() then
 				net.Start( "AM_VehicleHornStop" )
-				net.SendToServer() --Not sure if this the most optimised way to do this
+				net.SendToServer()
 			end
 		end
 	end

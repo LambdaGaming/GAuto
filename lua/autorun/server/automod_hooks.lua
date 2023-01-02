@@ -86,6 +86,7 @@ local function AM_LeaveVehicle( ply, ent )
 	if ent:GetNWBool( "CruiseActive" ) then
 		ent:SetNWBool( "CruiseActive", false )
 	end
+	if ent.AM_CarHorn then ent.AM_CarHorn:Stop() end
 end
 hook.Add( "PlayerLeaveVehicle", "AM_LeaveVehicle", AM_LeaveVehicle )
 
