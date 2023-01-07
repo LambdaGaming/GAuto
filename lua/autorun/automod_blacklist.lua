@@ -55,6 +55,9 @@ function AM_IsBlackListed( veh )
 	if AM_Config_Blacklist[model] and class == "prop_vehicle_jeep" and !veh:GetNWBool( "IsAutomodSeat" ) then
 		return true
 	end
+	if class == "prop_vehicle_prisoner_pod" and !veh:GetNWBool( "IsAutomodSeat" ) then
+		return true
+	end
 	if veh.fphysSeat then --Avoid interference with Simfphy's
 		return true
 	end

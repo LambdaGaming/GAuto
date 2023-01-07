@@ -158,6 +158,7 @@ end
 hook.Add( "onLockpickCompleted", "AM_LockpickFinish", AM_LockpickFinish )
 
 local function AM_CruiseThink()
+	if AM_IsBlackListed( veh ) then return end
 	for k,v in pairs( ents.FindByClass( "prop_vehicle_jeep" ) ) do
 		if !IsValid( v ) then return end
 		if v:GetNWBool( "CruiseActive" ) then
@@ -168,7 +169,7 @@ end
 hook.Add( "Think", "AM_CruiseThink", AM_CruiseThink )
 
 local function AM_CruiseController( ply, key )
-	if !IsFirstTimePredicted() then return end
+	if AM_IsBlackListed( veh ) or !IsFirstTimePredicted() then return end
 	if ply:InVehicle() then
 		local veh = ply:GetVehicle()
 		if veh:GetNWBool( "CruiseActive" ) then
