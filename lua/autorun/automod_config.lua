@@ -19,3 +19,4 @@ CreateConVar( "AM_Config_CruiseEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE },
 CreateConVar( "AM_Config_HealthOverride", 0, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Amount of health every vehicle spawns with no matter what. Set to 0 to disable." )
 CreateConVar( "AM_Config_DriverSeat", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Enable or disable entering the drivers seat if it's not taken, even if it's not the closest." )
 CreateConVar( "AM_Config_SpikeModel", "models/props_phx/mechanics/slider2.mdl", { FCVAR_ARCHIVE }, "The model of the spikestrip." )
+CreateConVar( "AM_Config_FuelLoss", 0.5, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "How fast fuel should drain when the throttle is pressed. You probably shouldn't touch this unless you know what you're doing." )

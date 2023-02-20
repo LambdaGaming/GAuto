@@ -4,13 +4,14 @@ local function AM_VehicleThink( ply, veh, mv )
 	if veh.FuelInit and !veh.NoFuel and IsValid( veh:GetDriver() ) then
 		local AM_FuelEnabled = GetConVar( "AM_Config_FuelEnabled" ):GetBool()
 		local AM_NoFuelGod = GetConVar( "AM_Config_NoFuelGod" ):GetBool()
+		local AM_FuelLoss = GetConVar( "AM_Config_FuelLoss" ):GetFloat()
 		
 		if !veh.FuelCooldown then veh.FuelCooldown = 0 end
 		if vel > 100 then
 			if AM_FuelEnabled and !veh:GetNWBool( "IsAutomodSeat" ) then
 				if veh.FuelCooldown and veh.FuelCooldown > CurTime() then return end
 				if veh:GetThrottle() >= 0.1 then
-					veh.FuelLoss = 0.5
+					veh.FuelLoss = AM_FuelLoss
 				end
 
 				local fuellevel = veh:GetNWInt( "AM_FuelAmount" )
