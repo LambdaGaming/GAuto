@@ -1,7 +1,7 @@
 # Automod
-This is a lightweight vehicle system for Garry's Mod. Not many vehicles are supported outside of popular creators including TDM, SGM, and LW, which is one of the reasons why this addon is not on the workshop. My original plan was to add a system that would allow vehicle creators to add support for their own vehicles through their own addon, but I have since moved onto other projects and this is no longer a priority. If you are a vehicle creator who is interested in Automod and would like to see a system like this added, please let me know.
+This is a lightweight vehicle system for Garry's Mod. Vehicles from popular creators including TDM, SGM, and LW are fully supported. A few select vehicles outside of these creators are also supported. Requests for adding support for new vehicles will not be accepted, but PRs that add support are welcome. A full list of supported addons can be found [here.](https://steamcommunity.com/sharedfiles/filedetails/?id=3018834846)
 
-## Features:
+# Features:
 - Vehicle health system
     - Vehicles can be damaged through bullets, explosives, physical contact with objects at high speeds, and any other normal means.
     - Players can use the primary fire of the repair tool to repair a vehicle to full health.
@@ -52,11 +52,7 @@ This is a lightweight vehicle system for Garry's Mod. Not many vehicles are supp
   - GChroma support that highlights Automod controls when a player enters the drivers seat of a vehicle.
     - If the GChroma sandbox module is installed, the lighting sequence from that addon will be restored when a player exits a vehicle.
 
-&nbsp;
-
-## Current HUD Features:
-Specific features for the vehicle HUD are listed here to avoid overcrowding the features list.
-<br>
+## HUD Features:
 __Note: All HUD elements for this addon were made for a resolution of 1920x1080. I tried my best to accommodate for most other resolutions but I can't guarantee that they will scale properly.__
 
 - Health is displayed as a fraction. It can be color-coded for certain situations. White indicates that the health is good. Green indicates that the vehicle is in god mode and cannot be damaged. Red indicates that the vehicle is at 25% health or less.
@@ -64,13 +60,36 @@ __Note: All HUD elements for this addon were made for a resolution of 1920x1080.
 - Cruise control status is displayed below the door lock status. It can be one of two colors: Green indicates that cruise control is currently active and white indicates that cruise control is disabled. If cruise control is enabled, the HUD will also display the percentage of throttle being used.
 - Fuel level is displayed below the cruise control status as a color-coded progress bar. It can be a total of three colors: Green indicates the fuel level is 100%-50%, orange indicates 49%-26%, and red indicates 25%-0%.
 
-&nbsp;
+# For Vehicle Developers:
+ If you are a vehicle developer and would like to add Automod support to your addons, tweak the following code to suit your needs and then add it to the main Lua file of your vehicle:
+ ```lua
+ if AM_Vehicles then --This check is necessary to prevent errors for players who don't have Automod
+	AM_Vehicles[""] = { --The model path of your vehicle goes within the quotes.
+		HornSound = "automod/carhorn.wav", --Automod comes with two horn sounds: automod/carhorn.wav and automod/truckhorn.wav, but you can use any sound you'd like.
+		MaxHealth = 100, --Max amount of health that the vehicle can have, and what it initially spawns with.
+		EnginePos = Vector( 0, 0, 0 ), --Local vector for the engine position. This is where smoke and explosions will emit from when the vehicle is damaged.
+		Seats = {
+			{ --You need one of these for each passenger seat you want the vehicle to spawn with. Note that the drivers seat is defined with the vehicle itself and not here, so a 4 seat vehicle will need 3 seats defined here.
+				pos = Vector( 0, 0, 0 ), --Local vector for the seat position.
+				ang = Angle( 0, 0, 0 ) --Local angles for the seat position. Typically everything will be 0 unless you have a seat that doesn't face forward.
+			},
+			{
+				pos = Vector( 0, 0, 0 ),
+				ang = Angle( 0, 0, 0 )
+			},
+			{
+				pos = Vector( 0, 0, 0 ),
+				ang = Angle( 0, 0, 0 )
+			}
+		}
+	}
+ end
+ ```
+If you do add Automod support to your vehicles, send me a link and I will add them to the collection linked above!
 
-## Issues & Pull Requests
+# Issues & Pull Requests
  If you would like to contribute to this repository by creating an issue or pull request, please refer to the [contributing guidelines.](https://lambdagaming.github.io/contributing.html)
 
-&nbsp;
-
-## Credits
+# Credits
 - [Simfphy's Lua Vehicle Base](https://github.com/Blu-x92/simfphys_base) for part of the passenger seat spawn code.
 - SCS for the horn sounds.
