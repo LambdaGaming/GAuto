@@ -92,8 +92,8 @@ if SERVER then
 					local comma = ""
 					if k < #self.Seats then comma = "," end
 					seat = seat..[[{
-			"ang": "{0 0 0}"
-			"pos": %s,
+			"ang": "{0 0 0}",
+			"pos": %s
 		}%s
 		]]
 					seat = string.format( seat, FormatVector( self.Vehicle:WorldToLocal( v:GetPos() ), true ), comma )
