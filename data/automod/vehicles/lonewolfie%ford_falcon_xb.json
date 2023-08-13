@@ -13,7 +13,5 @@
 			"ang": "{0 0 0}",
 			"pos": "[21 -36 25]"
 		}
-	],
-	"HornSound": "automod/carhorn.wav",
-	"MaxHealth": 100.0
+	]
 }

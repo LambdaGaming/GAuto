@@ -22,7 +22,5 @@
 					"pos": "[-24 2 38]"
 			}
 
-	],
-	"HornSound": "automod/carhorn.wav",
-	"MaxHealth": 100.0
+	]
 }
