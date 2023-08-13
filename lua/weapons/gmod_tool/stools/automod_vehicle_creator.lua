@@ -1,11 +1,17 @@
 TOOL.Name = "Automod Vehicle Creator"
 TOOL.Category = "Automod"
+TOOL.ClientConVar["usejson"] = "0"
 TOOL.Seats = {}
 
 if CLIENT then
 	language.Add( "tool.automod_vehicle_creator.name", "Automod Vehicle Creator" )
 	language.Add( "tool.automod_vehicle_creator.desc", "Generates vehicle configs to help add Automod support to a vehicle." )
 	language.Add( "tool.automod_vehicle_creator.0", "Left-click: Spawn passenger seat. Click again to save position. Right-click: Spawn engine. Click again to save position. Reload: Remove spawned entities and print generated seat table to console." )
+
+	local convarlist = TOOL:BuildConVarList()
+	function TOOL.BuildCPanel( panel )
+		panel:AddControl( "CheckBox", { Label = "Generate JSON instead of Lua", Command = "automod_vehicle_creator_usejson" } )
+	end
 end
 
 if SERVER then
@@ -60,7 +66,10 @@ if SERVER then
 		end
 	end
 	
-	local function FormatVector( vec )
+	local function FormatVector( vec, json )
+		if json then
+			return '"['..math.Round( vec.x ).." "..math.Round( vec.y ).." "..math.Round( vec.z )..']"'
+		end
 		return "Vector( "..math.Round( vec.x )..", "..math.Round( vec.y )..", "..math.Round( vec.z ).." )"
 	end
 
@@ -73,19 +82,48 @@ if SERVER then
 				return
 			end
 
-			local seat = ""
-			for k,v in pairs( self.Seats ) do
-				if !IsValid( v ) then continue end
-				seat = seat..[[{
+			--This is very messy but the generated code gets formatted nicely
+			local tbl
+			local enginepos = self.Vehicle:WorldToLocal( self.Engine:GetPos() )
+			if self:GetClientBool( "usejson" ) then
+				local seat = ""
+				for k,v in pairs( self.Seats ) do
+					if !IsValid( v ) then continue end
+					local comma = ""
+					if k < #self.Seats then comma = "," end
+					seat = seat..[[{
+			"ang": "{0 0 0}"
+			"pos": %s,
+		}%s
+		]]
+					seat = string.format( seat, FormatVector( self.Vehicle:WorldToLocal( v:GetPos() ), true ), comma )
+				end
+				tbl = string.format( [[File name: %s.json
+{
+	"EnginePos": %s,
+	"Seats": [
+		%s
+	],
+	"HornSound": "automod/carhorn.wav",
+	"MaxHealth": 100.0
+}]],
+				AM_TrimModel( self.Vehicle:GetModel() ),
+				FormatVector( enginepos, true ),
+				seat )
+			else
+				local seat = ""
+				for k,v in pairs( self.Seats ) do
+					if !IsValid( v ) then continue end
+					local comma = ""
+					if k < #self.Seats then comma = "," end
+					seat = seat..[[{
 				pos = %s,
 				ang = Angle( 0, 0, 0 )
-			},
+			}%s
 			]]
-				seat = string.format( seat, FormatVector( self.Vehicle:WorldToLocal( v:GetPos() ) ) )
-			end
-			
-			local enginepos = self.Vehicle:WorldToLocal( self.Engine:GetPos() )
-			local tbl = string.format( [[if AM_Vehicles then
+					seat = string.format( seat, FormatVector( self.Vehicle:WorldToLocal( v:GetPos() ) ), comma )
+				end
+				tbl = string.format( [[if AM_Vehicles then
 	AM_Vehicles["%s"] = {
 		HornSound = "automod/carhorn.wav",
 		MaxHealth = 100,
@@ -97,8 +135,9 @@ if SERVER then
 end]],
 				self.Vehicle:GetModel(),
 				FormatVector( enginepos ),
-				seat
-			)
+				seat )
+			end
+			
 			print( tbl )
 			owner:ChatPrint( "Generated code has been printed to the server console. Put it in a Lua file that both the client and server have access to." )
 			self.Vehicle = nil
