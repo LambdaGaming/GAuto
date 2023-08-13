@@ -87,6 +87,7 @@ if SERVER then
 			local enginepos = self.Vehicle:WorldToLocal( self.Engine:GetPos() )
 			if self:GetClientBool( "usejson" ) then
 				local seat = ""
+				local filename = AM_TrimModel( self.Vehicle:GetModel() )
 				for k,v in pairs( self.Seats ) do
 					if !IsValid( v ) then continue end
 					local comma = ""
@@ -98,8 +99,7 @@ if SERVER then
 		]]
 					seat = string.format( seat, FormatVector( self.Vehicle:WorldToLocal( v:GetPos() ), true ), comma )
 				end
-				tbl = string.format( [[File name: %s.json
-{
+				tbl = string.format( [[{
 	"EnginePos": %s,
 	"Seats": [
 		%s
@@ -107,9 +107,10 @@ if SERVER then
 	"HornSound": "automod/carhorn.wav",
 	"MaxHealth": 100.0
 }]],
-				AM_TrimModel( self.Vehicle:GetModel() ),
 				FormatVector( enginepos, true ),
 				seat )
+				file.Write( "automod/vehicles/"..filename..".json", tbl )
+				owner:ChatPrint( "Generated JSON has been printed to the server console and written to the server's data folder." )
 			else
 				local seat = ""
 				for k,v in pairs( self.Seats ) do
@@ -136,10 +137,10 @@ end]],
 				self.Vehicle:GetModel(),
 				FormatVector( enginepos ),
 				seat )
+				owner:ChatPrint( "Generated code has been printed to the server console. Put it in a Lua file that both the client and server have access to." )
 			end
 			
 			print( tbl )
-			owner:ChatPrint( "Generated code has been printed to the server console. Put it in a Lua file that both the client and server have access to." )
 			self.Vehicle = nil
 			SafeRemoveEntity( self.Engine )
 			for k,v in pairs( self.Seats ) do
