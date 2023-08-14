@@ -45,7 +45,12 @@ AM_Config_Blacklist = {
 	["models/sentry/trailers/boatcarrier.mdl"] = true,
 	["models/sentry/trailers/carcarrier.mdl"] = true,
 	["models/sentry/trailers/stortrailer.mdl"] = true,
-	["models/sentry/trailers/tanker.mdl"] = true
+	["models/sentry/trailers/tanker.mdl"] = true,
+	["models/tdmcars/por_tricycle.mdl"] = true, --TDM Porsche tricycle
+	["models/tdmcars/gtav/baletrailer.mdl"] = true, --TDM GTA 5 trailers/bikes
+	["models/tdmcars/gtav/bmx.mdl"] = true,
+	["models/tdmcars/gtav/camper_trailer.mdl"] = true,
+	["models/tdmcars/gtav/tribike.mdl"] = true
 }
 
 function AM_IsBlackListed( veh )
