@@ -147,9 +147,9 @@ local function AM_HUDStuff()
 			surface.DrawText( "Fuel Level:" )
 			
 			surface.SetTextPos( name[1], name[2] )
-			surface.DrawText( "Automod - By Source 2 Gman" )
+			surface.DrawText( "Automod - By OPGman" )
 			surface.SetTextPos( info[1], info[2] )
-			surface.DrawText( "Suggestions are appreciated!" )
+			surface.DrawText( "AKA LambdaGaming" )
 		end
 	end
 end
