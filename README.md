@@ -1,5 +1,5 @@
 # Automod
-This is a lightweight vehicle system for Garry's Mod. All vehicles made by popular creators TDM, SGM, and LW within a certain time period are planned to be supported. Currently, all of LW's vehicles, about a third of TDM's packs, and a handful of SGM's vehicles are supported. A few select vehicles outside of these creators are also supported. Requests for adding support for new vehicles will not be accepted, but PRs that add support are welcome. A full list of supported addons can be found [here.](https://steamcommunity.com/sharedfiles/filedetails/?id=3018834846)
+This is a lightweight vehicle system for Garry's Mod. All vehicles made by popular creators TDM, SGM, and LW before August of 2023 are planned to be supported. Currently, all of LW's and TDM's vehicles, and a handful of SGM's vehicles are supported. A few select vehicles outside of these creators are also supported. Requests for adding support for new vehicles will not be accepted, but PRs that add support are welcome. A full list of supported addons can be found [here.](https://steamcommunity.com/sharedfiles/filedetails/?id=3018834846)
 
 # Features:
 - Vehicle health system
