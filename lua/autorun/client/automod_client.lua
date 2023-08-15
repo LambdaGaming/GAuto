@@ -17,7 +17,7 @@ local function AM_SmokeThink()
 	for k,v in pairs( findjeep ) do
 		local model = v:GetModel()
 		local enginepos = v:GetNWVector( "AM_EnginePos" )
-		if enginepos == angle_zero then return end
+		if enginepos == vector_origin then return end
 		if v:GetNWBool( "AM_IsSmoking" ) then
 			local carpos = v:GetPos()
 			local plypos = ply:GetPos()
