@@ -66,15 +66,16 @@ end
 function AM_SpawnSeat( index, ent, pos, ang )
 	ent.seat[index] = ents.Create( "prop_vehicle_prisoner_pod" )
 	ent.seat[index]:SetModel( "models/nova/airboat_seat.mdl" )
-	ent.seat[index]:SetParent( ent ) --Sets the vehicle as the parent, very important for later
+	ent.seat[index]:SetParent( ent )
 	ent.seat[index]:SetPos( ent:LocalToWorld( pos ) ) --Gotta keep the vectors local to the vehicle so the seats always spawn in the right place, no matter where the vehicle is on the map
 	ent.seat[index]:SetAngles( ent:LocalToWorldAngles( ang ) )
 	ent.seat[index]:Spawn()
 	ent.seat[index]:SetKeyValue( "limitview", 0 ) --Disables the limited view that you get with the default prisoner pods
-	ent.seat[index]:SetVehicleEntryAnim( false ) --Doesn't do anything when switching seats, but does run the animation when you press your use key on a passenger seat
-	ent.seat[index]:SetNoDraw( true ) --Turns the seats invisible so it looks like you're actually sitting in the car
-	ent.seat[index]:SetNotSolid( true ) --We probably don't need this but i'm putting it here anyway incase of some weird physics freakout
-	ent.seat[index]:DrawShadow( false ) --Disables the shadow for the same reason as the nodraw
+	ent.seat[index]:SetVehicleEntryAnim( false ) --Disables the long entry animation
+	ent.seat[index]:SetNoDraw( true )
+	ent.seat[index]:SetNotSolid( true )
+	ent.seat[index]:DrawShadow( false )
+	ent.seat[index]:AddEFlags( EFL_NO_THINK_FUNCTION ) --Disables the entity's think function to reduce network usage
 	table.Merge( ent.seat[index], { HandleAnimation = function( _, ply )
 		return ply:SelectWeightedSequence( ACT_HL2MP_SIT ) --Sets the animation to the sitting animation, taken from the Gmod wiki
 	end } )
