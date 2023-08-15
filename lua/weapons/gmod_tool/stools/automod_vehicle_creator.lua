@@ -103,9 +103,7 @@ if SERVER then
 	"EnginePos": %s,
 	"Seats": [
 		%s
-	],
-	"HornSound": "automod/carhorn.wav",
-	"MaxHealth": 100.0
+	]
 }]],
 				FormatVector( enginepos, true ),
 				seat )
