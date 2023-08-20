@@ -69,7 +69,7 @@ local function AM_ChangeSeats( len, ply )
 	local realseat = key - 1 --Need to subtract 1 since the driver's seat doesn't count as a passenger seat
 	if veh:GetClass() == "prop_vehicle_jeep" then
 		if key == 1 then
-			AM_Notify( ply, "Seat change failed, you selected the seat you are already sitting in." )
+			AM_Notify( ply, "You are already sitting in the selected seat." )
 			return
 		else
 			if veh.seat and IsValid( veh.seat[realseat] ) then
@@ -79,11 +79,11 @@ local function AM_ChangeSeats( len, ply )
 					ply:SetEyeAngles( Angle( veh.seat[realseat]:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) ) --Fix for the seats setting random eye angles
 					ply.IsSwitching = false
 				else
-					AM_Notify( ply, "Seat change failed, selected seat is already taken." )
+					AM_Notify( ply, "Selected seat is already taken." )
 					return
 				end
 			else
-				AM_Notify( ply, "Seat change failed, selected seat doesn't exist. Vehicle may not be currently supported." )
+				AM_Notify( ply, "Selected seat doesn't exist." )
 				return
 			end
 		end
@@ -97,12 +97,12 @@ local function AM_ChangeSeats( len, ply )
 				ply.IsSwitching = false
 				return
 			else
-				AM_Notify( ply, "Seat change failed, selected seat is already taken." )
+				AM_Notify( ply, "Selected seat is already taken." )
 				return
 			end
 		end
 		if vehparent.seat[realseat] == veh then
-			AM_Notify( ply, "Seat change failed, you selected the seat you are already sitting in." )
+			AM_Notify( ply, "You are already sitting in the selected seat." )
 			return
 		end
 		if IsValid( vehparent ) and vehparent.seat and IsValid( vehparent.seat[realseat] ) then	
@@ -112,11 +112,11 @@ local function AM_ChangeSeats( len, ply )
 				ply:SetEyeAngles( Angle( vehparent.seat[realseat]:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) )
 				ply.IsSwitching = false
 			else
-				AM_Notify( ply, "Seat change failed, selected seat is already taken." )
+				AM_Notify( ply, "Selected seat is already taken." )
 				return
 			end
 		else
-			AM_Notify( ply, "Seat change failed, selected seat doesn't exist." )
+			AM_Notify( ply, "Selected seat doesn't exist." )
 			return
 		end
 	end
