@@ -77,7 +77,7 @@ local function AM_ChangeSeats( len, ply )
 					ply.IsSwitching = true --Fix for players getting kicked out while the seat cooldown is in effect
 					ply:EnterVehicle( veh.seat[realseat] )
 					ply:SetEyeAngles( Angle( veh.seat[realseat]:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) ) --Fix for the seats setting random eye angles
-					ply.IsSwitching = false
+					ply.IsSwitching = nil
 				else
 					AM_Notify( ply, "Selected seat is already taken." )
 					return
@@ -94,7 +94,7 @@ local function AM_ChangeSeats( len, ply )
 				ply.IsSwitching = true
 				ply:EnterVehicle( vehparent )
 				ply:SetEyeAngles( Angle( vehparent:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) )
-				ply.IsSwitching = false
+				ply.IsSwitching = nil
 				return
 			else
 				AM_Notify( ply, "Selected seat is already taken." )
@@ -110,7 +110,7 @@ local function AM_ChangeSeats( len, ply )
 				ply.IsSwitching = true
 				ply:EnterVehicle( vehparent.seat[realseat] )
 				ply:SetEyeAngles( Angle( vehparent.seat[realseat]:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) )
-				ply.IsSwitching = false
+				ply.IsSwitching = nil
 			else
 				AM_Notify( ply, "Selected seat is already taken." )
 				return
