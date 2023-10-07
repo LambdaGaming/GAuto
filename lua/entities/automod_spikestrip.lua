@@ -45,23 +45,29 @@ function ENT:Initialize()
 	end
 end
 
-function ENT:Use( activator, caller )
-	if self:GetOwner() == activator then
-		if DarkRP and !activator:isCP() then --Prevents former cops from taking back their old strips as a civi
-			AM_Notify( activator, "You are no longer a cop. Your old spikestrip will be removed." )
+function ENT:Use( ply )
+	if !IsValid( self:GetOwner() ) then
+		AM_Notify( ply, "The owner of this spikestrip has disconnected. Removing." )
+		self:EmitSound( "items/ammocrate_close.wav" )
+		self:Remove()
+		return
+	end
+	if self:GetOwner() == ply then
+		if DarkRP and !ply:isCP() then --Prevents former cops from taking back their old strips as a civi
+			AM_Notify( ply, "You are no longer a cop. Your old spikestrip will be removed." )
 			self:Remove()
 			return
 		end
-		activator:Give( "weapon_spikestrip" )
-		activator:SelectWeapon( "weapon_spikestrip" )
-		AM_Notify( activator, "You have collected your spikestrip." )
+		ply:Give( "weapon_spikestrip" )
+		ply:SelectWeapon( "weapon_spikestrip" )
+		AM_Notify( ply, "You have collected your spikestrip." )
 		self:EmitSound( "items/ammocrate_close.wav" )
 		self:Remove()
 	else
 		local nick = self:GetOwner():Nick()
 		local index = self:EntIndex()
 		local time = string.ToMinutesSeconds( timer.TimeLeft( "Spike_Remove_Timer"..index ) )
-		AM_Notify( activator, "This spikestrip is owned by "..nick.." and will be automatically removed in "..time.."." )
+		AM_Notify( ply, "This spikestrip is owned by "..nick.." and will be automatically removed in "..time.."." )
 	end
 end
 
