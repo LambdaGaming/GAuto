@@ -1,4 +1,3 @@
-
 AddCSLuaFile()
 
 SWEP.PrintName = "Vehicle Repair Tool"
@@ -88,6 +87,7 @@ if CLIENT then
 			local health25 = maxhealth * 0.25
 			local health75 = maxhealth * 0.75
 			draw.RoundedBox( 8, posw, posh, 160, 40, Color( 30, 30, 30, 254 ) )
+			surface.SetFont( "AM_HUDFont1" )
 			if health <= health25 then
 				surface.SetTextColor( 255, 0, 0 )
 			elseif health > health25 and health < health75 then

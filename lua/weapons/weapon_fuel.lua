@@ -1,4 +1,3 @@
-
 AddCSLuaFile()
 
 SWEP.PrintName = "Vehicle Fuel Can"
@@ -25,6 +24,8 @@ SWEP.Secondary.Automatic = false
 
 function SWEP:PrimaryAttack()
 	if !IsFirstTimePredicted() or CLIENT then return end
+	local AM_FuelEnabled = GetConVar( "AM_Config_FuelEnabled" ):GetBool()
+	if !AM_FuelEnabled then return end
 	local tr = self.Owner:GetEyeTrace().Entity
 	local pos = tr:GetPos()
 	if tr:GetClass() == "prop_vehicle_jeep" and self.Owner:GetPos():DistToSqr( pos ) < 40000 then
@@ -37,6 +38,8 @@ function SWEP:PrimaryAttack()
 end
 
 function SWEP:Think()
+	local AM_FuelEnabled = GetConVar( "AM_Config_FuelEnabled" ):GetBool()
+	if !AM_FuelEnabled then return end
 	if self.Owner:KeyDown( IN_ATTACK ) then
 		self.snd = CreateSound( self, "ambient/water/water_flow_loop1.wav" )
 		if !self.snd:IsPlaying() then
@@ -51,6 +54,7 @@ end
 
 if CLIENT then
 	local function DrawFuelHUD()
+		local AM_FuelEnabled = GetConVar( "AM_Config_FuelEnabled" ):GetBool()
 		local posw = ScrW() / 2 - 75
 		local posh = ScrH() / 2 - 10
 		local ply = LocalPlayer()
@@ -69,15 +73,21 @@ if CLIENT then
 			local fuel25 = maxfuel * 0.25
 			local fuel75 = maxfuel * 0.75
 			draw.RoundedBox( 8, posw, posh, 190, 40, Color( 30, 30, 30, 254 ) )
-			if fuel <= fuel25 then
+			surface.SetFont( "AM_HUDFont1" )
+			if AM_FuelEnabled and fuel <= fuel25 then
 				surface.SetTextColor( 255, 0, 0 )
 			elseif fuel > fuel25 and fuel < fuel75 then
 				surface.SetTextColor( 196, 145, 2 )
 			else
 				surface.SetTextColor( color_white )
 			end
-			surface.SetTextPos( posw + 5, posh + 10 )
-			surface.DrawText( "Vehicle Fuel Level: "..fuel )
+			surface.SetTextPos( posw + 15, posh + 10 )
+			
+			if AM_FuelEnabled then
+				surface.DrawText( "Vehicle Fuel Level: "..fuel )
+			else
+				surface.DrawText( "Vehicle fuel disabled." )
+			end
 		end
 	end
 	hook.Add( "HUDPaint", "AM_FuelHUD", DrawFuelHUD )
