@@ -26,7 +26,7 @@ function AM_SaveAllVehicles()
 	for k,v in pairs( AM_Vehicles ) do
 		timer.Simple( 0.5, function()
 			local slashfix = AM_TrimModel( k )
-			if file.Exists( "addons/Automod/data/automod/vehicles/"..slashfix..".json", "GAME" ) then
+			if file.Exists( "addons/Automod/data_static/automod/vehicles/"..slashfix..".json", "GAME" ) then
 				print( "[Automod] File for '"..k.."' already exists. Skipping." )
 				return
 			end
@@ -40,7 +40,7 @@ end
 local function AM_SaveVehicle( model )
 	if AM_Vehicles[model] then
 		local slashfix = AM_TrimModel( model )
-		if file.Exists( "automod/vehicles/"..slashfix..".json", "DATA" ) or file.Exists( "addons/Automod/data/automod/vehicles/"..slashfix..".json", "GAME" ) then
+		if file.Exists( "automod/vehicles/"..slashfix..".json", "DATA" ) or file.Exists( "addons/Automod/data_static/automod/vehicles/"..slashfix..".json", "GAME" ) then
 			print( "[Automod] This vehicle has already been saved. Delete it's data file and try again if you're saving a newer version." )
 			return
 		end

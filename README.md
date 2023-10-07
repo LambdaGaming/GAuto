@@ -1,5 +1,5 @@
 # Automod
-This is a lightweight vehicle system for Garry's Mod. All vehicles made by popular creators TDM, SGM, and LW before September 2023 are supported. A few select vehicles outside of these creators are also supported. Requests for adding support for new vehicles will not be accepted, but PRs that add support are welcome. A full list of supported addons can be found [here.](https://steamcommunity.com/sharedfiles/filedetails/?id=3018834846)
+This is a lightweight vehicle system for Garry's Mod. All vehicles made by popular creators TDM, SGM, and LW before September 2023 are supported. A few select vehicles outside of these creators are also supported. Issues that request adding support for new vehicles will not be accepted, but PRs that add support are welcome, and vehicle creators are encouraged to add support to their own addons. A full list of supported addons can be found [here.](https://steamcommunity.com/sharedfiles/filedetails/?id=3018834846)
 
 # Features:
 - Vehicle health system
@@ -62,6 +62,11 @@ __Note: All HUD elements for this addon were made for a resolution of 1920x1080.
 
 # For Vehicle Developers:
  If you are a vehicle developer and would like to add Automod support to your addons, you can use the Automod Vehicle Creator tool to easily create a table to place in your vehicle's Lua file. When using this tool, left click will spawn passenger seats that you can physgun into place, right click will spawn an engine, and reload will generate a Lua table and remove the engine and seats. You can also configure the horn sound and max health for the vehicle manually. Once you have a generated table, place it in any Lua file in your addon that has a shared scope. Placing it in a shared scope is extremely important, as both the client and server need to access it. If you do add Automod support to your vehicles, send me a link and I will add them to the collection linked above!
+
+# Compatibilities
+ - Photon is fully compatible. The HUD will adjust itself to make room for the Photon HUD when driving emergency vehicles, and the default controls have been designed to avoid conflicts with Photon.
+ - Simfphys Lua Vehicles are fully compatible. Nothing should conflict, and the spikestrip supports popping Simfphys tires.
+ - Other vehicle systems such as VCMod and Vehicle Damage 2 are NOT compatible. They will likely interfere with each other and cause various systems to break.
 
 # Issues & Pull Requests
  If you would like to contribute to this repository by creating an issue or pull request, please refer to the [contributing guidelines.](https://lambdagaming.github.io/contributing.html)

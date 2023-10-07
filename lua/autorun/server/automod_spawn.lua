@@ -27,7 +27,7 @@ function AM_LoadVehicle( model )
 		return
 	end
 	local slashfix = AM_TrimModel( model )
-	local findvehicle = file.Read( "addons/Automod/data/automod/vehicles/"..slashfix..".json", "GAME" )
+	local findvehicle = file.Read( "addons/Automod/data_static/automod/vehicles/"..slashfix..".json", "GAME" )
 	local findvehicleextra = file.Read( "automod/vehicles/"..slashfix..".json", "DATA" )
 	local filefoundinmaindir = false
 	if findvehicle == nil then
