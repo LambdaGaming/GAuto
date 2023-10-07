@@ -14,16 +14,6 @@ local vehicles = {
 	["jeep_owned_by_reckless_driver_kleiner"] = true
 }
 
-function ENT:SpawnFunction( ply, tr, name )
-	if !tr.Hit then return end
-	local SpawnPos = tr.HitPos + tr.HitNormal * 1
-	local ent = ents.Create( name )
-	ent:SetPos( SpawnPos )
-	ent:Spawn()
-	ent:Activate()
-	return ent
-end
-
 function ENT:Initialize()
     self:SetModel( GetConVar( "AM_Config_SpikeModel" ):GetString() )
 	self:SetMoveType( MOVETYPE_NONE )
@@ -65,6 +55,7 @@ function ENT:Use( activator, caller )
 		activator:Give( "weapon_spikestrip" )
 		activator:SelectWeapon( "weapon_spikestrip" )
 		AM_Notify( activator, "You have collected your spikestrip." )
+		self:EmitSound( "items/ammocrate_close.wav" )
 		self:Remove()
 	else
 		local nick = self:GetOwner():Nick()
@@ -97,10 +88,4 @@ end
 function ENT:OnRemove()
 	local index = self:EntIndex()
 	if timer.Exists( "Spike_Remove_Timer"..index ) then timer.Remove( "Spike_Remove_Timer"..index ) end
-end
-
-if CLIENT then
-    function ENT:Draw()
-        self:DrawModel()
-    end
 end
