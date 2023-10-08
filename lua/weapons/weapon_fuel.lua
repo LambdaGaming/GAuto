@@ -53,6 +53,30 @@ function SWEP:Think()
 end
 
 if CLIENT then
+	local model = ClientsideModel( SWEP.WorldModel )
+	model:SetNoDraw( true )
+	function SWEP:DrawWorldModel()
+		local owner = self:GetOwner()
+		if IsValid( owner ) then
+			local offsetVec = Vector( 5, 0, 12 )
+			local offsetAng = Angle( 0, -100, 190 )
+			local bone = owner:LookupBone( "ValveBiped.Bip01_R_Hand" )
+			if !bone then return end
+			
+			local matrix = owner:GetBoneMatrix( bone )
+			if !matrix then return end
+
+			local pos, ang = LocalToWorld( offsetVec, offsetAng, matrix:GetTranslation(), matrix:GetAngles() )
+			model:SetPos( pos )
+			model:SetAngles( ang )
+			model:SetupBones()
+		else
+			model:SetPos( self:GetPos() )
+			model:SetAngles( self:GetAngles() )
+		end
+		model:DrawModel()
+	end
+
 	local function DrawFuelHUD()
 		local AM_FuelEnabled = GetConVar( "AM_Config_FuelEnabled" ):GetBool()
 		local posw = ScrW() / 2 - 75
