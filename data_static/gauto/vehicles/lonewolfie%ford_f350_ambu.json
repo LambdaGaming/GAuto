@@ -1,0 +1,15 @@
+{
+	"EnginePos": "[0 119 68]",
+	"Seats": [
+		{
+			"ang": "{0 0 0}",
+			"pos": "[22 48 52]"
+		},
+		{
+			"ang": "{0 180 0}",
+			"pos": "[17 -93 71]"
+		}
+	],
+	"HornSound": "gauto/truckhorn.wav",
+	"MaxHealth": 150.0
+}

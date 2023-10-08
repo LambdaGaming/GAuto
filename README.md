@@ -1,4 +1,4 @@
-# Automod
+# GAuto
 This is a lightweight vehicle system for Garry's Mod. All vehicles made by popular creators TDM, SGM, and LW before September 2023 are supported. A few select vehicles outside of these creators are also supported. Issues that request adding support for new vehicles will not be accepted, but PRs that add support are welcome, and vehicle creators are encouraged to add support to their own addons. A full list of supported addons can be found [here.](https://steamcommunity.com/sharedfiles/filedetails/?id=3018834846)
 
 # Features:
@@ -42,14 +42,14 @@ This is a lightweight vehicle system for Garry's Mod. All vehicles made by popul
     - Pressing jump or the cruise toggle key will disable cruise control.
 - Vehicle data
     - Data tables for each vehicle that contain info about health, seat positions, horn sound, etc. are stored as linted JSON files to allow for easy editing.
-    - A vehicle creation function is also included to add Automod support to your own vehicles.
+    - A vehicle creation function is also included to add GAuto support to your own vehicles.
 - Manual vehicle engine toggle
     - Pressing the designated key will turn off the engine without requiring the driver to leave the vehicle.
     - While the engine is off, all default Gmod vehicle controls are disabled.
 - Support for other addons
   - Vehicles will ignite when their health reaches 0 if VFire is installed.
   - Simfphy's vehicles are also affected by the spike strip.
-  - GChroma support that highlights Automod controls when a player enters the drivers seat of a vehicle.
+  - GChroma support that highlights GAuto controls when a player enters the drivers seat of a vehicle.
     - If the GChroma sandbox module is installed, the lighting sequence from that addon will be restored when a player exits a vehicle.
 
 ## HUD Features:
@@ -61,7 +61,7 @@ __Note: All HUD elements for this addon were made for a resolution of 1920x1080.
 - Fuel level is displayed below the cruise control status as a color-coded progress bar. It can be a total of three colors: Green indicates the fuel level is 100%-50%, orange indicates 49%-26%, and red indicates 25%-0%.
 
 # For Vehicle Developers:
- If you are a vehicle developer and would like to add Automod support to your addons, you can use the Automod Vehicle Creator tool to easily create a table to place in your vehicle's Lua file. When using this tool, left click will spawn passenger seats that you can physgun into place, right click will spawn an engine, and reload will generate a Lua table and remove the engine and seats. You can also configure the horn sound and max health for the vehicle manually. Once you have a generated table, place it in any Lua file in your addon that has a shared scope. Placing it in a shared scope is extremely important, as both the client and server need to access it. If you do add Automod support to your vehicles, send me a link and I will add them to the collection linked above!
+ If you are a vehicle developer and would like to add GAuto support to your addons, you can use the GAuto Vehicle Creator tool to easily create a table to place in your vehicle's Lua file. When using this tool, left click will spawn passenger seats that you can physgun into place, right click will spawn an engine, and reload will generate a Lua table and remove the engine and seats. You can also configure the horn sound and max health for the vehicle manually. Once you have a generated table, place it in any Lua file in your addon that has a shared scope. Placing it in a shared scope is extremely important, as both the client and server need to access it. If you do add GAuto support to your vehicles, send me a link and I will add them to the collection linked above!
 
 # Compatibilities
  - Photon is fully compatible. The HUD will adjust itself to make room for the Photon HUD when driving emergency vehicles, and the default controls have been designed to avoid conflicts with Photon.
