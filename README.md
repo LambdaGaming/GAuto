@@ -1,5 +1,5 @@
 # GAuto
-This is a lightweight vehicle system for Garry's Mod. All vehicles made by popular creators TDM, SGM, and LW before September 2023 are supported. A few select vehicles outside of these creators are also supported. Issues that request adding support for new vehicles will not be accepted, but PRs that add support are welcome, and vehicle creators are encouraged to add support to their own addons. A full list of supported addons can be found [here.](https://steamcommunity.com/sharedfiles/filedetails/?id=3018834846)
+This is a lightweight vehicle system for Garry's Mod. All vehicles made by popular creators TDM, SGM, and LW before September 2023 are supported out of the box. A few select vehicles outside of these creators are also supported. Requests for adding support for new vehicles will not be accepted, but PRs that add support are welcome, and vehicle creators are encouraged to add support to their own addons. A full list of supported addons can be found [here.](https://steamcommunity.com/sharedfiles/filedetails/?id=3018834846) This addon is now available on the [Steam workshop.](https://steamcommunity.com/sharedfiles/filedetails/?id=3048040907)
 
 # Features:
 - Vehicle health system
