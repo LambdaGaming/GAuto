@@ -1,5 +1,5 @@
 util.AddNetworkString( "GAuto_VehicleLock" )
-local function VehicleLock( len, ply )
+function GAuto.VehicleLock( len, ply )
 	if IsFirstTimePredicted() then
 		local veh = ply:GetVehicle()
 		if GAuto.IsBlackListed( veh ) then return end
@@ -15,10 +15,10 @@ local function VehicleLock( len, ply )
 		end
 	end
 end
-net.Receive( "GAuto_VehicleLock", VehicleLock )
+net.Receive( "GAuto_VehicleLock", GAuto.VehicleLock )
 
 util.AddNetworkString( "GAuto_VehicleHorn" )
-local function VehicleHorn( len, ply )
+function GAuto.VehicleHorn( len, ply )
 	local GAuto_HornEnabled = GetConVar( "GAuto_Config_HornEnabled" ):GetBool()
 	if GAuto_HornEnabled then
 		local veh = ply:GetVehicle()
@@ -29,19 +29,19 @@ local function VehicleHorn( len, ply )
 		end
 	end
 end
-net.Receive( "GAuto_VehicleHorn", VehicleHorn )
+net.Receive( "GAuto_VehicleHorn", GAuto.VehicleHorn )
 
 util.AddNetworkString( "GAuto_VehicleHornStop" )
-local function VehicleHornStop( len, ply )
+function GAuto.VehicleHornStop( len, ply )
 	local veh = ply:GetVehicle()
 	if !IsValid( veh ) then return end
 	if !veh.GAuto_CarHorn then return end
 	if veh.GAuto_CarHorn:IsPlaying() then veh.GAuto_CarHorn:Stop() end
 end
-net.Receive( "GAuto_VehicleHornStop", VehicleHornStop )
+net.Receive( "GAuto_VehicleHornStop", GAuto.VehicleHornStop )
 
 util.AddNetworkString( "GAuto_CruiseControl" )
-local function CruiseControl( len, ply )
+function GAuto.CruiseControl( len, ply )
 	local GAuto_CruiseEnabled = GetConVar( "GAuto_Config_CruiseEnabled" ):GetBool()
 	if GAuto_CruiseEnabled then
 		local veh = ply:GetVehicle()
@@ -57,11 +57,11 @@ local function CruiseControl( len, ply )
 		veh:SetNWInt( "CruiseSpeed", 0.05 )
 	end
 end
-net.Receive( "GAuto_CruiseControl", CruiseControl )
+net.Receive( "GAuto_CruiseControl", GAuto.CruiseControl )
 
 util.AddNetworkString( "GAuto_ChangeSeats" )
-local function ChangeSeats( len, ply )
-	local key = net.ReadInt( 32 )
+function GAuto.ChangeSeats( len, ply, seat )
+	local key = seat or net.ReadInt( 32 )
 	local veh = ply:GetVehicle()
 	if GAuto.IsBlackListed( veh ) then return end
 	local vehparent = veh:GetParent()
@@ -121,11 +121,11 @@ local function ChangeSeats( len, ply )
 		end
 	end
 end
-net.Receive( "GAuto_ChangeSeats", ChangeSeats )
+net.Receive( "GAuto_ChangeSeats", GAuto.ChangeSeats )
 
 util.AddNetworkString( "GAuto_EjectPassenger" )
-local function EjectPassenger( len, ply )
-	local key = net.ReadInt( 32 )
+function GAuto.EjectPassenger( len, ply, seat )
+	local key = seat or net.ReadInt( 32 )
 	local veh = ply:GetVehicle()
 	local realseat = key - 1
 	if GAuto.IsBlackListed( veh ) then return end
@@ -148,10 +148,10 @@ local function EjectPassenger( len, ply )
 		GAuto.Notify( ply, "Passenger ejection failed, only the driver can eject passengers." )
 	end
 end
-net.Receive( "GAuto_EjectPassenger", EjectPassenger )
+net.Receive( "GAuto_EjectPassenger", GAuto.EjectPassenger )
 
 util.AddNetworkString( "GAuto_EngineToggle" )
-local function EngineToggle( len, ply )
+function GAuto.EngineToggle( len, ply )
 	if ply:InVehicle() then
 		local veh = ply:GetVehicle()
 		local GAuto_HealthEnabled = GetConVar( "GAuto_Config_HealthEnabled" ):GetBool()
@@ -168,4 +168,4 @@ local function EngineToggle( len, ply )
 		end
 	end
 end
-net.Receive( "GAuto_EngineToggle", EngineToggle )
+net.Receive( "GAuto_EngineToggle", GAuto.EngineToggle )
