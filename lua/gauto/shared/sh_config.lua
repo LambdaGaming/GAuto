@@ -21,6 +21,7 @@ CreateConVar( "GAuto_Config_CruiseEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE
 CreateConVar( "GAuto_Config_HealthOverride", 0, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Amount of health every vehicle spawns with no matter what. Set to 0 to disable." )
 CreateConVar( "GAuto_Config_DriverSeat", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Players will automatically enter the drivers seat if it is not taken. If set to 0, players will enter the closest detected seat." )
 CreateConVar( "GAuto_Config_SpikeModel", "models/props_phx/mechanics/slider2.mdl", { FCVAR_ARCHIVE }, "The model of the spikestrip." )
+CreateConVar( "GAuto_Config_SpikeModelOffset", 90, { FCVAR_ARCHIVE }, "Yaw offset that the spikestrip should be placed at." )
 CreateConVar( "GAuto_Config_FuelLoss", 0.5, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "How fast fuel should drain when the throttle is pressed. You probably shouldn't touch this unless you know what you're doing." )
 
 --Blacklisted models that shouldn't be affected by GAuto, such as trains or other vehicles that use prop_vehicle_jeep as their base
