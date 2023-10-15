@@ -30,7 +30,7 @@ function ENT:Initialize()
 						return
 					end
 					if self:GetOwner():isCP() then --Makes sure the player is still a cop so a civi doesn't get a free spikestrip
-						self:GetOwner():Give( "weapon_spikestrip" )
+						self:GetOwner():Give( "weapon_gauto_spikestrip" )
 						GAuto.Notify( self:GetOwner(), "Your spikestrip has been returned to you." )
 					end
 					self:Remove()
@@ -58,8 +58,8 @@ function ENT:Use( ply )
 			self:Remove()
 			return
 		end
-		ply:Give( "weapon_spikestrip" )
-		ply:SelectWeapon( "weapon_spikestrip" )
+		ply:Give( "weapon_gauto_spikestrip" )
+		ply:SelectWeapon( "weapon_gauto_spikestrip" )
 		GAuto.Notify( ply, "You have collected your spikestrip." )
 		self:EmitSound( "items/ammocrate_close.wav" )
 		self:Remove()
