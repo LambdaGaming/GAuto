@@ -159,9 +159,8 @@ end
 hook.Add( "onLockpickCompleted", "GAuto_LockpickFinish", LockpickFinish )
 
 local function CruiseThink()
-	if GAuto.IsBlackListed( veh ) then return end
-	for k,v in pairs( ents.FindByClass( "prop_vehicle_jeep" ) ) do
-		if !IsValid( v ) then return end
+	for k,v in ipairs( ents.FindByClass( "prop_vehicle_jeep" ) ) do
+		if GAuto.IsBlackListed( v ) then return end
 		if v:GetNWBool( "CruiseActive" ) then
 			v:SetThrottle( v:GetNWInt( "CruiseSpeed" ) )
 		end
@@ -170,22 +169,21 @@ end
 hook.Add( "Think", "GAuto_CruiseThink", CruiseThink )
 
 local function CruiseController( ply, key )
-	if GAuto.IsBlackListed( veh ) or !IsFirstTimePredicted() then return end
-	if ply:InVehicle() then
-		local veh = ply:GetVehicle()
-		if veh:GetNWBool( "CruiseActive" ) then
-			local speed = veh:GetNWInt( "CruiseSpeed" )
-			if key == IN_JUMP then
-				veh:SetNWBool( "CruiseActive", false )
-				veh:SetNWInt( "CruiseSpeed", 0 )
-				GAuto.Notify( ply, "Cruise control is now disabled." )
-			end
-			if key == IN_FORWARD then
-				veh:SetNWInt( "CruiseSpeed", math.Clamp( speed + 0.10, 0.05, 1 ) )
-			end
-			if key == IN_BACK then
-				veh:SetNWInt( "CruiseSpeed", math.Clamp( speed - 0.10, 0.05, 1 ) )
-			end
+	if !IsFirstTimePredicted() or !ply:InVehicle() then return end
+	local veh = ply:GetVehicle()
+	if GAuto.IsBlackListed( veh ) then return end
+	if veh:GetNWBool( "CruiseActive" ) then
+		local speed = veh:GetNWInt( "CruiseSpeed" )
+		if key == IN_JUMP then
+			veh:SetNWBool( "CruiseActive", false )
+			veh:SetNWInt( "CruiseSpeed", 0 )
+			GAuto.Notify( ply, "Cruise control is now disabled." )
+		end
+		if key == IN_FORWARD then
+			veh:SetNWInt( "CruiseSpeed", math.Clamp( speed + 0.10, 0.05, 1 ) )
+		end
+		if key == IN_BACK then
+			veh:SetNWInt( "CruiseSpeed", math.Clamp( speed - 0.10, 0.05, 1 ) )
 		end
 	end
 end
