@@ -159,7 +159,7 @@ end
 hook.Add( "onLockpickCompleted", "GAuto_LockpickFinish", LockpickFinish )
 
 local function CruiseThink()
-	for k,v in ipairs( ents.FindByClass( "prop_vehicle_jeep" ) ) do
+	for k,v in ipairs( ents.FindByClass( "prop_vehicle_jeep*" ) ) do
 		if GAuto.IsBlackListed( v ) then return end
 		if v:GetNWBool( "CruiseActive" ) then
 			v:SetThrottle( v:GetNWInt( "CruiseSpeed" ) )
