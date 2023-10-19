@@ -8,8 +8,10 @@ function GAuto.DestroyCheck( veh ) --Disables the engine and sets the vehicle on
 			veh:Ignite()
 		end
 		if GAuto_ExplosionEnabled then
+			local eng = veh:GetAttachment( veh:LookupAttachment( "vehicle_engine" ) )
+			if !eng or eng.Pos == vector_origin then return end
 			local e = ents.Create( "env_explosion" )
-			e:SetPos( veh:LocalToWorld( veh:GetNWVector( "GAuto_EnginePos" ) ) )
+			e:SetPos( eng.Pos )
 			e:Spawn()
 			e:SetKeyValue( "iMagnitude", 50 )
 			e:Fire( "Explode", 0, 0 )

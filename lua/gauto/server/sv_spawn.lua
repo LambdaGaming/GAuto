@@ -14,13 +14,6 @@ function GAuto.VehicleHealth( model ) --Does the same as above but with the vehi
 	return 100
 end
 
-function GAuto.EnginePos( model ) --Does the same as above but with the vehicle's engine position
-	if GAuto.Vehicles[model] and GAuto.Vehicles[model].EnginePos then
-		return GAuto.Vehicles[model].EnginePos
-	end
-	return vector_origin
-end
-
 function GAuto.LoadVehicle( model )
 	if !model then
 		MsgC( color_red, "[GAuto] ERROR: Invalid argument for GAuto.LoadVehicle()." )
@@ -111,7 +104,6 @@ local function InitVehicle( ent )
 				end
 				ent:SetNWBool( "GAuto_IsSmoking", false )
 				ent:SetNWBool( "GAuto_HasExploded", false )
-				ent:SetNWVector( "GAuto_EnginePos", GAuto.EnginePos( vehmodel ) )
 				ent:AddCallback( "PhysicsCollide", PhysicsCollide )
 			end
 			if GAuto_HornEnabled then
@@ -127,7 +119,7 @@ local function InitVehicle( ent )
 			end
 			if GAuto_SeatsEnabled then
 				if !GAuto.Vehicles or !GAuto.Vehicles[vehmodel] then
-					MsgC( color_red, "\n[GAuto] Warning! The model '"..vehmodel.."' is unsupported. Basic features will still work but passenger seats will not spawn and engines will not smoke.\n" )
+					MsgC( color_red, "\n[GAuto] Warning! The model '"..vehmodel.."' is unsupported. Most features will still work but passenger seats will not spawn.\n" )
 					return
 				end
 				if !GAuto.Vehicles[vehmodel].Seats then return end

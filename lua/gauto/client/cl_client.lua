@@ -13,17 +13,17 @@ end )
 local smokevelocity = Vector( 0, 0, 50 )
 local function SmokeThink()
 	local ply = LocalPlayer()
-	local findjeep = ents.FindByClass( "prop_vehicle_jeep" )
-	for k,v in pairs( findjeep ) do
+	local findjeep = ents.FindByClass( "prop_vehicle_jeep*" )
+	for k,v in ipairs( findjeep ) do
 		local model = v:GetModel()
-		local enginepos = v:GetNWVector( "GAuto_EnginePos" )
-		if enginepos == vector_origin then return end
+		local eng = v:GetAttachment( v:LookupAttachment( "vehicle_engine" ) )
+		if !eng or eng.Pos == vector_origin then return end
 		if v:GetNWBool( "GAuto_IsSmoking" ) then
 			local carpos = v:GetPos()
 			local plypos = ply:GetPos()
 			if plypos:DistToSqr( carpos ) < 4000000 then --Only displays particles if the player is within a certain distance of the vehicle, helps with optimization
 				local rand = math.random( 1, 9 )
-				local pos = v:LocalToWorld( enginepos )
+				local pos = eng.Pos
 				local smoke = ParticleEmitter( pos ):Add( "particle/smokesprites_000"..rand, pos )
 				local dietime = math.Rand( 0.6, 1.3 )
 				local startsize = math.random( 0, 5 )

@@ -61,11 +61,12 @@ __Note: All HUD elements for this addon were made for a resolution of 1920x1080.
 - Fuel level is displayed below the cruise control status as a color-coded progress bar. It can be a total of three colors: Green indicates the fuel level is 100%-50%, orange indicates 49%-26%, and red indicates 25%-0%.
 
 # For Vehicle Developers:
- If you are a vehicle developer and would like to add GAuto support to your addons, you can use the GAuto Vehicle Creator tool to easily create a table to place in your vehicle's Lua file. When using this tool, left click will spawn passenger seats that you can physgun into place, right click will spawn an engine, and reload will generate a Lua table and remove the engine and seats. You can also configure the horn sound and max health for the vehicle manually. Once you have a generated table, place it in any Lua file in your addon that has a shared scope. Placing it in a shared scope is extremely important, as both the client and server need to access it. If you do add GAuto support to your vehicles, send me a link and I will add them to the collection linked above!
+ If you are a vehicle developer and would like to add GAuto support to your addons, you can use the GAuto Vehicle Creator tool to easily create a table to place in your vehicle's Lua file. When using this tool, left click will spawn passenger seats that you can physgun into place, and reload will generate a Lua table and remove the seats. You can also configure the horn sound and max health for the vehicle manually. Once you have a generated table, place it in any Lua file in your addon that has a shared scope. Placing it in a shared scope is extremely important, as both the client and server need to access it. If you do add GAuto support to your vehicles, send me a link and I will add them to the collection linked above!
 
 # Compatibilities
  - Photon is fully compatible. The HUD will adjust itself to make room for the Photon HUD when driving emergency vehicles, and the default controls have been designed to avoid conflicts with Photon.
  - Simfphys Lua Vehicles are fully compatible. Nothing should conflict, and the spikestrip supports popping Simfphys tires.
+ - VFire is fully compatible. For the best destruction effects, it is recommended you have it installed.
  - Other vehicle systems such as VCMod and Vehicle Damage 2 are NOT compatible. They will likely interfere with each other and cause various systems to break.
 
 # Issues & Pull Requests

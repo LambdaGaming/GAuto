@@ -102,7 +102,6 @@ end
 GAuto.Vehicles[""] = {
 	HornSound = "gauto/carhorn.wav",
 	MaxHealth = 100,
-	EnginePos = ,
 	Seats = {
 		{
 			pos = ,
