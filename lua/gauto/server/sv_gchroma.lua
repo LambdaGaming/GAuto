@@ -28,6 +28,7 @@ local function GChromaEnteredVehicle( ply, veh, role )
 			local parent = veh:GetParent()
 			local driver = parent:GetDriver()
 			gchroma.ResetDevice( GCHROMA_DEVICE_ALL )
+			gchroma.SetDeviceColor( GCHROMA_DEVICE_ALL, Vector( 25, 25, 25 ) )
 			if IsValid( driver ) then
 				gchroma.SetDeviceColorEx( GCHROMA_DEVICE_KEYBOARD, GCHROMA_COLOR_RED, GCHROMA_KEY_1, 0 )
 			else
