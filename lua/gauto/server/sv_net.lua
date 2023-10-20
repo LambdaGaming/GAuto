@@ -139,13 +139,11 @@ function GAuto.EjectPassenger( len, ply, seat )
 				GAuto.Notify( ply, "Ejected "..passengernick.." from the vehicle." )
 				GAuto.Notify( passenger, "You have been ejected from the vehicle by "..nick.."." )
 			else
-				GAuto.Notify( ply, "Passenger ejection failed, selected seat doesn't have a passenger." )
+				GAuto.Notify( ply, "Selected seat doesn't have a passenger to eject." )
 			end
 		else
-			GAuto.Notify( ply, "Passenger ejection failed, selected seat doesn't exist." )
+			GAuto.Notify( ply, "Select seat doesn't exist." )
 		end
-	else
-		GAuto.Notify( ply, "Passenger ejection failed, only the driver can eject passengers." )
 	end
 end
 net.Receive( "GAuto_EjectPassenger", GAuto.EjectPassenger )
