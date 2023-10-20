@@ -24,9 +24,9 @@ function GAuto.LoadVehicle( model )
 	local findvehicleextra = file.Read( "gauto/vehicles/"..slashfix..".json", "DATA" )
 	local filefoundinmaindir = false
 	if findvehicle == nil then
-		print( "[GAuto] GAuto file not found for '"..model.."' in addon data directory. Checking main data directory." )
+		print( "[GAuto] GAuto file not found in addon data directory. Checking main data directory." )
 		if findvehicleextra == nil then
-			MsgC( color_red, "[GAuto] ERROR: GAuto file not found for model '"..model.."'." )
+			MsgC( color_red, "[GAuto] Warning! The model '"..model.."' is unsupported. Everything will still work but passenger seats will be limited.\n" )
 			return
 		end
 	else
@@ -118,11 +118,17 @@ local function InitVehicle( ent )
 				ent.FuelInit = true --Fix for some vehicles running out of fuel as soon as they spawn
 			end
 			if GAuto_SeatsEnabled then
-				if !GAuto.Vehicles or !GAuto.Vehicles[vehmodel] then
-					MsgC( color_red, "\n[GAuto] Warning! The model '"..vehmodel.."' is unsupported. Most features will still work but passenger seats will not spawn.\n" )
-					return
+				if ( !GAuto.Vehicles[vehmodel] or !GAuto.Vehicles[vehmodel].Seats ) and GetConVar( "GAuto_Config_AutoPassenger" ):GetBool() then
+					local attachment = ent:GetAttachment( ent:LookupAttachment( "vehicle_driver_eyes" ) )
+					if !attachment then return end
+					local driverPos = ent:WorldToLocal( attachment.Pos )
+					driverPos:Sub( Vector( driverPos.x * 2, 0, 35 ) )
+					if math.abs( driverPos.x ) <= 5 then return end --Don't spawn seat if players would be too close to each other
+					if !GAuto.Vehicles[vehmodel] then
+						GAuto.Vehicles[vehmodel] = {}
+					end
+					GAuto.Vehicles[vehmodel].Seats = { { pos = driverPos, ang = angle_zero } } --Add single passenger seat as a fallback if vehicle isn't supported
 				end
-				if !GAuto.Vehicles[vehmodel].Seats then return end
 				local vehseats = GAuto.Vehicles[vehmodel].Seats
 				local numseats = table.Count( vehseats )
 				ent.seat = {}

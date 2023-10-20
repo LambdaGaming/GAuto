@@ -19,6 +19,7 @@ This is a lightweight vehicle system for Garry's Mod. All vehicles made by popul
   - Supported vehicles will spawn with passenger seats.
   - Players can switch between seats using the number keys.
   - The driver can kick passengers out by holding alt and pressing the number keys.
+  - Unsupported vehicles will have a single passenger seat automatically placed next to the driver's seat if there's room.
 - Horns
   - All vehicles, both supported and unsupported, have a horn that can be used by pressing J.
   - GAuto comes with 2 horn sounds, but when adding support to a vehicle, any sound can be used.
