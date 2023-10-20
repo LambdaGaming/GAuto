@@ -45,7 +45,7 @@ function GAuto.CruiseControl( len, ply )
 	local GAuto_CruiseEnabled = GetConVar( "GAuto_Config_CruiseEnabled" ):GetBool()
 	if GAuto_CruiseEnabled then
 		local veh = ply:GetVehicle()
-		if GAuto.IsBlackListed( veh ) or veh.EngineDisabled then return end
+		if GAuto.IsBlackListed( veh ) or !veh:IsEngineStarted() then return end
 		local cruiseactive = veh:GetNWBool( "CruiseActive" )
 		if cruiseactive then
 			veh:SetNWBool( "CruiseActive", false )
@@ -157,15 +157,9 @@ function GAuto.EngineToggle( len, ply )
 		local GAuto_HealthEnabled = GetConVar( "GAuto_Config_HealthEnabled" ):GetBool()
 		local GAuto_FuelEnabled = GetConVar( "GAuto_Config_FuelEnabled" ):GetBool()
 		if GAuto.IsBlackListed( veh ) then return end
-		if GAuto_HealthEnabled and veh:GetNWInt( "GAuto_VehicleHealth" ) <= 0 then return end --Don't want players turning the car back on when it's supposed to be damaged or out of fuel
+		if GAuto_HealthEnabled and veh:GetNWInt( "GAuto_VehicleHealth" ) <= 0 then return end --Don't want players turning the car back on when it's destroyed or out of fuel
 		if GAuto_FuelEnabled and veh:GetNWInt( "GAuto_FuelAmount" ) <= 0 then return end
-		if veh.EngineDisabled then
-			veh:Fire( "turnon", "", 0.01 )
-			veh.EngineDisabled = false
-		else
-			veh:Fire( "turnoff", "", 0.01 )
-			veh.EngineDisabled = true
-		end
+		veh:StartEngine( !veh:IsEngineStarted() )
 	end
 end
 net.Receive( "GAuto_EngineToggle", GAuto.EngineToggle )
