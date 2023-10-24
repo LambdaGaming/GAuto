@@ -60,9 +60,3 @@ concommand.Add( "GAuto_SaveVehicle", function( ply, cmd, args )
 	end
 	SaveVehicle( args[1] )
 end )
-
-local shouldsave = gmsave.ShouldSaveEntity
-function gmsave.ShouldSaveEntity( ent, t ) --Finding decent documentation on this function was such a pain, especially now that the facepunch forums are gone
-	if ent:GetNWBool( "IsGAutoSeat" ) then return false end --Should prevent the seats from duping themselves after loading a save
-	return shouldsave( ent, t )
-end

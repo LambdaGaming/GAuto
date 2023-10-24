@@ -76,6 +76,7 @@ function GAuto.SpawnSeat( index, ent, pos, ang )
 	ent.seat[index]:SetNWBool( "IsGAutoSeat", true )
 	ent.seat[index].VehicleTable = {} --Prevents photon from spamming console when it can't find each seat's VehicleTable
 	ent.seat[index].ID = index --Useful for identifying the seat without having to use loops
+	ent.seat[index].DoNotDuplicate = true --Prevents seats from spawning twice if the vehicle is duped or saved
 end
 
 local function InitVehicle( ent )
