@@ -2,9 +2,9 @@ AddCSLuaFile()
 
 GAuto = {}
 
-for _,v in pairs( file.Find( "gauto/shared/*", "LUA" ) ) do
-	include( "gauto/shared/"..v )
-	AddCSLuaFile( "gauto/shared/"..v )
+for _,v in pairs( file.Find( "gauto/*", "LUA" ) ) do
+	include( "gauto/"..v )
+	AddCSLuaFile( "gauto/"..v )
 end
 
 for _,v in pairs( file.Find( "gauto/client/*", "LUA" ) ) do
