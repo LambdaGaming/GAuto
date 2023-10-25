@@ -91,6 +91,7 @@ local function InitVehicle( ent )
 			local GAuto_FuelEnabled = GetConVar( "GAuto_Config_FuelEnabled" ):GetBool()
 			local GAuto_FuelAmount = GetConVar( "GAuto_Config_FuelAmount" ):GetInt()
 			local GAuto_SeatsEnabled = GetConVar( "GAuto_Config_SeatsEnabled" ):GetBool()
+			local GAuto_ParticlesEnabled = GetConVar( "GAuto_Config_ParticlesEnabled" ):GetBool()
 			if !GAuto.Vehicles[vehmodel] then
 				print( "[GAuto] Vehicle table not found. Attempting to load from file..." )
 				GAuto.LoadVehicle( vehmodel ) --Tries to load the vehicle from file if it doesn't exist in memory
@@ -135,6 +136,23 @@ local function InitVehicle( ent )
 				ent.seat = {}
 				for i=1, numseats do
 					GAuto.SpawnSeat( i, ent, vehseats[i].pos, vehseats[i].ang )
+				end
+			end
+			if GAuto_ParticlesEnabled then
+				ent.particles = {}
+				for i = 0, ent:GetWheelCount() - 1 do
+					local wheel = ent:GetWheel( i )
+					local height = ent:GetWheelTotalHeight( i )
+					ent.particles[i] = ents.Create( "info_particle_system" )
+					ent.particles[i]:SetKeyValue( "effect_name", "WheelDust" )
+					ent.particles[i]:SetKeyValue( "start_active", 0 )
+					ent.particles[i]:SetOwner( ent )
+					ent.particles[i]:SetPos( wheel:GetPos() + Vector( 0, 0, -height ) )
+					ent.particles[i]:SetAngles( wheel:GetAngles() )
+					ent.particles[i]:Spawn()
+					ent.particles[i]:Activate()
+					ent.particles[i]:SetParent( ent )
+					ent.particles[i].DoNotDuplicate = true
 				end
 			end
 		end

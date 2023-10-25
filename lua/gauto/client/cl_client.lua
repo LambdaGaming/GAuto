@@ -11,6 +11,8 @@ end )
 
 local smokevelocity = Vector( 0, 0, 50 )
 local function SmokeThink()
+	local GAuto_ParticlesEnabled = GetConVar( "GAuto_Config_ParticlesEnabled" ):GetBool()
+	if !GAuto_ParticlesEnabled then return end
 	local ply = LocalPlayer()
 	local findjeep = ents.FindByClass( "prop_vehicle_jeep*" )
 	for k,v in ipairs( findjeep ) do

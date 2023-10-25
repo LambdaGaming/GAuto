@@ -1,19 +1,26 @@
+game.AddParticles( "particles/vehicle.pcf" )
+PrecacheParticleSystem( "WheelDust" )
+
+local allowedSurfaces = {
+	["grass"] = true,
+	["dirt"] = true,
+	["sand"] = true
+}
+
 local function VehicleThink( ply, veh, mv )
 	if GAuto.IsBlackListed( veh ) then return end
 	local vel = veh:GetVelocity():Length()
+	local GAuto_ParticlesEnabled = GetConVar( "GAuto_Config_ParticlesEnabled" ):GetBool()
 	if veh.FuelInit and !veh.NoFuel and IsValid( veh:GetDriver() ) then
 		local GAuto_FuelEnabled = GetConVar( "GAuto_Config_FuelEnabled" ):GetBool()
 		local GAuto_NoFuelGod = GetConVar( "GAuto_Config_NoFuelGod" ):GetBool()
 		local GAuto_FuelLoss = GetConVar( "GAuto_Config_FuelLoss" ):GetFloat()
-		
 		if !veh.FuelCooldown then veh.FuelCooldown = 0 end
 		if vel > 100 then
-			if GAuto_FuelEnabled and !veh:GetNWBool( "IsGAutoSeat" ) then
-				if veh.FuelCooldown and veh.FuelCooldown > CurTime() then return end
+			if GAuto_FuelEnabled and !veh:GetNWBool( "IsGAutoSeat" ) and veh.FuelCooldown > CurTime() then
 				if veh:GetThrottle() >= 0.1 then
 					veh.FuelLoss = GAuto_FuelLoss
 				end
-
 				local fuellevel = veh:GetNWInt( "GAuto_FuelAmount" )
 				if fuellevel > 0 then
 					veh:SetNWInt( "GAuto_FuelAmount", fuellevel - veh.FuelLoss )
@@ -30,6 +37,20 @@ local function VehicleThink( ply, veh, mv )
 					GAuto.Notify( ply, "Your vehicle has run out of fuel!" )
 				end
 			end
+		end
+	end
+	if GAuto_ParticlesEnabled and veh.particles then
+		local count = veh:GetWheelCount() - 1
+		for i = 0, count do
+			local pos, id, ground = veh:GetWheelContactPoint( i )
+			if ground then
+				local data = util.GetSurfaceData( id )
+				if allowedSurfaces[data.name] and vel > 100 then
+					veh.particles[i]:Fire( "Start" )
+					continue
+				end
+			end
+			veh.particles[i]:Fire( "Stop" )
 		end
 	end
 end
@@ -63,6 +84,7 @@ local function LeaveVehicle( ply, ent )
 	if GAuto.IsBlackListed( ent ) or ent:GetNWBool( "IsGAutoSeat" ) then return end
 	local GAuto_WheelLockEnabled = GetConVar( "GAuto_Config_WheelLockEnabled" ):GetBool()
 	local GAuto_BrakeLockEnabled = GetConVar( "GAuto_Config_BrakeLockEnabled" ):GetBool()
+	local GAuto_ParticlesEnabled = GetConVar( "GAuto_Config_ParticlesEnabled" ):GetBool()
 	if GAuto_BrakeLockEnabled then
 		if ply:KeyDown( IN_JUMP ) then --Activates the parking brake if the player is holding the jump button when they exit
 			ent:Fire( "HandBrakeOn", "", 0.01 )
@@ -83,6 +105,12 @@ local function LeaveVehicle( ply, ent )
 				ent:SetSteering( 0, 0 )
 			end
 		end )
+	end
+	if GAuto_ParticlesEnabled and ent.particles then
+		local count = ent:GetWheelCount() - 1
+		for i = 0, count do
+			ent.particles[i]:Fire( "Stop" )
+		end
 	end
 	if ent:GetNWBool( "CruiseActive" ) then
 		ent:SetNWBool( "CruiseActive", false )

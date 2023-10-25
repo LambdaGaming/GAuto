@@ -10,6 +10,10 @@ This is a lightweight vehicle system for Garry's Mod. All vehicles made by popul
     - Tires will deflate after receiving enough damage from either bullets or spike strips.
     - Tires can be repaired with the secondary fire of the repair tool.
     - Deflated tires will cause the vehicle to slow down and become harder to control.
+- Vehicle HUD
+  - HUD appears in the bottom right of the screen when the player enters the driver's seat.
+  - Adapts it's position based on the current vehicle's Photon support.
+  - Displays vehicle's health, door lock status, cruise control status, and fuel level.
 - Brake locking
   - Brakes will only lock on a vehicle if the driver holds their jump key as they exit the vehicle.
   - Brakes can be released with the vehicle management tool for towing purposes if the vehicle is locked and cannot be driven away.
@@ -27,15 +31,9 @@ This is a lightweight vehicle system for Garry's Mod. All vehicles made by popul
   - Drivers can lock their vehicle's doors to prevent any other players from getting in by pressing N.
   - Locking the doors does not prevent players who are already in the vehicle from getting out.
   - An alarm will sound if a player starts lockpicking a vehicle on DarkRP.
-- Customizable controls
-  - All controls besides the seat number keys can be reassigned.
 - Fuel system
   - Fuel will be consumed when the throttle is down.
   - Fuel can be replenished through the fuel can entity or SWEP.
-- Vehicle HUD
-  - HUD appears in the bottom right of the screen when the player enters the driver's seat.
-  - Adapts it's position based on the current vehicle's Photon support.
-  - Displays vehicle's health, door lock status, cruise control status, and fuel level.
 - Cruise control
   - Throttle will always start out slow. Drivers can increase/decrease cruise speed by pressing forward/backward.
   - Pressing jump or V will disable cruise control.
@@ -44,6 +42,12 @@ This is a lightweight vehicle system for Garry's Mod. All vehicles made by popul
   - A vehicle creation tool is also included to easily add GAuto support to your own vehicles.
 - Engine toggle
   - Pressing P will turn off the engine without requiring the driver to leave the vehicle.
+- Customizable controls
+  - All controls besides the seat number keys can be reassigned.
+- Particles
+  - Dust will emit from the wheels when driving on certain surfaces including dirt, grass, and sand
+  - Engine emits a large cloud of smoke when vehicle is heavily damaged
+  - Can be disabled server-side if it causes performance issues
 
 # FAQs
 ### Is a lighting system planned?
@@ -71,5 +75,5 @@ If your car isn't smoking, its model likely does not have an engine attachment, 
  If you would like to contribute to this repository by creating an issue or pull request, please refer to the [contributing guidelines.](https://lambdagaming.github.io/contributing.html)
 
 # Credits
-- [Simfphys Lua Vehicle Base](https://github.com/Blu-x92/simfphys_base) for part of the passenger seat spawn code.
+- [Simfphys Lua Vehicle Base](https://github.com/Blu-x92/simfphys_base) for parts of various systems including passenger seats and particles.
 - SCS for the horn sounds.
