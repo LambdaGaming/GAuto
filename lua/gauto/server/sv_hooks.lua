@@ -1,10 +1,8 @@
-game.AddParticles( "particles/vehicle.pcf" )
-PrecacheParticleSystem( "WheelDust" )
-
 local allowedSurfaces = {
 	["grass"] = true,
 	["dirt"] = true,
-	["sand"] = true
+	["sand"] = true,
+	["snow"] = true
 }
 
 local function VehicleThink( ply, veh, mv )
