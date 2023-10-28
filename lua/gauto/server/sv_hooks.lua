@@ -2,7 +2,8 @@ local allowedSurfaces = {
 	["grass"] = true,
 	["dirt"] = true,
 	["sand"] = true,
-	["snow"] = true
+	["snow"] = true,
+	["antlionsand"] = true
 }
 
 local function VehicleThink( ply, veh, mv )
@@ -42,8 +43,8 @@ local function VehicleThink( ply, veh, mv )
 		for i = 0, count do
 			local pos, id, ground = veh:GetWheelContactPoint( i )
 			if ground then
-				local data = util.GetSurfaceData( id )
-				if allowedSurfaces[data.name] and vel > 100 then
+				local name = util.GetSurfacePropName( id )
+				if allowedSurfaces[name] and vel > 100 then
 					veh.particles[i]:Fire( "Start" )
 					continue
 				end
