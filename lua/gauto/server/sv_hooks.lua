@@ -14,9 +14,8 @@ local function VehicleThink( ply, veh, mv )
 		local GAuto_FuelEnabled = GetConVar( "GAuto_Config_FuelEnabled" ):GetBool()
 		local GAuto_NoFuelGod = GetConVar( "GAuto_Config_NoFuelGod" ):GetBool()
 		local GAuto_FuelLoss = GetConVar( "GAuto_Config_FuelLoss" ):GetFloat()
-		if !veh.FuelCooldown then veh.FuelCooldown = 0 end
 		if vel > 100 then
-			if GAuto_FuelEnabled and !veh:GetNWBool( "IsGAutoSeat" ) and veh.FuelCooldown > CurTime() then
+			if GAuto_FuelEnabled and !veh:GetNWBool( "IsGAutoSeat" ) and veh.FuelCooldown < CurTime() then
 				if veh:GetThrottle() >= 0.1 then
 					veh.FuelLoss = GAuto_FuelLoss
 				end

@@ -118,6 +118,7 @@ local function InitVehicle( ent )
 				ent:SetNWInt( "GAuto_FuelAmount", GAuto_FuelAmount )
 				ent.FuelLoss = 0
 				ent.FuelInit = true --Fix for some vehicles running out of fuel as soon as they spawn
+				ent.FuelCooldown = 0
 			end
 			if GAuto_SeatsEnabled then
 				if ( !GAuto.Vehicles[vehmodel] or !GAuto.Vehicles[vehmodel].Seats ) and GetConVar( "GAuto_Config_AutoPassenger" ):GetBool() then
