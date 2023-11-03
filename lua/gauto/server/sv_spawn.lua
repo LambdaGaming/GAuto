@@ -123,20 +123,24 @@ local function InitVehicle( ent )
 			if GAuto_SeatsEnabled then
 				if ( !GAuto.Vehicles[vehmodel] or !GAuto.Vehicles[vehmodel].Seats ) and GetConVar( "GAuto_Config_AutoPassenger" ):GetBool() then
 					local attachment = ent:GetAttachment( ent:LookupAttachment( "vehicle_driver_eyes" ) )
-					if !attachment then return end
-					local driverPos = ent:WorldToLocal( attachment.Pos )
-					driverPos:Sub( Vector( driverPos.x * 2, 0, 35 ) )
-					if math.abs( driverPos.x ) <= 5 then return end --Don't spawn seat if players would be too close to each other
-					if !GAuto.Vehicles[vehmodel] then
-						GAuto.Vehicles[vehmodel] = {}
+					if attachment then
+						local driverPos = ent:WorldToLocal( attachment.Pos )
+						driverPos:Sub( Vector( driverPos.x * 2, 0, 35 ) )
+						if math.abs( driverPos.x ) > 5 then --Don't spawn seat if players would be too close to each other
+							if !GAuto.Vehicles[vehmodel] then
+								GAuto.Vehicles[vehmodel] = {}
+							end
+							GAuto.Vehicles[vehmodel].Seats = { { pos = driverPos, ang = angle_zero } } --Add single passenger seat as a fallback if vehicle isn't supported
+						end
 					end
-					GAuto.Vehicles[vehmodel].Seats = { { pos = driverPos, ang = angle_zero } } --Add single passenger seat as a fallback if vehicle isn't supported
 				end
-				local vehseats = GAuto.Vehicles[vehmodel].Seats
-				local numseats = table.Count( vehseats )
-				ent.seat = {}
-				for i=1, numseats do
-					GAuto.SpawnSeat( i, ent, vehseats[i].pos, vehseats[i].ang )
+				if GAuto.Vehicles[vehmodel] and !GAuto.Vehicles[vehmodel].Seats then
+					local vehseats = GAuto.Vehicles[vehmodel].Seats
+					local numseats = table.Count( vehseats )
+					ent.seat = {}
+					for i=1, numseats do
+						GAuto.SpawnSeat( i, ent, vehseats[i].pos, vehseats[i].ang )
+					end
 				end
 			end
 			if GAuto_ParticlesEnabled then
