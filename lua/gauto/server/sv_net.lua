@@ -34,8 +34,7 @@ net.Receive( "GAuto_VehicleHorn", GAuto.VehicleHorn )
 util.AddNetworkString( "GAuto_VehicleHornStop" )
 function GAuto.VehicleHornStop( len, ply )
 	local veh = ply:GetVehicle()
-	if !IsValid( veh ) then return end
-	if !veh.GAuto_CarHorn then return end
+	if !IsValid( veh ) or !veh.GAuto_CarHorn then return end
 	if veh.GAuto_CarHorn:IsPlaying() then veh.GAuto_CarHorn:Stop() end
 end
 net.Receive( "GAuto_VehicleHornStop", GAuto.VehicleHornStop )
