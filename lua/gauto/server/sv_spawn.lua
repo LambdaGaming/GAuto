@@ -134,7 +134,7 @@ local function InitVehicle( ent )
 						end
 					end
 				end
-				if GAuto.Vehicles[vehmodel] and !GAuto.Vehicles[vehmodel].Seats then
+				if GAuto.Vehicles[vehmodel] and GAuto.Vehicles[vehmodel].Seats then
 					local vehseats = GAuto.Vehicles[vehmodel].Seats
 					local numseats = table.Count( vehseats )
 					ent.seat = {}
