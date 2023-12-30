@@ -66,7 +66,7 @@ If your car isn't smoking, its model likely does not have an engine attachment, 
 
 # Compatibilities
  - Photon is fully compatible. The HUD will adjust itself to make room for the Photon HUD when driving emergency vehicles, and the default controls have been designed to avoid conflicts with Photon.
- - Simfphys Lua Vehicles are fully compatible. Nothing should conflict, and the spikestrip supports popping Simfphys tires.
+ - Simfphys and LVS vehicles are fully compatible. Nothing should conflict, and the spikestrip will pop tires from both systems.
  - VFire is supported. For the best destruction effects, it's recommended you have it installed.
  - GChroma is supported. All available keybinds will be highlighted when you enter the drivers seat of a vehicle.
  - Other vehicle systems such as VCMod and Vehicle Damage 2 are NOT compatible. They will likely interfere with GAuto and cause various systems to break.

@@ -72,7 +72,6 @@ function ENT:Use( ply )
 end
 
 function ENT:StartTouch( ent )
-	if self.SpikeCooldown and self.SpikeCooldown > CurTime() then return end
 	if GAuto.IsBlackListed( ent ) then return end
 	local class = ent:GetClass()
 	if vehicles[class] then
@@ -87,8 +86,10 @@ function ENT:StartTouch( ent )
 		GAuto.PopTire( ent, wheelpos[1][1] )
 	elseif class == "gmod_sent_vehicle_fphysics_wheel" then --Simfphy's support
 		ent:SetDamaged( true )
+	elseif class == "lvs_wheeldrive_wheel" or scripted_ents.IsBasedOn( class, "lvs_wheeldrive_wheel" ) then --LVS support
+		ent:SetSuspensionHeight( -1 )
+		ent:SetSuspensionStiffness( 1 )
 	end
-	self.SpikeCooldown = CurTime() + 1
 end
 
 function ENT:OnRemove()
