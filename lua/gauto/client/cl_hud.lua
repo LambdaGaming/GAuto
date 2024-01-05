@@ -51,7 +51,7 @@ local function HUDStuff()
 		local GAuto_FuelAmount = GetConVar( "GAuto_Config_FuelAmount" ):GetInt()
 		local GAuto_FuelEnabled = GetConVar( "GAuto_Config_FuelEnabled" ):GetBool()
 
-		if vehicle.VehicleName then --Detects if the vehicle has Photon support or not
+		if vehicle.VehicleName or ( Photon2 and Photon2.ClientInput and Photon2.ClientInput.TargetController ) then --Adjust for Photon Legacy & Photon 2
 			HUDPositions = HUDPhoton
 		else
 			HUDPositions = HUDNoPhoton
