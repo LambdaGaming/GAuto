@@ -80,8 +80,9 @@ if CLIENT then
 
 		local wepclass = wep:GetClass()
 		local vehpos = ply:GetPos():DistToSqr( tr:GetPos() )
+		if !tr:IsVehicle() or ply:InVehicle() or wepclass != "weapon_gauto_repair" or vehpos > 40000 then return end
+
 		local maxhealth = tr:GetNWInt( "GAuto_VehicleMaxHealth" )
-		if !IsValid( tr ) or !tr:IsVehicle() or ply:InVehicle() or wepclass != "weapon_repair" or vehpos > 40000 then return end
 		if maxhealth > 0 then
 			local health = tr:GetNWInt( "GAuto_VehicleHealth" )
 			local health25 = maxhealth * 0.25

@@ -91,27 +91,26 @@ if CLIENT then
 		local pos = tr:GetPos()
 		local vehpos = ply:GetPos():DistToSqr( pos )
 		local maxfuel = 100
-		if !tr:IsVehicle() or ply:InVehicle() or wepclass != "weapon_fuel" or vehpos > 40000 then return end
-		if maxfuel > 0 then
-			local fuel = tr:GetNWInt( "GAuto_FuelAmount" )
-			local fuel25 = maxfuel * 0.25
-			local fuel75 = maxfuel * 0.75
-			draw.RoundedBox( 8, posw, posh, 190, 40, Color( 30, 30, 30, 254 ) )
-			surface.SetFont( "GAuto_HUDFont1" )
-			if GAuto_FuelEnabled and fuel <= fuel25 then
-				surface.SetTextColor( 255, 0, 0 )
-			elseif fuel > fuel25 and fuel < fuel75 then
-				surface.SetTextColor( 196, 145, 2 )
-			else
-				surface.SetTextColor( color_white )
-			end
-			surface.SetTextPos( posw + 15, posh + 10 )
-			
-			if GAuto_FuelEnabled then
-				surface.DrawText( "Vehicle Fuel Level: "..fuel )
-			else
-				surface.DrawText( "Vehicle fuel disabled." )
-			end
+		if !tr:IsVehicle() or ply:InVehicle() or wepclass != "weapon_gauto_fuel" or vehpos > 40000 then return end
+
+		local fuel = tr:GetNWInt( "GAuto_FuelAmount" )
+		local fuel25 = maxfuel * 0.25
+		local fuel75 = maxfuel * 0.75
+		draw.RoundedBox( 8, posw, posh, 190, 40, Color( 30, 30, 30, 254 ) )
+		surface.SetFont( "GAuto_HUDFont1" )
+		if GAuto_FuelEnabled and fuel <= fuel25 then
+			surface.SetTextColor( 255, 0, 0 )
+		elseif fuel > fuel25 and fuel < fuel75 then
+			surface.SetTextColor( 196, 145, 2 )
+		else
+			surface.SetTextColor( color_white )
+		end
+		surface.SetTextPos( posw + 15, posh + 10 )
+		
+		if GAuto_FuelEnabled then
+			surface.DrawText( "Vehicle Fuel Level: "..fuel )
+		else
+			surface.DrawText( "Vehicle fuel disabled." )
 		end
 	end
 	hook.Add( "HUDPaint", "GAuto_FuelHUD", DrawFuelHUD )
