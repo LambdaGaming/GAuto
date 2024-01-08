@@ -24,9 +24,8 @@ function GAuto.LoadVehicle( model )
 	local findvehicleextra = file.Read( "gauto/vehicles/"..slashfix..".json", "DATA" )
 	local filefoundinmaindir = false
 	if findvehicle == nil then
-		print( "[GAuto] GAuto file not found in addon data directory. Checking main data directory." )
 		if findvehicleextra == nil then
-			MsgC( color_red, "[GAuto] Warning! The model '"..model.."' is unsupported. Everything will still work but passenger seats will be limited.\n" )
+			MsgC( color_red, "[GAuto] Warning: '"..model.."' is unsupported. Everything will still work, but passenger seats will be limited or unavailable.\n" )
 			return
 		end
 	else
@@ -93,7 +92,6 @@ local function InitVehicle( ent )
 			local GAuto_SeatsEnabled = GetConVar( "GAuto_Config_SeatsEnabled" ):GetBool()
 			local GAuto_ParticlesEnabled = GetConVar( "GAuto_Config_ParticlesEnabled" ):GetBool()
 			if !GAuto.Vehicles[vehmodel] then
-				print( "[GAuto] Vehicle table not found. Attempting to load from file..." )
 				GAuto.LoadVehicle( vehmodel ) --Tries to load the vehicle from file if it doesn't exist in memory
 			end
 			if GAuto_HealthEnabled then
