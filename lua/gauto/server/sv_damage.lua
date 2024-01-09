@@ -21,6 +21,7 @@ function GAuto.DestroyCheck( veh ) --Disables the engine and sets the vehicle on
 			end
 		end
 		veh:SetNWBool( "GAuto_HasExploded", true )
+		hook.Run( "GAuto_OnVehicleDestroyed", veh )
 	end
 end
 
@@ -75,6 +76,7 @@ function GAuto.AddHealth( veh, hp ) --Adds health to the vehicle, nothing specia
 		veh:SetNWBool( "GAuto_HasExploded", false )
 	end
 	veh:SetNWInt( "GAuto_VehicleHealth", newhp )
+	hook.Run( "GAuto_OnAddHealth", veh, hp )
 	GAuto.SmokeCheck( veh )
 end
 
@@ -97,6 +99,9 @@ function GAuto.PopTire( veh, wheel )
 			return --Don't try to pop a tire that's already popped
 		end
 
+		local canPop = hook.Run( "GAuto_CanPopTire", veh, wheel )
+		if canPop == false then return end
+
 		--Simulates the tire slowly losing air
 		local spring = 500.1
 		local deflatesound = CreateSound( veh, "ambient/gas/steam2.wav" )
@@ -114,6 +119,7 @@ function GAuto.PopTire( veh, wheel )
 		veh:EmitSound( "HL1/ambience/steamburst1.wav" )
 		veh.WheelHealth = veh.WheelHealth or {}
 		veh.WheelHealth[wheel] = 0
+		hook.Run( "GAuto_OnTirePopped", veh, wheel )
 	end
 end
 
@@ -144,14 +150,21 @@ function GAuto.PopCheck( dmg, veh )
 	end
 end
 
-function GAuto.RepairTire( veh )
+function GAuto.RepairTire( veh, wheel )
 	local GAuto_TirePopEnabled = GetConVar( "GAuto_Config_TirePopEnabled" ):GetBool()
 	if GAuto_TirePopEnabled and !GAuto.IsBlackListed( veh ) and veh:IsVehicle() then
-		local vehmodel = veh:GetModel()
+		if wheel then
+			veh:SetSpringLength( wheel, 500.1 )
+			veh:GetWheel( wheel ):SetDamping( 0, 0 )
+			veh.WheelHealth[wheel] = nil
+			hook.Run( "GAuto_OnTireRepaired", veh, wheel )
+			return
+		end
 		for i = 0, veh:GetWheelCount() - 1 do
 			veh:SetSpringLength( i, 500.1 )
 			veh:GetWheel( i ):SetDamping( 0, 0 )
 			veh.WheelHealth = {}
+			hook.Run( "GAuto_OnTireRepaired", veh, -1 )
 		end
 	end
 end

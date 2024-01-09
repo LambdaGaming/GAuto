@@ -2,7 +2,8 @@ util.AddNetworkString( "GAuto_VehicleLock" )
 function GAuto.VehicleLock( len, ply )
 	if IsFirstTimePredicted() then
 		local veh = ply:GetVehicle()
-		if GAuto.IsBlackListed( veh ) then return end
+		local canLock = hook.Run( "GAuto_CanLockDoors", ply, veh )
+		if GAuto.IsBlackListed( veh ) or canLock == false then return end
 		if !veh:GetNWBool( "GAuto_DoorsLocked" ) then
 			GAuto.Notify( ply, "Vehicle locked." )
 			veh:Fire( "Lock", "", 0.01 )
@@ -22,7 +23,8 @@ function GAuto.VehicleHorn( len, ply )
 	local GAuto_HornEnabled = GetConVar( "GAuto_Config_HornEnabled" ):GetBool()
 	if GAuto_HornEnabled then
 		local veh = ply:GetVehicle()
-		if GAuto.IsBlackListed( veh ) then return end
+		local canHorn = hook.Run( "GAuto_CanUseHorn", ply, veh )
+		if GAuto.IsBlackListed( veh ) or canHorn == false then return end
 		veh.GAuto_CarHorn = CreateSound( veh, veh:GetNWString( "GAuto_HornSound" ) )
 		if !veh.GAuto_CarHorn:IsPlaying() then
 			veh.GAuto_CarHorn:Play()
@@ -44,7 +46,8 @@ function GAuto.CruiseControl( len, ply )
 	local GAuto_CruiseEnabled = GetConVar( "GAuto_Config_CruiseEnabled" ):GetBool()
 	if GAuto_CruiseEnabled then
 		local veh = ply:GetVehicle()
-		if GAuto.IsBlackListed( veh ) or !veh:IsEngineStarted() then return end
+		local canCruise = hook.Run( "GAuto_CanCruise", ply, veh )
+		if GAuto.IsBlackListed( veh ) or !veh:IsEngineStarted() or canCruise == false then return end
 		local cruiseactive = veh:GetNWBool( "CruiseActive" )
 		if cruiseactive then
 			veh:SetNWBool( "CruiseActive", false )
@@ -66,6 +69,8 @@ function GAuto.ChangeSeats( len, ply, seat )
 	local vehparent = veh:GetParent()
 	local driver = veh:GetDriver()
 	local realseat = key - 1 --Need to subtract 1 since the driver's seat doesn't count as a passenger seat
+	local canChange = hook.Run( "GAuto_CanChangeSeats", ply, veh, seat )
+	if canChange == false then return end
 	if veh:GetClass() == "prop_vehicle_jeep" then
 		if key == 1 then
 			GAuto.Notify( ply, "You are already sitting in the selected seat." )
@@ -127,7 +132,8 @@ function GAuto.EjectPassenger( len, ply, seat )
 	local key = seat or net.ReadInt( 32 )
 	local veh = ply:GetVehicle()
 	local realseat = key - 1
-	if GAuto.IsBlackListed( veh ) then return end
+	local canEject = hook.Run( "GAuto_CanEjectPassenger", ply, veh, seat )
+	if GAuto.IsBlackListed( veh ) or canEject == false then return end
 	if veh:GetClass() == "prop_vehicle_jeep" then
 		if veh.seat and IsValid( veh.seat[realseat] ) then
 			local passenger = veh.seat[realseat]:GetDriver()
@@ -153,7 +159,8 @@ function GAuto.EngineToggle( len, ply )
 		local veh = ply:GetVehicle()
 		local GAuto_HealthEnabled = GetConVar( "GAuto_Config_HealthEnabled" ):GetBool()
 		local GAuto_FuelEnabled = GetConVar( "GAuto_Config_FuelEnabled" ):GetBool()
-		if GAuto.IsBlackListed( veh ) then return end
+		local canToggle = hook.Run( "GAuto_CanToggleEngine", ply, veh )
+		if GAuto.IsBlackListed( veh ) or canToggle == false then return end
 		if GAuto_HealthEnabled and veh:GetNWInt( "GAuto_VehicleHealth" ) <= 0 then return end --Don't want players turning the car back on when it's destroyed or out of fuel
 		if GAuto_FuelEnabled and veh:GetNWInt( "GAuto_FuelAmount" ) <= 0 then return end
 		veh:StartEngine( !veh:IsEngineStarted() )
