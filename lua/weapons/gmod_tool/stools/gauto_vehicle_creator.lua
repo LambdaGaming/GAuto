@@ -1,17 +1,57 @@
 TOOL.Name = "GAuto Vehicle Creator"
 TOOL.Category = "GAuto"
-TOOL.ClientConVar["usejson"] = "0"
 TOOL.Seats = {}
 
 if CLIENT then
 	language.Add( "tool.gauto_vehicle_creator.name", "GAuto Vehicle Creator" )
 	language.Add( "tool.gauto_vehicle_creator.desc", "Generates vehicle configs to help add GAuto support to a vehicle." )
-	language.Add( "tool.gauto_vehicle_creator.0", "Left-click: Spawn passenger seat. Reload: Remove spawned entities and print generated seat table to console." )
+	language.Add( "tool.gauto_vehicle_creator.0", "Right-click: Open configuration menu. Left-click: Spawn passenger seat. Reload: Remove spawned seats and print generated vehicle table to console." )
 
-	local convarlist = TOOL:BuildConVarList()
-	function TOOL.BuildCPanel( panel )
-		panel:AddControl( "CheckBox", { Label = "Generate JSON instead of Lua", Command = "gauto_vehicle_creator_usejson" } )
-	end
+	net.Receive( "GAuto_VehicleCreatorMenu", function()
+		local main = vgui.Create( "DFrame" )
+		main:SetTitle( "GAuto Vehicle Creator" )
+		main:SetSize( 300, 300 )
+		main:Center()
+		main:MakePopup()
+		main.Paint = function( self, w, h )
+			draw.RoundedBox( 4, 0, 0, w, h, Color( 64, 64, 64, 190 ) )
+		end
+	
+		local checkBox = vgui.Create( "DCheckBoxLabel", main )
+		checkBox:Dock( TOP )
+		checkBox:DockMargin( 0, 0, 0, 20 )
+		checkBox:SetText( "Generate JSON instead of Lua" )
+		checkBox:SizeToContents()
+		local hornLabel = vgui.Create( "DLabel", main )
+		hornLabel:Dock( TOP )
+		hornLabel:SetText( "Horn Sound" )
+		local horn = vgui.Create( "DTextEntry", main )
+		horn:Dock( TOP )
+		horn:DockMargin( 0, 0, 0, 20 )
+		horn:SetValue( "gauto/carhorn.wav" )
+		local healthLabel = vgui.Create( "DLabel", main )
+		healthLabel:Dock( TOP )
+		healthLabel:SetText( "Max Health" )
+		local health = vgui.Create( "DNumberWang", main )
+		health:Dock( TOP )
+		health:DockMargin( 0, 0, 0, 20 )
+		health:SetMin( 1 )
+		health:SetMax( 1000 )
+		health:SetValue( 100 )
+
+		local save = vgui.Create( "DButton", main )
+		save:Dock( BOTTOM )
+		save:SetSize( nil, 20 )
+		save:SetText( "Save" )
+		save.DoClick = function()
+			net.Start( "GAuto_VehicleCreatorMenu" )
+			net.WriteBool( checkBox:GetChecked() )
+			net.WriteString( horn:GetValue() )
+			net.WriteUInt( health:GetValue(), 10 )
+			net.SendToServer()
+			main:Close()
+		end
+	end )
 end
 
 if SERVER then
@@ -46,6 +86,14 @@ if SERVER then
 			owner:ChatPrint( "Passenger seat spawned and no-collided with vehicle. Physgun it into position." )
 		end
 	end
+
+	util.AddNetworkString( "GAuto_VehicleCreatorMenu" )
+	function TOOL:RightClick()
+		if IsFirstTimePredicted() then
+			net.Start( "GAuto_VehicleCreatorMenu" )
+			net.Send( self:GetOwner() )
+		end
+	end
 	
 	local function FormatVector( vec, json )
 		if json then
@@ -57,15 +105,11 @@ if SERVER then
 	function TOOL:Reload( tr )
 		if IsFirstTimePredicted() then
 			local owner = self:GetOwner()
-			if !owner:IsAdmin() or !IsValid( self.Vehicle ) then return end
-			if table.IsEmpty( self.Seats ) then
-				owner:ChatPrint( "Spawn at least 1 seat to finalize the vehicle." )
-				return
-			end
+			if !owner:IsAdmin() or !self:CheckValid( tr ) then return end
 
 			--This is very messy but the generated code gets formatted nicely
 			local tbl
-			if self:GetClientBool( "usejson" ) then
+			if GAuto.Tool.UseJSON then
 				local seat = ""
 				local filename = GAuto.TrimModel( self.Vehicle:GetModel() )
 				for k,v in pairs( self.Seats ) do
@@ -80,11 +124,14 @@ if SERVER then
 					seat = string.format( seat, FormatVector( self.Vehicle:WorldToLocal( v:GetPos() ), true ), comma )
 				end
 				tbl = string.format( [[{
+	"HornSound": "%s",
+	"MaxHealth": %s,
 	"Seats": [
 		%s
 	]
 }]],
-				seat )
+				GAuto.Tool.Horn, GAuto.Tool.Health, seat )
+				file.CreateDir( "gauto/vehicles" )
 				file.Write( "gauto/vehicles/"..filename..".json", tbl )
 				owner:ChatPrint( "Generated JSON has been printed to the server console and written to the server's data folder." )
 			else
@@ -100,17 +147,16 @@ if SERVER then
 			]]
 					seat = string.format( seat, FormatVector( self.Vehicle:WorldToLocal( v:GetPos() ) ), comma )
 				end
-				tbl = string.format( [[if GAuto.Vehicles then
+				tbl = string.format( [[if GAuto and GAuto.Vehicles then
 	GAuto.Vehicles["%s"] = {
-		HornSound = "gauto/carhorn.wav",
-		MaxHealth = 100,
+		HornSound = "%s",
+		MaxHealth = %s,
 		Seats = {
 			%s
 		}
 	}
 end]],
-				self.Vehicle:GetModel(),
-				seat )
+				self.Vehicle:GetModel(), GAuto.Tool.Horn, GAuto.Tool.Health, seat )
 				owner:ChatPrint( "Generated code has been printed to the server console. Put it in a Lua file that both the client and server have access to." )
 			end
 			
@@ -122,4 +168,17 @@ end]],
 			self.Seats = {}
 		end
 	end
+
+	net.Receive( "GAuto_VehicleCreatorMenu", function( len, ply )
+		if !ply:IsAdmin() then return end
+		local json = net.ReadBool()
+		local horn = net.ReadString()
+		local health = net.ReadUInt( 10 )
+		GAuto.Tool = {
+			UseJSON = json,
+			Horn = horn,
+			Health = health
+		}
+		ply:ChatPrint( "Settings saved!" )
+	end )
 end

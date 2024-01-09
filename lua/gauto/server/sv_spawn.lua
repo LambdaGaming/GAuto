@@ -135,9 +135,11 @@ local function InitVehicle( ent )
 				if GAuto.Vehicles[vehmodel] and GAuto.Vehicles[vehmodel].Seats then
 					local vehseats = GAuto.Vehicles[vehmodel].Seats
 					local numseats = table.Count( vehseats )
-					ent.seat = {}
-					for i=1, numseats do
-						GAuto.SpawnSeat( i, ent, vehseats[i].pos, vehseats[i].ang )
+					if numseats > 0 then
+						ent.seat = {}
+						for i=1, numseats do
+							GAuto.SpawnSeat( i, ent, vehseats[i].pos, vehseats[i].ang )
+						end
 					end
 				end
 			end
