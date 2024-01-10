@@ -14,7 +14,7 @@ if CLIENT then
 		main:Center()
 		main:MakePopup()
 		main.Paint = function( self, w, h )
-			draw.RoundedBox( 4, 0, 0, w, h, Color( 64, 64, 64, 190 ) )
+			draw.RoundedBox( 4, 0, 0, w, h, Color( 30, 30, 30, 230 ) )
 		end
 	
 		local checkBox = vgui.Create( "DCheckBoxLabel", main )

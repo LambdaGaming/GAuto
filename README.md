@@ -11,9 +11,8 @@ This is a lightweight vehicle system for Garry's Mod. All vehicles made by popul
     - Tires can be repaired with the secondary fire of the repair tool.
     - Deflated tires will cause the vehicle to slow down and become harder to control.
 - Vehicle HUD
-  - HUD appears in the bottom right of the screen when the player enters the driver's seat.
-  - Adapts it's position based on the current vehicle's Photon support.
-  - Displays vehicle's health, door lock status, cruise control status, and fuel level.
+  - HUD appears on the right when player enters the driver's seat.
+  - Displays vehicle's health, fuel level, door lock status, and cruise control status.
 - Brake locking
   - Brakes will only lock on a vehicle if the driver holds their jump key as they exit the vehicle.
   - Brakes can be released with the vehicle management tool for towing purposes if the vehicle is locked and cannot be driven away.
@@ -68,8 +67,8 @@ If your car isn't smoking, its model likely does not have an engine attachment, 
 If you want to interface with this addon through Lua, see the [documentation](dev.md) for hooks, functions, and other things you can use.
 
 # Compatibilities
- - Photon Legacy is fully compatible. The HUD will adjust itself to make room for the Photon HUD when driving emergency vehicles, and the default controls have been designed to avoid conflicts with Photon.
- - Photon 2 is mostly compatible. The HUD will adjust itself like Photon Legacy, but seat switching and ejection are disabled on Photon 2 vehicles due to how the controls are setup. All other controls should not conflict.
+ - Photon Legacy is fully compatible. Both the HUD and default controls were designed to avoid conflicts with it.
+ - Photon 2 is mostly compatible. The HUD will not overlap, but seat switching and ejection are disabled on Photon 2 vehicles due to how the controls are setup. All other controls should not conflict.
  - Simfphys and LVS vehicles are fully compatible. Nothing should conflict, and the spikestrip will pop tires from both systems.
  - VFire is supported. For the best destruction effects, it's recommended you have it installed.
  - GChroma is supported. All available keybinds will be highlighted when you enter the drivers seat of a vehicle.
