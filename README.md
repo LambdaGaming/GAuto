@@ -51,24 +51,25 @@ This is a lightweight vehicle system for Garry's Mod. All vehicles made by popul
 
 # FAQs
 ### Is a lighting system planned?
-No. For both regular and emergency lighting, I recommend Photon. It's available on the workshop and fully compatible with GAuto.
+No. For both regular and emergency lighting, I recommend Photon Legacy or Photon 2. They're both available on the workshop and compatible with GAuto.
 ### Will you add support to [this car]?
 Probably not. Any vehicle I add support to going forward is only because I personally want to use it with GAuto. If you would like to add support yourself, I will accept a PR on GitHub, but otherwise it's up to vehicle creators to add support to their own vehicles, because I simply cannot fulfil every request.
 ### Will you add [this feature]?
-Maybe. If it'll make a significant improvement to the addon then there is a good chance it will be added, as long as it isn't anything massive.
+Maybe. If it'll make a significant improvement to the addon there's a good chance it will be added.
 ### Why is smoke sometimes floating above the car?
 The smoke effect is placed at the position of the engine attachment that is built into the model. If the attachment isn't aligned properly, the smoke won't be aligned properly either. There is nothing I can do to fix this. Some vehicle creators do this intentionally to make the vehicle drivable in deep water.
 ### Why isn't my car smoking or catching fire when damaged?
 If your car isn't smoking, its model likely does not have an engine attachment, or the attachment is located at 0,0,0 and has been disabled to prevent it from looking weird. If your car isn't catching fire when its health reaches 0, you likely don't have VFire installed.
 
-# Development:
+# Development
 ### Vehicle Creation
  If you are a vehicle creator and would like to add GAuto support to your addons, you can use the GAuto Vehicle Creator tool to easily create a table to place in your vehicle's Lua file. When using this tool, left click will spawn passenger seats that you can physgun into place, right click will open a menu to edit values such as the vehicle's health and horn sound, and reload will remove the seats and generate vehicle data as either a Lua script or JSON table. Lua scripts need placed in a Lua file with a shared scope, and JSON files are automatically generated in the game's data folder. If you do add GAuto support to your vehicles, send me a link and I will add them to the collection linked at the top!
 ### Interfacing
 If you want to interface with this addon through Lua, see the [documentation](dev.md) for hooks, functions, and other things you can use.
 
 # Compatibilities
- - Photon is fully compatible. The HUD will adjust itself to make room for the Photon HUD when driving emergency vehicles, and the default controls have been designed to avoid conflicts with Photon.
+ - Photon Legacy is fully compatible. The HUD will adjust itself to make room for the Photon HUD when driving emergency vehicles, and the default controls have been designed to avoid conflicts with Photon.
+ - Photon 2 is mostly compatible. The HUD will adjust itself like Photon Legacy, but seat switching and ejection are disabled on Photon 2 vehicles due to how the controls are setup. All other controls should not conflict.
  - Simfphys and LVS vehicles are fully compatible. Nothing should conflict, and the spikestrip will pop tires from both systems.
  - VFire is supported. For the best destruction effects, it's recommended you have it installed.
  - GChroma is supported. All available keybinds will be highlighted when you enter the drivers seat of a vehicle.

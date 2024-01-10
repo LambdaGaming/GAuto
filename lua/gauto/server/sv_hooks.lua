@@ -214,3 +214,13 @@ local function CruiseController( ply, key )
 	end
 end
 hook.Add( "KeyPress", "GAuto_CruiseController", CruiseController )
+
+--Prevent seat changing and ejection in Photon 2 vehicles due to control conflicts
+local function Photon2NoSeatChange( ply, veh, seat )
+	local controller = veh:GetNW2Entity( "Photon2:Controller" )
+	if IsValid( controller ) then
+		return false
+	end
+end
+hook.Add( "GAuto_CanChangeSeats", "Photon2_GAuto_SeatChange", Photon2NoSeatChange )
+hook.Add( "GAuto_CanEjectPassenger", "Photon2_GAuto_Eject", Photon2NoSeatChange )

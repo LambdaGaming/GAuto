@@ -67,7 +67,6 @@ function GAuto.ChangeSeats( len, ply, seat )
 	local veh = ply:GetVehicle()
 	if GAuto.IsBlackListed( veh ) then return end
 	local vehparent = veh:GetParent()
-	local driver = veh:GetDriver()
 	local realseat = key - 1 --Need to subtract 1 since the driver's seat doesn't count as a passenger seat
 	local canChange = hook.Run( "GAuto_CanChangeSeats", ply, veh, seat )
 	if canChange == false then return end
