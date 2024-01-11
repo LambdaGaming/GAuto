@@ -16,39 +16,43 @@ SWEP.Primary.Ammo = "none"
 SWEP.Primary.ClipSize = -1
 SWEP.Primary.DefaultClip = -1
 SWEP.Primary.Automatic = true
-
 SWEP.Secondary.Ammo = "none"
 SWEP.Secondary.ClipSize = -1
 SWEP.Secondary.DefaultClip = -1
 SWEP.Secondary.Automatic = false
 
+SWEP.NextThinkTime = 0
+
 function SWEP:PrimaryAttack()
-	if !IsFirstTimePredicted() or CLIENT then return end
-	local GAuto_FuelEnabled = GetConVar( "GAuto_Config_FuelEnabled" ):GetBool()
-	if !GAuto_FuelEnabled then return end
-	local tr = self.Owner:GetEyeTrace().Entity
-	local pos = tr:GetPos()
-	if tr:GetClass() == "prop_vehicle_jeep" and self.Owner:GetPos():DistToSqr( pos ) < 40000 then
-		local fuel = tr:GetNWInt( "GAuto_FuelAmount" )
-		if fuel < 100 then
-			GAuto.SetFuel( tr, fuel + 1 )
-		end
-	end
-	self:SetNextPrimaryFire( CurTime() + 0.1 )
 end
 
-function SWEP:Think()
-	local GAuto_FuelEnabled = GetConVar( "GAuto_Config_FuelEnabled" ):GetBool()
-	if !GAuto_FuelEnabled then return end
-	if self.Owner:KeyDown( IN_ATTACK ) then
-		self.snd = CreateSound( self, "ambient/water/water_flow_loop1.wav" )
-		if !self.snd:IsPlaying() then
-			self.snd:Play()
+function SWEP:SecondaryAttack()
+end
+
+if SERVER then
+	function SWEP:Think()
+		if self.NextThinkTime > CurTime() then return end
+		local GAuto_FuelEnabled = GetConVar( "GAuto_Config_FuelEnabled" ):GetBool()
+		if !GAuto_FuelEnabled then return end
+		if self.Owner:KeyDown( IN_ATTACK ) then
+			local tr = self.Owner:GetEyeTrace().Entity
+			local pos = tr:GetPos()
+			if tr:GetClass() == "prop_vehicle_jeep" and self.Owner:GetPos():DistToSqr( pos ) < 40000 then
+				local fuel = tr:GetNWInt( "GAuto_FuelAmount" )
+				if fuel < 100 then
+					GAuto.SetFuel( tr, fuel + 1 )
+				end
+				self.snd = CreateSound( self, "ambient/water/water_flow_loop1.wav" )
+				if !self.snd:IsPlaying() then
+					self.snd:Play()
+				end
+			end
+		else
+			if self.snd and self.snd:IsPlaying() then
+				self.snd:Stop()
+			end
 		end
-	else
-		if self.snd and self.snd:IsPlaying() then
-			self.snd:Stop()
-		end
+		self.NextThinkTime = CurTime() + 0.1
 	end
 end
 
@@ -78,39 +82,35 @@ if CLIENT then
 	end
 
 	local function DrawFuelHUD()
-		local GAuto_FuelEnabled = GetConVar( "GAuto_Config_FuelEnabled" ):GetBool()
-		local posw = ScrW() / 2 - 75
-		local posh = ScrH() / 2 - 10
 		local ply = LocalPlayer()
-		local tr = ply:GetEyeTrace().Entity
 		local wep = ply:GetActiveWeapon()
+		if IsValid( wep ) and wep:GetClass() != "weapon_gauto_fuel" then return end
 
-		if !IsValid( wep ) or !IsValid( tr ) then return end
-
-		local wepclass = wep:GetClass()
-		local pos = tr:GetPos()
-		local vehpos = ply:GetPos():DistToSqr( pos )
-		local maxfuel = 100
-		if !tr:IsVehicle() or ply:InVehicle() or wepclass != "weapon_gauto_fuel" or vehpos > 40000 then return end
-
+		local tr = ply:GetEyeTrace().Entity
+		local GAuto_FuelEnabled = GetConVar( "GAuto_Config_FuelEnabled" ):GetBool()
+		local posw = ScrW() / 2 - 95
+		local posh = ScrH() / 2 - 20
+		local vehpos = ply:GetPos():DistToSqr( tr:GetPos() )
+		local maxfuel = GetConVar( "GAuto_Config_FuelAmount" ):GetInt()
 		local fuel = tr:GetNWInt( "GAuto_FuelAmount" )
 		local fuel25 = maxfuel * 0.25
 		local fuel75 = maxfuel * 0.75
-		draw.RoundedBox( 8, posw, posh, 190, 40, Color( 30, 30, 30, 254 ) )
+		draw.RoundedBox( 4, posw, posh, 190, 40, Color( 30, 30, 30, 230 ) )
 		surface.SetFont( "GAuto_HUDFont1" )
-		if GAuto_FuelEnabled and fuel <= fuel25 then
-			surface.SetTextColor( 255, 0, 0 )
-		elseif fuel > fuel25 and fuel < fuel75 then
-			surface.SetTextColor( 196, 145, 2 )
-		else
-			surface.SetTextColor( color_white )
-		end
 		surface.SetTextPos( posw + 15, posh + 10 )
-		
-		if GAuto_FuelEnabled then
+		surface.SetTextColor( color_white )
+
+		if !GAuto_FuelEnabled then
+			surface.DrawText( "Vehicle fuel disabled." )
+		elseif IsValid( tr ) and tr:IsVehicle() and vehpos <= 40000 then
+			if GAuto_FuelEnabled and fuel <= fuel25 then
+				surface.SetTextColor( 255, 0, 0 )
+			elseif fuel > fuel25 and fuel < fuel75 then
+				surface.SetTextColor( 196, 145, 2 )
+			end
 			surface.DrawText( "Vehicle Fuel Level: "..fuel )
 		else
-			surface.DrawText( "Vehicle fuel disabled." )
+			surface.DrawText( "No vehicle detected." )
 		end
 	end
 	hook.Add( "HUDPaint", "GAuto_FuelHUD", DrawFuelHUD )
