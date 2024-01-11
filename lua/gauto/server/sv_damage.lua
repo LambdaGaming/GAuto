@@ -95,10 +95,6 @@ end
 function GAuto.PopTire( veh, wheel )
 	local GAuto_TirePopEnabled = GetConVar( "GAuto_Config_TirePopEnabled" ):GetBool()
 	if GAuto_TirePopEnabled and !GAuto.IsBlackListed( veh ) and veh:IsVehicle() then
-		if veh.WheelHealth and veh.WheelHealth[wheel] and veh.WheelHealth[wheel] <= 0 then
-			return --Don't try to pop a tire that's already popped
-		end
-
 		local canPop = hook.Run( "GAuto_CanPopTire", veh, wheel )
 		if canPop == false then return end
 
@@ -131,19 +127,17 @@ function GAuto.PopCheck( dmg, veh )
 		local dmgamount = dmg:GetDamage() * 300
 		for i = 0, veh:GetWheelCount() - 1 do
 			local wheel = veh:GetWheel( i )
-			if IsValid( wheel ) then
-				if veh.WheelHealth and veh.WheelHealth[i] and veh.WheelHealth[i] <= 0 then
-					return --Don't try to pop a tire that's already popped
-				end
-				local dist = wheel:GetPos():DistToSqr( pos )
-				local diameter = veh:GetWheelBaseHeight( i )
-				local diametersqr = diameter * diameter
-				if dist <= diametersqr then --Only deal damage if the bullets hit within the wheel's diameter
-					veh.WheelHealth = veh.WheelHealth or {}
-					veh.WheelHealth[i] = ( veh.WheelHealth[i] or GAuto_TireHealth ) - dmgamount
-					if veh.WheelHealth[i] <= 0 then
-						GAuto.PopTire( veh, i )
-					end
+			if !IsValid( wheel ) or ( veh.WheelHealth and veh.WheelHealth[i] and veh.WheelHealth[i] <= 0 ) then
+				--Don't try to pop a tire that's invalid or already popped
+				continue
+			end
+			local dist = wheel:GetPos():DistToSqr( pos )
+			local diameter = veh:GetWheelBaseHeight( i ) * 16 --Increase diameter since the base height doesn't cover the whole visible wheel
+			if dist <= diameter then --Only deal damage if the bullets hit within the wheel's diameter
+				veh.WheelHealth = veh.WheelHealth or {}
+				veh.WheelHealth[i] = ( veh.WheelHealth[i] or GAuto_TireHealth ) - dmgamount
+				if veh.WheelHealth[i] <= 0 then
+					GAuto.PopTire( veh, i )
 				end
 			end
 		end
