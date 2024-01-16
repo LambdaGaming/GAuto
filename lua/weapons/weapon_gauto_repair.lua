@@ -77,7 +77,7 @@ if CLIENT then
 	local function DrawRepairHUD()
 		local ply = LocalPlayer()
 		local wep = ply:GetActiveWeapon()
-		if IsValid( wep ) and wep:GetClass() != "weapon_gauto_repair" then return end
+		if !IsValid( wep ) or wep:GetClass() != "weapon_gauto_repair" then return end
 		
 		local posw = ScrW() / 2 - 95
 		local posh = ScrH() / 2 - 20

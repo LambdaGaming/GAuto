@@ -84,7 +84,7 @@ if CLIENT then
 	local function DrawFuelHUD()
 		local ply = LocalPlayer()
 		local wep = ply:GetActiveWeapon()
-		if IsValid( wep ) and wep:GetClass() != "weapon_gauto_fuel" then return end
+		if !IsValid( wep ) or wep:GetClass() != "weapon_gauto_fuel" then return end
 
 		local tr = ply:GetEyeTrace().Entity
 		local GAuto_FuelEnabled = GetConVar( "GAuto_Config_FuelEnabled" ):GetBool()
