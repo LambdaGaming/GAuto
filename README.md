@@ -71,13 +71,13 @@ If you want to interface with this addon through Lua, see the [documentation](de
  - Photon 2 is mostly compatible. The HUD will not overlap, but seat switching and ejection are disabled on Photon 2 vehicles due to how the controls are setup. All other controls should not conflict.
  - Simfphys and LVS vehicles are fully compatible. Nothing should conflict, and the spikestrip will pop tires from both systems.
  - VFire is supported. For the best destruction effects, it's recommended you have it installed.
- - GChroma is supported. All available keybinds will be highlighted when you enter the drivers seat of a vehicle.
- - Other vehicle systems such as VCMod and Vehicle Damage 2 are NOT compatible. They will likely interfere with GAuto and cause various systems to break.
+ - Sligwolf's vehicles are compatible but blacklisted, meaning they can be installed alongside GAuto without any issues, but they won't use any GAuto features.
+ - Other vehicle systems such as VCMod, SVMod, and Vehicle Damage 2 are NOT compatible. They will likely interfere with GAuto and cause various systems to break.
 
 # Issues & Pull Requests
  If you would like to contribute to this repository by creating an issue or pull request, please refer to the [contributing guidelines.](https://lambdagaming.github.io/contributing.html)
 
 # Credits
 - [Simfphys Base](https://github.com/Blu-x92/simfphys_base) - Reference for coding various systems including passenger seats and particle effects.
-- SCS Software - Horn sounds
+- Valve - Particle effects
 - SGM - Feature suggestions
