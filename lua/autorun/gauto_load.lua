@@ -1,6 +1,6 @@
 AddCSLuaFile()
 
-GAuto = {}
+GAuto = { Version = "2.7" }
 
 for _,v in pairs( file.Find( "gauto/*", "LUA" ) ) do
 	include( "gauto/"..v )
@@ -19,3 +19,5 @@ if SERVER then
 		include( "gauto/server/"..v )
 	end
 end
+
+MsgC( Color( 255, 0, 0 ), "GAuto v"..GAuto.Version.." successfully loaded.\n" )
