@@ -1,7 +1,10 @@
 GAuto.Vehicles = {}
 
 game.AddParticles( "particles/vehicle.pcf" )
+game.AddParticles( "particles/fire_01.pcf" )
 PrecacheParticleSystem( "WheelDust" )
+PrecacheParticleSystem( "burning_engine_fire" )
+PrecacheParticleSystem( "smoke_burning_engine_01" )
 
 CreateConVar( "GAuto_Config_HealthEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Vehicles will take damage." )
 CreateConVar( "GAuto_Config_BulletDamageEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Vehicles will take bullet damage. Does nothing if GAuto_Config_HealthEnabled is disabled." )
