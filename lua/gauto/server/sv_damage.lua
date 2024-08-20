@@ -94,7 +94,7 @@ end
 
 function GAuto.PopTire( veh, wheel )
 	local GAuto_TirePopEnabled = GetConVar( "GAuto_Config_TirePopEnabled" ):GetBool()
-	if GAuto_TirePopEnabled and !GAuto.IsBlackListed( veh ) and veh:IsVehicle() then
+	if GAuto_TirePopEnabled and !GAuto.IsBlackListed( veh ) then
 		local canPop = hook.Run( "GAuto_CanPopTire", veh, wheel )
 		if canPop == false then return end
 
@@ -146,7 +146,7 @@ end
 
 function GAuto.RepairTire( veh, wheel )
 	local GAuto_TirePopEnabled = GetConVar( "GAuto_Config_TirePopEnabled" ):GetBool()
-	if GAuto_TirePopEnabled and !GAuto.IsBlackListed( veh ) and veh:IsVehicle() then
+	if GAuto_TirePopEnabled and !GAuto.IsBlackListed( veh ) then
 		if wheel then
 			veh:SetSpringLength( wheel, 500.1 )
 			veh:GetWheel( wheel ):SetDamping( 0, 0 )

@@ -89,7 +89,7 @@ GAuto.Blacklist = {
 }
 
 function GAuto.IsBlackListed( veh )
-	if !IsValid( veh ) then return true end --Return blacklisted if the vehicle isn't valid to avoid running IsValid twice
+	if !IsValid( veh ) or !veh:IsVehicle() then return true end --Return blacklisted if the vehicle isn't valid to avoid running IsValid twice
 	local class = veh:GetClass()
 	local model = veh:GetModel()
 	if GAuto.Blacklist[model] and class == "prop_vehicle_jeep" and !veh:GetNWBool( "IsGAutoSeat" ) then
