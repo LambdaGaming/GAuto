@@ -169,8 +169,8 @@ local function ProcessDamage( ent, dmg )
 	local GAuto_BulletDamageEnabled = GetConVar( "GAuto_Config_BulletDamageEnabled" ):GetBool()
 	local GAuto_ScalePlayerDamage = GetConVar( "GAuto_Config_ScalePlayerDamage" ):GetBool()
 	if GAuto_HealthEnabled then
-		if GAuto.IsBlackListed( ent ) or ent:IsOnFire() then return end --Prevent car from constantly igniting itself if it's on fire
 		if ent:GetClass() == "prop_vehicle_jeep" then
+		if ent:IsOnFire() then return end --Prevent car from constantly igniting itself if it's on fire
 			if dmg:IsBulletDamage() and GAuto_BulletDamageEnabled then
 				GAuto.TakeDamage( ent, dmg:GetDamage() * 450 )
 				GAuto.PopCheck( dmg, ent )
