@@ -24,7 +24,8 @@ local function SmokeThink()
 			local plypos = ply:GetPos()
 			if plypos:DistToSqr( carpos ) < 4000000 then --Only displays particles if the player is within a certain distance of the vehicle, helps with optimization
 				local rand = math.random( 1, 9 )
-				local pos = eng.Pos
+				local offset = v:GetNWVector( "GAuto_EngineOffset" )
+				local pos = eng.Pos + offset
 				local emitter = ParticleEmitter( pos )
 				local smoke = emitter:Add( "particle/smokesprites_000"..rand, pos )
 				local dietime = math.Rand( 0.6, 1.3 )

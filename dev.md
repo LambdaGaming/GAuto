@@ -34,6 +34,7 @@ These are various values tied to GAuto vehicles that might be useful.
 | Name | Scope | Type | Description |
 |------|-------|------|-------------|
 |GAuto_DoorsLocked|Shared|Networked Bool|Whether or not the vehicle is currently locked.|
+|GAuto_EngineOffset|Shared|Networked Vector|Offset of the engine position used for particle effects.|
 |GAuto_HasExploded|Shared|Networked Bool|Whether or not the vehicle has exploded.|
 |GAuto_HornSound|Shared|Networked String|Sound path for the vehicle's horn.|
 |GAuto_IsSmoking|Shared|Networked Bool|Whether or not the vehicle is currently smoking.|

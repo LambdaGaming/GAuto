@@ -1,17 +1,24 @@
 local color_red = Color( 255, 0, 0 )
 
-function GAuto.HornSound( model ) --Finds the set horn sound for the specified model, returns a default sound if none is found
+function GAuto.HornSound( model )
 	if GAuto.Vehicles[model] and GAuto.Vehicles[model].HornSound then
 		return GAuto.Vehicles[model].HornSound
 	end
 	return "gauto/carhorn.wav"
 end
 
-function GAuto.VehicleHealth( model ) --Does the same as above but with the vehicle's health
+function GAuto.VehicleHealth( model )
 	if GAuto.Vehicles[model] and GAuto.Vehicles[model].MaxHealth then
 		return GAuto.Vehicles[model].MaxHealth
 	end
 	return 100
+end
+
+function GAuto.EngineOffset( model )
+	if GAuto.Vehicles[model] and GAuto.Vehicles[model].EngineOffset then
+		return GAuto.Vehicles[model].EngineOffset
+	end
+	return vector_origin
 end
 
 function GAuto.LoadVehicle( model )
@@ -104,6 +111,7 @@ local function InitVehicle( ent )
 				end
 				ent:SetNWBool( "GAuto_IsSmoking", false )
 				ent:SetNWBool( "GAuto_HasExploded", false )
+				ent:SetNWVector( "GAuto_EngineOffset", GAuto.EngineOffset( vehmodel ) )
 				ent:AddCallback( "PhysicsCollide", PhysicsCollide )
 			end
 			if GAuto_HornEnabled then
