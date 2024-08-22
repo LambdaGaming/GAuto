@@ -66,7 +66,7 @@ local function HUDStuff()
 		surface.SetTextPos( health[1], health[2] )
 		if vehmaxhealth > 0 then
 			local percent = CalcPercentage( vehhealth, vehmaxhealth )
-			surface.DrawText( "Health: "..percent.."%" )
+			surface.DrawText( "Health: "..math.Round( percent, 2 ).."%" )
 		else
 			surface.DrawText( "Health Disabled" )
 		end
@@ -85,7 +85,7 @@ local function HUDStuff()
 				surface.SetTextColor( color_white )
 			end
 			surface.SetTextPos( fuel[1], fuel[2] )
-			surface.DrawText( "Fuel: "..fuelPercentage.."%" )
+			surface.DrawText( "Fuel: "..math.Round( fuelPercentage, 2 ).."%" )
 		else
 			surface.SetTextColor( color_white )
 			surface.SetTextPos( fuel[1], fuel[2] )
