@@ -28,9 +28,8 @@ GAuto is a lightweight vehicle system for Garry's Mod that extends the default f
 - All vehicles, both supported and unsupported, have a horn that can be used by pressing J.
 - GAuto comes with 3 horn sounds, but when adding support to a vehicle, any sound can be used.
 ### Door Locking
-- Drivers can lock their vehicle's doors to prevent any other players from getting in by pressing N.
+- Drivers can lock their doors to prevent any other players from getting in, even when the driver leaves, by pressing N.
 - Locking the doors does not prevent passengers from getting out.
-- An alarm will sound if a player starts lockpicking a vehicle on DarkRP.
 ### Fuel System
 - Fuel is consumed when the throttle is pressed.
 - Fuel can be replenished through the fuel can entity or weapon.
@@ -73,6 +72,7 @@ If you want to interface with this addon through Lua, see the [documentation](de
  - Photon 2 is mostly compatible. The HUD will not overlap, but seat switching and ejection are disabled on Photon 2 vehicles due to how the controls are setup. All other controls should not conflict.
  - Simfphys and LVS vehicles are fully compatible. Nothing should conflict, and the spikestrip will pop tires from both systems.
  - VFire is supported. For the best destruction effects, it's recommended you have it installed.
+ - DarkRP is fully compatible. The door lock status of vehicles is properly synced when using keys, an alarm will sound when lock picking a vehicle, and passengers will be ejected when using a battering ram on a vehicle.
  - Sligwolf's vehicles are compatible but blacklisted, meaning they can be installed alongside GAuto without any issues, but they won't use any GAuto features.
  - Other vehicle systems such as VCMod, SVMod, and Vehicle Damage 2 are NOT compatible. They will likely interfere with GAuto and cause various systems to break.
 

@@ -161,22 +161,6 @@ local function PlayerUseVeh( ply, ent )
 end
 hook.Add( "PlayerUse", "GAuto_PlayerUseVeh", PlayerUseVeh )
 
-local function Lockpick( ply, ent, trace )
-	local GAuto_AlarmEnabled = GetConVar( "GAuto_Config_LockAlarmEnabled" ):GetBool()
-	if !GAuto_AlarmEnabled or GAuto.IsBlackListed( ent ) or !GAuto.IsDrivable( ent ) then return end
-	ent:EmitSound( "gauto/alarm.mp3" )
-end
-hook.Add( "lockpickStarted", "GAuto_Lockpick", Lockpick )
-
-local function LockpickFinish( ply, success, ent )
-	local GAuto_AlarmEnabled = GetConVar( "GAuto_Config_LockAlarmEnabled" ):GetBool()
-	if GAuto_AlarmEnabled and GAuto.IsDrivable( ent ) and success then
-		ent:SetNWBool( "GAuto_DoorsLocked", false )
-		ent:SetNWEntity( "GAuto_LockOwner", nil )
-	end
-end
-hook.Add( "onLockpickCompleted", "GAuto_LockpickFinish", LockpickFinish )
-
 local function CruiseThink()
 	for k,v in ipairs( ents.FindByClass( "prop_vehicle_*" ) ) do
 		if GAuto.IsBlackListed( v ) then return end
@@ -217,3 +201,45 @@ local function Photon2NoSeatChange( ply, veh, seat )
 end
 hook.Add( "GAuto_CanChangeSeats", "Photon2_GAuto_SeatChange", Photon2NoSeatChange )
 hook.Add( "GAuto_CanEjectPassenger", "Photon2_GAuto_Eject", Photon2NoSeatChange )
+
+--DarkRP stuff
+local function Lockpick( ply, ent, trace )
+	local GAuto_AlarmEnabled = GetConVar( "GAuto_Config_LockAlarmEnabled" ):GetBool()
+	if !GAuto_AlarmEnabled or GAuto.IsBlackListed( ent ) or !GAuto.IsDrivable( ent ) then return end
+	ent:EmitSound( "gauto/alarm.mp3" )
+end
+hook.Add( "lockpickStarted", "DarkRP_GAuto_Lockpick", Lockpick )
+
+local function LockpickFinish( ply, success, ent )
+	local GAuto_AlarmEnabled = GetConVar( "GAuto_Config_LockAlarmEnabled" ):GetBool()
+	if GAuto_AlarmEnabled and GAuto.IsDrivable( ent ) and success then
+		ent:SetNWBool( "GAuto_DoorsLocked", false )
+		ent:SetNWEntity( "GAuto_LockOwner", nil )
+	end
+end
+hook.Add( "onLockpickCompleted", "DarkRP_GAuto_LockpickFinish", LockpickFinish )
+
+local function DarkRPKeysLocked( ent )
+	if GAuto.IsBlackListed( ent ) then return end
+	ent:SetNWBool( "GAuto_DoorsLocked", true )
+end
+hook.Add( "onKeysLocked", "DarkRP_GAuto_KeysLocked", DarkRPKeysLocked )
+
+local function DarkRPKeysLocked( ent )
+	if GAuto.IsBlackListed( ent ) then return end
+	ent:SetNWBool( "GAuto_DoorsLocked", false )
+end
+hook.Add( "onKeysUnlocked", "DarkRP_GAuto_KeysUnlocked", DarkRPKeysLocked )
+
+--Eject passengers when battering ram is used on vehicle
+local function DarkRPDoorRam( success, ply, tr )
+	local ent = tr.Entity
+	if !success or !IsValid( ent ) or !ent.seat then return end
+	for k,v in pairs( ent.seat ) do
+		local passenger = v:GetDriver()
+		if IsValid( passenger ) then
+			passenger:ExitVehicle()
+		end
+	end
+end
+hook.Add( "onDoorRamUsed", "DarkRP_GAuto_DoorRam", DarkRPDoorRam )

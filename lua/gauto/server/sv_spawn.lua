@@ -30,11 +30,9 @@ function GAuto.LoadVehicle( model )
 	local findvehicle = file.Read( "data_static/gauto/vehicles/"..slashfix..".json", "THIRDPARTY" )
 	local findvehicleextra = file.Read( "gauto/vehicles/"..slashfix..".json", "DATA" )
 	local filefoundinmaindir = false
-	if findvehicle == nil then
-		if findvehicleextra == nil then
-			MsgC( color_red, "[GAuto] Warning: '"..model.."' is unsupported. Everything will still work, but passenger seats will be limited or unavailable.\n" )
-			return
-		end
+	if findvehicle == nil and findvehicleextra == nil then
+		MsgC( color_red, "[GAuto] Warning: '"..model.."' is unsupported. Everything will still work, but passenger seats will be limited or unavailable.\n" )
+		return
 	else
 		filefoundinmaindir = true
 	end
