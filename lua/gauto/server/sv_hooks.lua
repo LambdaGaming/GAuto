@@ -91,7 +91,7 @@ local function LeaveVehicle( ply, ent )
 			ent:Fire( "HandBrakeOff", "", 0.01 )
 		end
 	end
-	if GAuto_WheelLockEnabled then
+	if GAuto_WheelLockEnabled and ent:GetClass() == "prop_vehicle_jeep" then
 		local steering = ent:GetSteering()
 		timer.Simple( 0.01, function() --Small timer because it otherwise won't register
 			if !IsValid( ent ) then return end
@@ -118,74 +118,67 @@ end
 hook.Add( "PlayerLeaveVehicle", "GAuto_LeaveVehicle", LeaveVehicle )
 
 local function PlayerUseVeh( ply, ent )
-	if !IsValid( ply ) or GAuto.IsBlackListed( ent ) then return end
-	if ent:GetClass() == "prop_vehicle_jeep" then
-		local GAuto_SeatsEnabled = GetConVar( "GAuto_Config_SeatsEnabled" ):GetBool()
-		if ent.GAuto_ExitCooldown and ent.GAuto_ExitCooldown > CurTime() then return end
-		if ent:GetNWBool( "GAuto_DoorsLocked" ) then
-			if ent:GetNWEntity( "GAuto_LockOwner" ) == ply then
-				ent:Fire( "Unlock", "", 0.01 )
-				ent:SetNWBool( "GAuto_DoorsLocked", false )
-				ent:SetNWEntity( "GAuto_LockOwner", nil )
-				GAuto.Notify( ply, "Vehicle unlocked." )
-			else
-				if ent.LockedNotifyCooldown and ent.LockedNotifyCooldown > CurTime() then return end
-				GAuto.Notify( ply, "This vehicle is locked." )
-				ent.LockedNotifyCooldown = CurTime() + 1
-			end
+	if !IsValid( ply ) or !GAuto.IsDrivable( ent ) or GAuto.IsBlackListed( ent ) then return end
+	local GAuto_SeatsEnabled = GetConVar( "GAuto_Config_SeatsEnabled" ):GetBool()
+	if ent.GAuto_ExitCooldown and ent.GAuto_ExitCooldown > CurTime() then return end
+	if ent:GetNWBool( "GAuto_DoorsLocked" ) then
+		if ent:GetNWEntity( "GAuto_LockOwner" ) == ply then
+			ent:Fire( "Unlock", "", 0.01 )
+			ent:SetNWBool( "GAuto_DoorsLocked", false )
+			ent:SetNWEntity( "GAuto_LockOwner", nil )
+			GAuto.Notify( ply, "Vehicle unlocked." )
+		else
+			if ent.LockedNotifyCooldown and ent.LockedNotifyCooldown > CurTime() then return end
+			GAuto.Notify( ply, "This vehicle is locked." )
+			ent.LockedNotifyCooldown = CurTime() + 1
 		end
-		if !ent:GetNWBool( "GAuto_DoorsLocked" ) and GAuto_SeatsEnabled then
-			if ply:InVehicle() or !ent.seat then return end
-			if GetConVar( "GAuto_Config_DriverSeat" ):GetBool() and !IsValid( ent:GetDriver() ) then
-				ply:EnterVehicle( ent )
-				return
-			end
-			local starttime = CurTime()
-			local seatlist = { ent } --Throw the driver's seat in with the passenger seats incase the vehicle doesn't have a driver
-			local foundseat = false
-			for k,v in pairs( ent.seat ) do
-				table.insert( seatlist, v ) --FINALLY found a better working method, probably not the best but it works and I don't see a drop in performance so it's good enough
-			end
-			table.sort( seatlist, function( a, b ) return ply:WorldToLocal( a:GetPos() ):Length() < ply:WorldToLocal( b:GetPos() ):Length() end )
-			for i = 1, #seatlist do
-				if IsValid( seatlist[i] ) and !IsValid( seatlist[i]:GetDriver() ) then --Make sure the closest seat doesn't have a driver, and if it does, pick the next closest seat
-					ply:EnterVehicle( seatlist[i] )
-					foundseat = true
-					break
-				end
-			end
-			if !foundseat then
-				GAuto.Notify( ply, "All seats in this vehicle are occupied." )
-			end
-		end
-		ply.GAuto_SeatCooldown = CurTime() + 1 --Prevents players from sometimes teleporting to the last detected seat instead of the first
 	end
+	if !ent:GetNWBool( "GAuto_DoorsLocked" ) and GAuto_SeatsEnabled then
+		if ply:InVehicle() or !ent.seat then return end
+		if GetConVar( "GAuto_Config_DriverSeat" ):GetBool() and !IsValid( ent:GetDriver() ) then
+			ply:EnterVehicle( ent )
+			return
+		end
+		local starttime = CurTime()
+		local seatlist = { ent } --Throw the driver's seat in with the passenger seats incase the vehicle doesn't have a driver
+		local foundseat = false
+		for k,v in pairs( ent.seat ) do
+			table.insert( seatlist, v ) --FINALLY found a better working method, probably not the best but it works and I don't see a drop in performance so it's good enough
+		end
+		table.sort( seatlist, function( a, b ) return ply:WorldToLocal( a:GetPos() ):Length() < ply:WorldToLocal( b:GetPos() ):Length() end )
+		for i = 1, #seatlist do
+			if IsValid( seatlist[i] ) and !IsValid( seatlist[i]:GetDriver() ) then --Make sure the closest seat doesn't have a driver, and if it does, pick the next closest seat
+				ply:EnterVehicle( seatlist[i] )
+				foundseat = true
+				break
+			end
+		end
+		if !foundseat then
+			GAuto.Notify( ply, "All seats in this vehicle are taken." )
+		end
+	end
+	ply.GAuto_SeatCooldown = CurTime() + 1 --Prevents players from sometimes teleporting to the last detected seat instead of the first
 end
 hook.Add( "PlayerUse", "GAuto_PlayerUseVeh", PlayerUseVeh )
 
 local function Lockpick( ply, ent, trace )
 	local GAuto_AlarmEnabled = GetConVar( "GAuto_Config_LockAlarmEnabled" ):GetBool()
-	if !GAuto_AlarmEnabled or GAuto.IsBlackListed( ent ) then return end
-	if ent:IsVehicle() and ent:GetClass() == "prop_vehicle_jeep" then
-		ent:EmitSound( "gauto/alarm.mp3" )
-	end
+	if !GAuto_AlarmEnabled or GAuto.IsBlackListed( ent ) or !GAuto.IsDrivable( ent ) then return end
+	ent:EmitSound( "gauto/alarm.mp3" )
 end
 hook.Add( "lockpickStarted", "GAuto_Lockpick", Lockpick )
 
 local function LockpickFinish( ply, success, ent )
 	local GAuto_AlarmEnabled = GetConVar( "GAuto_Config_LockAlarmEnabled" ):GetBool()
-	if !GAuto_AlarmEnabled or GAuto.IsBlackListed( ent ) then return end
-	if ent:IsVehicle() and ent:GetClass() == "prop_vehicle_jeep" then
-		if success then
-			ent:SetNWBool( "GAuto_DoorsLocked", false )
-			ent:SetNWEntity( "GAuto_LockOwner", nil )
-		end
+	if GAuto_AlarmEnabled and GAuto.IsDrivable( ent ) and success then
+		ent:SetNWBool( "GAuto_DoorsLocked", false )
+		ent:SetNWEntity( "GAuto_LockOwner", nil )
 	end
 end
 hook.Add( "onLockpickCompleted", "GAuto_LockpickFinish", LockpickFinish )
 
 local function CruiseThink()
-	for k,v in ipairs( ents.FindByClass( "prop_vehicle_jeep*" ) ) do
+	for k,v in ipairs( ents.FindByClass( "prop_vehicle_*" ) ) do
 		if GAuto.IsBlackListed( v ) then return end
 		if v:GetNWBool( "CruiseActive" ) then
 			v:SetThrottle( v:GetNWInt( "CruiseSpeed" ) )

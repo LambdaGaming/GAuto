@@ -1,5 +1,5 @@
 # GAuto
-This is a lightweight vehicle system for Garry's Mod. All vehicles made by popular creators TDM, SGM, and LW before September 2023 are supported out of the box. A few select vehicles outside of these creators are also supported. I will not be adding support to any more vehicles myself, but contributions that add support are welcome, and vehicle creators are encouraged to add support to their own addons. A full list of supported addons can be found [here.](https://steamcommunity.com/sharedfiles/filedetails/?id=3018834846) GAuto is now also available on the [Steam workshop.](https://steamcommunity.com/sharedfiles/filedetails/?id=3048040907)
+GAuto is a lightweight vehicle system for Garry's Mod that extends the default functionality of vehicles based on the built-in jeep and airboat entities. All vehicles made by popular creators TDM, SGM, and LW before September 2023 are supported out of the box. A few select vehicles outside of these creators are also supported. I will not be adding support to any more vehicles myself, but contributions that add support are welcome, and vehicle creators are encouraged to add support to their own addons. A full list of supported addons can be found [here.](https://steamcommunity.com/sharedfiles/filedetails/?id=3018834846) GAuto is now also available on the [Steam workshop.](https://steamcommunity.com/sharedfiles/filedetails/?id=3048040907)
 
 # Features
 ### Vehicle Health System
@@ -17,7 +17,8 @@ This is a lightweight vehicle system for Garry's Mod. All vehicles made by popul
 - Brakes will only lock on a vehicle if the driver holds their jump key as they exit the vehicle.
 - Brakes can be released with the vehicle management tool for towing purposes if the vehicle is locked and cannot be driven away.
 ### Steering Wheel Locking
-  - The front wheels will lock into a turned position if the driver keeps them turned as they exit the vehicle.
+- The front wheels will lock into a turned position if the driver keeps them turned as they exit the vehicle.
+- Not supported on airboats since it causes them to spin indefinitely.
 ### Passenger Seats
 - Supported vehicles will spawn with multiple passenger seats.
 - Players can switch between seats using the number keys.
@@ -47,6 +48,7 @@ This is a lightweight vehicle system for Garry's Mod. All vehicles made by popul
 - Dust will emit from the wheels when driving on certain surfaces including dirt, grass, and sand.
 - Engine emits a large cloud of smoke when vehicle is heavily damaged.
 - Can be disabled server-side if it causes performance issues.
+- Not supported on airboats due to the lack of an engine attachment (and wheels).
 
 # FAQs
 ### Is a lighting system planned?

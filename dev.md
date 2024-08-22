@@ -20,7 +20,8 @@ Functions that are meant to only be used internally are not listed here.
 |------|-------|-----------|---------|-------------|
 |GAuto.AddHealth|Server|Vehicle `veh`, Int `hp`|N/A|Adds a set amount of health to the specified vehicle. Will automatically clamp health at max value, and check to see if the vehicle should smoke.|
 |GAuto.GodModeEnabled|Server|Vehicle `veh`|Bool `enabled`|Returns whether or not the specified vehicle has god mode enabled.|
-|GAuto.IsBlacklisted|Shared|Vehicle `veh`|Bool `blacklisted`|Returns whether or not the specified vehicle is considered blacklisted by GAuto.|
+|GAuto.IsBlackListed|Shared|Vehicle `veh`|Bool `blacklisted`|Returns whether or not the specified vehicle is considered blacklisted by GAuto.|
+|GAuto.IsDrivable|Shared|Entity `ent`|Bool `drivable`|Returns whether or not the specified entity is a drivable vehicle such as a jeep or airboat.|
 |GAuto.Notify|Shared|Player `ply`, String `text`, Bool `broadcast`|N/A|Sends a GAuto notification to the target player. When called on the client, only the text parameter can be used.|
 |GAuto.PopTire|Server|Vehicle `veh`, Int `wheel`|N/A|Pops a tire on the specified vehicle.|
 |GAuto.RepairTire|Server|Vehicle `veh`, Int `wheel`|N/A|Repairs the specified tire on a vehicle, or repairs all tires if `wheel` parameter isn't specified.|

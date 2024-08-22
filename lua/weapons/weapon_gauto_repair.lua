@@ -30,7 +30,7 @@ end
 function SWEP:SecondaryAttack()
 	if !IsFirstTimePredicted() or CLIENT then return end
 	local tr = self.Owner:GetEyeTrace().Entity
-	if tr:GetClass() == "prop_vehicle_jeep" and self.Owner:GetPos():DistToSqr( tr:GetPos() ) < 40000 then
+	if GAuto.IsDrivable( tr ) and self.Owner:GetPos():DistToSqr( tr:GetPos() ) < 40000 then
 		local rand = math.random( 1, 3 )
 		GAuto.RepairTire( tr )
 		self:SendWeaponAnim( ACT_VM_SWINGMISS )
@@ -46,7 +46,7 @@ if SERVER then
 		if self.NextThinkTime > CurTime() then return end
 		if self.Owner:KeyDown( IN_ATTACK ) then
 			local tr = self.Owner:GetEyeTrace().Entity
-			if tr:GetClass() == "prop_vehicle_jeep" and self.Owner:GetPos():DistToSqr( tr:GetPos() ) < 40000 then
+			if GAuto.IsDrivable( tr ) and self.Owner:GetPos():DistToSqr( tr:GetPos() ) < 40000 then
 				if tr:GetNWInt( "GAuto_VehicleHealth" ) < tr:GetNWInt( "GAuto_VehicleMaxHealth" ) then
 					if tr:GetNWInt( "GAuto_VehicleHealth" ) <= 0 then
 						tr:Fire( "turnon", "", 0.01 )
@@ -92,9 +92,9 @@ if CLIENT then
 		surface.SetTextPos( posw + 15, posh + 10 )
 		surface.SetTextColor( color_white )
 		
-		if IsValid( tr ) and tr:IsVehicle() and maxhealth <= 0 then
+		if IsValid( tr ) and !GAuto.IsBlackListed( tr ) and maxhealth <= 0 then
 			surface.DrawText( "Vehicle damage disabled." )
-		elseif IsValid( tr ) and tr:IsVehicle() and vehpos <= 40000 then
+		elseif IsValid( tr ) and !GAuto.IsBlackListed( tr ) and vehpos <= 40000 then
 			if health <= health25 then
 				surface.SetTextColor( 255, 0, 0 )
 			elseif health > health25 and health < health75 then

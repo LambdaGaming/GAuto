@@ -70,7 +70,7 @@ function GAuto.ChangeSeats( len, ply, seat )
 	local realseat = key - 1 --Need to subtract 1 since the driver's seat doesn't count as a passenger seat
 	local canChange = hook.Run( "GAuto_CanChangeSeats", ply, veh, seat )
 	if canChange == false then return end
-	if veh:GetClass() == "prop_vehicle_jeep" then
+	if GAuto.IsDrivable( veh ) then
 		if key == 1 then
 			GAuto.Notify( ply, "You are already sitting in the selected seat." )
 			return
@@ -132,22 +132,20 @@ function GAuto.EjectPassenger( len, ply, seat )
 	local veh = ply:GetVehicle()
 	local realseat = key - 1
 	local canEject = hook.Run( "GAuto_CanEjectPassenger", ply, veh, seat )
-	if GAuto.IsBlackListed( veh ) or canEject == false then return end
-	if veh:GetClass() == "prop_vehicle_jeep" then
-		if veh.seat and IsValid( veh.seat[realseat] ) then
-			local passenger = veh.seat[realseat]:GetDriver()
-			if IsValid( passenger ) then
-				local nick = ply:Nick()
-				local passengernick = passenger:Nick()
-				passenger:ExitVehicle()
-				GAuto.Notify( ply, "Ejected "..passengernick.." from the vehicle." )
-				GAuto.Notify( passenger, "You have been ejected from the vehicle by "..nick.."." )
-			else
-				GAuto.Notify( ply, "Selected seat doesn't have a passenger to eject." )
-			end
+	if GAuto.IsBlackListed( veh ) or !GAuto.IsDrivable( veh ) or canEject == false then return end
+	if veh.seat and IsValid( veh.seat[realseat] ) then
+		local passenger = veh.seat[realseat]:GetDriver()
+		if IsValid( passenger ) then
+			local nick = ply:Nick()
+			local passengernick = passenger:Nick()
+			passenger:ExitVehicle()
+			GAuto.Notify( ply, "Ejected "..passengernick.." from the vehicle." )
+			GAuto.Notify( passenger, "You have been ejected from the vehicle by "..nick.."." )
 		else
-			GAuto.Notify( ply, "Select seat doesn't exist." )
+			GAuto.Notify( ply, "Selected seat doesn't have a passenger to eject." )
 		end
+	else
+		GAuto.Notify( ply, "Select seat doesn't exist." )
 	end
 end
 net.Receive( "GAuto_EjectPassenger", GAuto.EjectPassenger )

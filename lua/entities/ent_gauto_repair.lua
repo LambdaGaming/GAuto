@@ -34,7 +34,7 @@ local function Spark( ent )
 end
 
 function ENT:StartTouch( ent )
-	if ent:GetClass() == "prop_vehicle_jeep" then
+	if GAuto.IsDrivable( ent ) then
 		local health = ent:GetNWInt( "GAuto_VehicleHealth" )
 		local maxhealth = ent:GetNWInt( "GAuto_VehicleMaxHealth" )
 		local healthpercent = self.HealthPercent

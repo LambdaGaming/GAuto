@@ -88,8 +88,9 @@ GAuto.Blacklist = {
 	["models/tdmcars/gtav/tribike.mdl"] = true
 }
 
+--Will allow airboats, jeeps that aren't in the list, and prisoner pods that are GAuto passenger seats
 function GAuto.IsBlackListed( veh )
-	if !IsValid( veh ) or !veh:IsVehicle() then return true end --Return blacklisted if the vehicle isn't valid to avoid running IsValid twice
+	if !IsValid( veh ) or !veh:IsVehicle() then return true end --Run basic checks first so they don't need done in every function
 	local class = veh:GetClass()
 	local model = veh:GetModel()
 	if GAuto.Blacklist[model] and class == "prop_vehicle_jeep" and !veh:GetNWBool( "IsGAutoSeat" ) then
@@ -102,6 +103,11 @@ function GAuto.IsBlackListed( veh )
 		return true
 	end
 	return false
+end
+
+--Will allow all jeeps and airboats
+function GAuto.IsDrivable( ent )
+	return IsValid( ent ) and ( ent:GetClass() == "prop_vehicle_jeep" or ent:GetClass() == "prop_vehicle_airboat" )
 end
 
 --Template vehicle table

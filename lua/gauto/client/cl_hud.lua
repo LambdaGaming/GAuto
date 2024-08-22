@@ -32,7 +32,7 @@ local color_gray = Color( 30, 30, 30, 230 )
 local function HUDStuff()
 	local ply = LocalPlayer()
 	local vehicle = ply:GetVehicle()
-	if ply:InVehicle() and vehicle:GetClass() == "prop_vehicle_jeep" then
+	if ply:InVehicle() and GAuto.IsDrivable( vehicle ) then
 		local vehhealth = vehicle:GetNWInt( "GAuto_VehicleHealth" )
 		local vehmaxhealth = vehicle:GetNWInt( "GAuto_VehicleMaxHealth" )
 		local godenabled = vehicle:GetNWBool( "GodMode" )

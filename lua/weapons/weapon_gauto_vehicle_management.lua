@@ -43,7 +43,7 @@ function SWEP:SecondaryAttack()
     local tr = self.Owner:GetEyeTrace().Entity
 	local pos = tr:GetPos()
 	if self.Owner:GetPos():DistToSqr( pos ) > 90000 then return end
-    if tr:GetClass() == "prop_vehicle_jeep" and SERVER then
+    if SERVER and GAuto.IsDrivable( tr ) then
 		tr:SetAngles( tr:GetAngles() + rotate )
 		GAuto.Notify( self.Owner, "Vehicle rotated." )
     end

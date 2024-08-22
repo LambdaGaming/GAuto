@@ -35,7 +35,7 @@ local function Splash( ent )
 end
 
 function ENT:StartTouch( ent )
-	if ent:GetClass() == "prop_vehicle_jeep" then
+	if GAuto.IsDrivable( ent ) then
 		local fuel = ent:GetNWInt( "GAuto_FuelAmount" )
 		local maxfuel = GetConVar( "GAuto_Config_FuelAmount" ):GetInt()
 		local fuelpercent = self.FuelPercent

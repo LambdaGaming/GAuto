@@ -87,86 +87,84 @@ end
 
 local function InitVehicle( ent )
 	timer.Simple( 0.1, function() --Small timer because the model isn't seen the instant this hook is called
-		if GAuto.IsBlackListed( ent ) then return end --Prevents blacklisted models from being affected
+		if GAuto.IsBlackListed( ent ) or !GAuto.IsDrivable( ent ) then return end --Prevents blacklisted models from being affected
 		local vehmodel = ent:GetModel()
-		if ent:IsVehicle() and ent:GetClass() == "prop_vehicle_jeep" then
-			local GAuto_HealthEnabled = GetConVar( "GAuto_Config_HealthEnabled" ):GetBool()
-			local GAuto_HealthOverride = GetConVar( "GAuto_Config_HealthOverride" ):GetInt()
-			local GAuto_HornEnabled = GetConVar( "GAuto_Config_HornEnabled" ):GetBool()
-			local GAuto_DoorLockEnabled = GetConVar( "GAuto_Config_LockEnabled" ):GetBool()
-			local GAuto_FuelEnabled = GetConVar( "GAuto_Config_FuelEnabled" ):GetBool()
-			local GAuto_FuelAmount = GetConVar( "GAuto_Config_FuelAmount" ):GetInt()
-			local GAuto_SeatsEnabled = GetConVar( "GAuto_Config_SeatsEnabled" ):GetBool()
-			local GAuto_ParticlesEnabled = GetConVar( "GAuto_Config_ParticlesEnabled" ):GetBool()
-			if !GAuto.Vehicles[vehmodel] then
-				GAuto.LoadVehicle( vehmodel ) --Tries to load the vehicle from file if it doesn't exist in memory
+		local GAuto_HealthEnabled = GetConVar( "GAuto_Config_HealthEnabled" ):GetBool()
+		local GAuto_HealthOverride = GetConVar( "GAuto_Config_HealthOverride" ):GetInt()
+		local GAuto_HornEnabled = GetConVar( "GAuto_Config_HornEnabled" ):GetBool()
+		local GAuto_DoorLockEnabled = GetConVar( "GAuto_Config_LockEnabled" ):GetBool()
+		local GAuto_FuelEnabled = GetConVar( "GAuto_Config_FuelEnabled" ):GetBool()
+		local GAuto_FuelAmount = GetConVar( "GAuto_Config_FuelAmount" ):GetInt()
+		local GAuto_SeatsEnabled = GetConVar( "GAuto_Config_SeatsEnabled" ):GetBool()
+		local GAuto_ParticlesEnabled = GetConVar( "GAuto_Config_ParticlesEnabled" ):GetBool()
+		if !GAuto.Vehicles[vehmodel] then
+			GAuto.LoadVehicle( vehmodel ) --Tries to load the vehicle from file if it doesn't exist in memory
+		end
+		if GAuto_HealthEnabled then
+			if GAuto_HealthOverride > 0 then
+				ent:SetNWInt( "GAuto_VehicleHealth", GAuto_HealthOverride )
+				ent:SetNWInt( "GAuto_VehicleMaxHealth", GAuto_HealthOverride )
+			else
+				ent:SetNWInt( "GAuto_VehicleHealth", GAuto.VehicleHealth( vehmodel ) ) --Sets vehicle health if the health system is enabled
+				ent:SetNWInt( "GAuto_VehicleMaxHealth", GAuto.VehicleHealth( vehmodel ) )
 			end
-			if GAuto_HealthEnabled then
-				if GAuto_HealthOverride > 0 then
-					ent:SetNWInt( "GAuto_VehicleHealth", GAuto_HealthOverride )
-					ent:SetNWInt( "GAuto_VehicleMaxHealth", GAuto_HealthOverride )
-				else
-					ent:SetNWInt( "GAuto_VehicleHealth", GAuto.VehicleHealth( vehmodel ) ) --Sets vehicle health if the health system is enabled
-					ent:SetNWInt( "GAuto_VehicleMaxHealth", GAuto.VehicleHealth( vehmodel ) )
-				end
-				ent:SetNWBool( "GAuto_IsSmoking", false )
-				ent:SetNWBool( "GAuto_HasExploded", false )
-				ent:SetNWVector( "GAuto_EngineOffset", GAuto.EngineOffset( vehmodel ) )
-				ent:AddCallback( "PhysicsCollide", PhysicsCollide )
-			end
-			if GAuto_HornEnabled then
-				ent:SetNWString( "GAuto_HornSound", GAuto.HornSound( vehmodel ) ) --Sets horn sound of the setting is enabled
-			end
-			if GAuto_DoorLockEnabled then
-				ent:SetNWBool( "GAuto_DoorsLocked", false ) --Sets door lock status if the setting is enabled
-			end
-			if GAuto_FuelEnabled then
-				ent:SetNWInt( "GAuto_FuelAmount", GAuto_FuelAmount )
-				ent.FuelLoss = 0
-				ent.FuelInit = true --Fix for some vehicles running out of fuel as soon as they spawn
-				ent.FuelCooldown = 0
-			end
-			if GAuto_SeatsEnabled then
-				if ( !GAuto.Vehicles[vehmodel] or !GAuto.Vehicles[vehmodel].Seats ) and GetConVar( "GAuto_Config_AutoPassenger" ):GetBool() then
-					local attachment = ent:GetAttachment( ent:LookupAttachment( "vehicle_driver_eyes" ) )
-					if attachment then
-						local driverPos = ent:WorldToLocal( attachment.Pos )
-						driverPos:Sub( Vector( driverPos.x * 2, 0, 35 ) )
-						if math.abs( driverPos.x ) > 5 then --Don't spawn seat if players would be too close to each other
-							if !GAuto.Vehicles[vehmodel] then
-								GAuto.Vehicles[vehmodel] = {}
-							end
-							GAuto.Vehicles[vehmodel].Seats = { { pos = driverPos, ang = angle_zero } } --Add single passenger seat as a fallback if vehicle isn't supported
+			ent:SetNWBool( "GAuto_IsSmoking", false )
+			ent:SetNWBool( "GAuto_HasExploded", false )
+			ent:SetNWVector( "GAuto_EngineOffset", GAuto.EngineOffset( vehmodel ) )
+			ent:AddCallback( "PhysicsCollide", PhysicsCollide )
+		end
+		if GAuto_HornEnabled then
+			ent:SetNWString( "GAuto_HornSound", GAuto.HornSound( vehmodel ) ) --Sets horn sound of the setting is enabled
+		end
+		if GAuto_DoorLockEnabled then
+			ent:SetNWBool( "GAuto_DoorsLocked", false ) --Sets door lock status if the setting is enabled
+		end
+		if GAuto_FuelEnabled then
+			ent:SetNWInt( "GAuto_FuelAmount", GAuto_FuelAmount )
+			ent.FuelLoss = 0
+			ent.FuelInit = true --Fix for some vehicles running out of fuel as soon as they spawn
+			ent.FuelCooldown = 0
+		end
+		if GAuto_SeatsEnabled then
+			if ( !GAuto.Vehicles[vehmodel] or !GAuto.Vehicles[vehmodel].Seats ) and GetConVar( "GAuto_Config_AutoPassenger" ):GetBool() then
+				local attachment = ent:GetAttachment( ent:LookupAttachment( "vehicle_driver_eyes" ) )
+				if attachment then
+					local driverPos = ent:WorldToLocal( attachment.Pos )
+					driverPos:Sub( Vector( driverPos.x * 2, 0, 35 ) )
+					if math.abs( driverPos.x ) > 5 then --Don't spawn seat if players would be too close to each other
+						if !GAuto.Vehicles[vehmodel] then
+							GAuto.Vehicles[vehmodel] = {}
 						end
-					end
-				end
-				if GAuto.Vehicles[vehmodel] and GAuto.Vehicles[vehmodel].Seats then
-					local vehseats = GAuto.Vehicles[vehmodel].Seats
-					local numseats = table.Count( vehseats )
-					if numseats > 0 then
-						ent.seat = {}
-						for i=1, numseats do
-							GAuto.SpawnSeat( i, ent, vehseats[i].pos, vehseats[i].ang )
-						end
+						GAuto.Vehicles[vehmodel].Seats = { { pos = driverPos, ang = angle_zero } } --Add single passenger seat as a fallback if vehicle isn't supported
 					end
 				end
 			end
-			if GAuto_ParticlesEnabled then
-				ent.particles = {}
-				for i = 0, ent:GetWheelCount() - 1 do
-					local wheel = ent:GetWheel( i )
-					local height = ent:GetWheelTotalHeight( i )
-					ent.particles[i] = ents.Create( "info_particle_system" )
-					ent.particles[i]:SetKeyValue( "effect_name", "WheelDust" )
-					ent.particles[i]:SetKeyValue( "start_active", 0 )
-					ent.particles[i]:SetOwner( ent )
-					ent.particles[i]:SetPos( wheel:GetPos() + Vector( 0, 0, -height ) )
-					ent.particles[i]:SetAngles( wheel:GetAngles() )
-					ent.particles[i]:Spawn()
-					ent.particles[i]:Activate()
-					ent.particles[i]:SetParent( ent )
-					ent.particles[i].DoNotDuplicate = true
+			if GAuto.Vehicles[vehmodel] and GAuto.Vehicles[vehmodel].Seats then
+				local vehseats = GAuto.Vehicles[vehmodel].Seats
+				local numseats = table.Count( vehseats )
+				if numseats > 0 then
+					ent.seat = {}
+					for i=1, numseats do
+						GAuto.SpawnSeat( i, ent, vehseats[i].pos, vehseats[i].ang )
+					end
 				end
+			end
+		end
+		if GAuto_ParticlesEnabled then
+			ent.particles = {}
+			for i = 0, ent:GetWheelCount() - 1 do
+				local wheel = ent:GetWheel( i )
+				local height = ent:GetWheelTotalHeight( i )
+				ent.particles[i] = ents.Create( "info_particle_system" )
+				ent.particles[i]:SetKeyValue( "effect_name", "WheelDust" )
+				ent.particles[i]:SetKeyValue( "start_active", 0 )
+				ent.particles[i]:SetOwner( ent )
+				ent.particles[i]:SetPos( wheel:GetPos() + Vector( 0, 0, -height ) )
+				ent.particles[i]:SetAngles( wheel:GetAngles() )
+				ent.particles[i]:Spawn()
+				ent.particles[i]:Activate()
+				ent.particles[i]:SetParent( ent )
+				ent.particles[i].DoNotDuplicate = true
 			end
 		end
 	end )

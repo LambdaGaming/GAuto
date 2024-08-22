@@ -37,7 +37,7 @@ if SERVER then
 		if self.Owner:KeyDown( IN_ATTACK ) then
 			local tr = self.Owner:GetEyeTrace().Entity
 			local pos = tr:GetPos()
-			if tr:GetClass() == "prop_vehicle_jeep" and self.Owner:GetPos():DistToSqr( pos ) < 40000 then
+			if GAuto.IsDrivable( tr ) and self.Owner:GetPos():DistToSqr( pos ) < 40000 then
 				local fuel = tr:GetNWInt( "GAuto_FuelAmount" )
 				if fuel < 100 then
 					GAuto.SetFuel( tr, fuel + 1 )
@@ -102,7 +102,7 @@ if CLIENT then
 
 		if !GAuto_FuelEnabled then
 			surface.DrawText( "Vehicle fuel disabled." )
-		elseif IsValid( tr ) and tr:IsVehicle() and vehpos <= 40000 then
+		elseif GAuto.IsDrivable( tr ) and vehpos <= 40000 then
 			if GAuto_FuelEnabled and fuel <= fuel25 then
 				surface.SetTextColor( 255, 0, 0 )
 			elseif fuel > fuel25 and fuel < fuel75 then
