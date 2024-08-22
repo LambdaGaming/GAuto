@@ -26,7 +26,7 @@ GAuto is a lightweight vehicle system for Garry's Mod that extends the default f
 - Unsupported vehicles will have a single passenger seat automatically placed next to the driver's seat if there's enough room.
 ### Horns
 - All vehicles, both supported and unsupported, have a horn that can be used by pressing J.
-- GAuto comes with 2 horn sounds, but when adding support to a vehicle, any sound can be used.
+- GAuto comes with 3 horn sounds, but when adding support to a vehicle, any sound can be used.
 ### Door Locking
 - Drivers can lock their vehicle's doors to prevent any other players from getting in by pressing N.
 - Locking the doors does not prevent passengers from getting out.
