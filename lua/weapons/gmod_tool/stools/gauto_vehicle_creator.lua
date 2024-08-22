@@ -55,13 +55,43 @@ if CLIENT then
 end
 
 if SERVER then
+	local seatJson = [[{
+			"pos": %s,
+			"ang": %s
+		}%s
+		]]
+	
+	local bodyJson = [[{
+	"HornSound": "%s",
+	"MaxHealth": %s,
+	"Seats": [
+		%s
+	]
+}]]
+
+	local seatLua = [[{
+				pos = %s,
+				ang = %s
+			}%s
+			]]
+
+	local bodyLua = [[if GAuto and GAuto.Vehicles then
+	GAuto.Vehicles["%s"] = {
+		HornSound = "%s",
+		MaxHealth = %s,
+		Seats = {
+			%s
+		}
+	}
+end]]
+
 	function TOOL:CheckValid( tr )
 		local owner = self:GetOwner()
 		if !owner:IsAdmin() then
 			owner:ChatPrint( "Only admins can use this tool!" )
 			return false
 		end
-		if !IsValid( tr.Entity ) or tr.Entity:GetClass() != "prop_vehicle_jeep" then
+		if !IsValid( tr.Entity ) or !GAuto.IsDrivable( tr.Entity ) then
 			owner:ChatPrint( "Look at a vehicle to spawn items for it." )
 			return false
 		end
@@ -102,12 +132,18 @@ if SERVER then
 		return "Vector( "..math.Round( vec.x )..", "..math.Round( vec.y )..", "..math.Round( vec.z ).." )"
 	end
 
+	local function FormatAngle( ang, json )
+		if json then
+			return '"{0 '..math.Round( ang.y )..' 0}"'
+		end
+		return 'Angle( 0, '..math.Round( ang.y )..', 0 )'
+	end
+
 	function TOOL:Reload( tr )
 		if IsFirstTimePredicted() then
 			local owner = self:GetOwner()
 			if !owner:IsAdmin() or !self:CheckValid( tr ) then return end
 
-			--This is very messy but the generated code gets formatted nicely
 			local tbl
 			if GAuto.Tool.UseJSON then
 				local seat = ""
@@ -116,21 +152,10 @@ if SERVER then
 					if !IsValid( v ) then continue end
 					local comma = ""
 					if k < #self.Seats then comma = "," end
-					seat = seat..[[{
-			"ang": "{0 0 0}",
-			"pos": %s
-		}%s
-		]]
-					seat = string.format( seat, FormatVector( self.Vehicle:WorldToLocal( v:GetPos() ), true ), comma )
+					seat = seat..seatJson
+					seat = string.format( seat, FormatVector( self.Vehicle:WorldToLocal( v:GetPos() ), true ), FormatAngle( self.Vehicle:WorldToLocalAngles( v:GetAngles() ), true ), comma )
 				end
-				tbl = string.format( [[{
-	"HornSound": "%s",
-	"MaxHealth": %s,
-	"Seats": [
-		%s
-	]
-}]],
-				GAuto.Tool.Horn, GAuto.Tool.Health, seat )
+				tbl = string.format( bodyJson, GAuto.Tool.Horn, GAuto.Tool.Health, seat )
 				file.CreateDir( "gauto/vehicles" )
 				file.Write( "gauto/vehicles/"..filename..".json", tbl )
 				owner:ChatPrint( "Generated JSON has been printed to the server console and written to the server's data folder." )
@@ -140,23 +165,10 @@ if SERVER then
 					if !IsValid( v ) then continue end
 					local comma = ""
 					if k < #self.Seats then comma = "," end
-					seat = seat..[[{
-				pos = %s,
-				ang = Angle( 0, 0, 0 )
-			}%s
-			]]
-					seat = string.format( seat, FormatVector( self.Vehicle:WorldToLocal( v:GetPos() ) ), comma )
+					seat = seat..seatLua
+					seat = string.format( seat, FormatVector( self.Vehicle:WorldToLocal( v:GetPos() ) ), FormatAngle( self.Vehicle:WorldToLocalAngles( v:GetAngles() ) ), comma )
 				end
-				tbl = string.format( [[if GAuto and GAuto.Vehicles then
-	GAuto.Vehicles["%s"] = {
-		HornSound = "%s",
-		MaxHealth = %s,
-		Seats = {
-			%s
-		}
-	}
-end]],
-				self.Vehicle:GetModel(), GAuto.Tool.Horn, GAuto.Tool.Health, seat )
+				tbl = string.format( bodyLua, self.Vehicle:GetModel(), GAuto.Tool.Horn, GAuto.Tool.Health, seat )
 				owner:ChatPrint( "Generated code has been printed to the server console. Put it in a Lua file that both the client and server have access to." )
 			end
 			
