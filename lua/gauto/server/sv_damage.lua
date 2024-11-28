@@ -230,8 +230,8 @@ hook.Add( "vFireEntityStartedBurning", "GAuto_OnIgnite", function( ent )
 	if GAuto_ExplosionEnabled and GAuto_CharringTime >= 0 and !GAuto.IsBlackListed( ent ) and !timer.Exists( "GAuto_VehicleExplode"..ent:EntIndex() ) then
 		timer.Create( "GAuto_VehicleExplode"..ent:EntIndex(), GAuto_CharringTime, 1, function()
 			if !IsValid( ent ) then return end
-			GAuto.Explode( veh )
-			GAuto.CreateCharredProp( veh )
+			GAuto.Explode( ent )
+			GAuto.CreateCharredProp( ent )
 		end )
 	end
 end )
