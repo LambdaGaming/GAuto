@@ -29,6 +29,8 @@ Functions that are meant to only be used internally are not listed here.
 |GAuto.TakeDamage|Server|Vehicle `veh`, Int `damage`|N/A|Damages the specified vehicle by a set amount, and runs checks to see if the vehicle should smoke or explode.|
 |GAuto.ToggleGodMode|Server|Vehicle `veh`|N/A|Toggles god mode on the specified vehicle.|
 |GAuto.TrimModel|Server|String `model`|String `trimmedModel`|Trims a model path down to the format that GAuto uses for data files.|
+|GAuto.Explode|Server|Vehicle `veh`|N/A|Explodes the specified vehicle from the engine position.|
+|GAuto.CreateCharredProp|Server|Vehicle `veh`|N/A|Replaces the vehicle with a non-functional model that looks like it's been burnt.|
 
 # Vehicle Parameters
 These are various values tied to GAuto vehicles that might be useful. 

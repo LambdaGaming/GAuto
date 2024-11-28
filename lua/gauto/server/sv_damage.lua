@@ -1,21 +1,15 @@
 function GAuto.DestroyCheck( veh ) --Disables the engine and sets the vehicle on fire if it's health is 0
 	if veh:GetNWInt( "GAuto_VehicleHealth" ) <= 0 and !veh:GetNWBool( "GAuto_HasExploded" ) then
 		local GAuto_ExplosionEnabled = GetConVar( "GAuto_Config_DamageExplosionEnabled" ):GetBool()
-		local GAuto_ExplodeRemoveEnabled = GetConVar( "GAuto_Config_ExplodeRemoveEnabled" ):GetBool()
 		local GAuto_ExplodeRemoveTime = GetConVar( "GAuto_Config_ExplodeRemoveTime" ):GetInt()
+		local GAuto_CharringTime = GetConVar( "GAuto_Config_CharringTime" ):GetInt()
 		veh:Fire( "turnoff", "", 0.01 )
 		if vFireInstalled then --Only ignites the vehicle if VFire is installed since otherwise it looks weird
 			veh:Ignite()
 		end
 		if GAuto_ExplosionEnabled then
-			local eng = veh:GetAttachment( veh:LookupAttachment( "vehicle_engine" ) )
-			local offset = veh:GetNWVector( "GAuto_EngineOffset" )
-			local e = ents.Create( "env_explosion" )
-			e:SetPos( eng and ( eng.Pos + offset ) or vector_origin )
-			e:Spawn()
-			e:SetKeyValue( "iMagnitude", 50 )
-			e:Fire( "Explode", 0, 0 )
-			if GAuto_ExplodeRemoveEnabled then
+			GAuto.Explode( veh )
+			if ( !vFireInstalled or GAuto_CharringTime < 0 ) and GAuto_ExplodeRemoveTime >= 0 then
 				timer.Simple( GAuto_ExplodeRemoveTime, function()
 					if IsValid( veh ) then veh:Remove() end
 				end )
@@ -164,6 +158,35 @@ function GAuto.RepairTire( veh, wheel )
 	end
 end
 
+function GAuto.Explode( veh )
+	local eng = veh:GetAttachment( veh:LookupAttachment( "vehicle_engine" ) )
+	local offset = veh:GetNWVector( "GAuto_EngineOffset" )
+	local e = ents.Create( "env_explosion" )
+	e:SetPos( eng and ( eng.Pos + offset ) or vector_origin )
+	e:Spawn()
+	e:SetKeyValue( "iMagnitude", 50 )
+	e:Fire( "Explode", 0, 0 )
+end
+
+function GAuto.CreateCharredProp( veh )
+	local GAuto_ExplosionEnabled = GetConVar( "GAuto_Config_DamageExplosionEnabled" ):GetBool()
+	local GAuto_ExplodeRemoveTime = GetConVar( "GAuto_Config_ExplodeRemoveTime" ):GetInt()
+	local GAuto_CharringTime = GetConVar( "GAuto_Config_CharringTime" ):GetInt()
+	local e = ents.Create( "prop_physics" )
+	e:SetPos( veh:GetPos() )
+	e:SetModel( veh:GetModel() )
+	e:SetAngles( veh:GetAngles() )
+	e:SetColor( Color( 128, 128, 128 ) )
+	e:SetMaterial( "models/props_foliage/tree_deciduous_01a_trunk" )
+	e:Spawn()
+	veh:Remove()
+	if GAuto_ExplodeRemoveTime >= 0 then
+		timer.Simple( GAuto_ExplodeRemoveTime, function()
+			if IsValid( veh ) then veh:Remove() end
+		end )
+	end
+end
+
 local function ProcessDamage( ent, dmg )
 	local GAuto_HealthEnabled = GetConVar( "GAuto_Config_HealthEnabled" ):GetBool()
 	local GAuto_BulletDamageEnabled = GetConVar( "GAuto_Config_BulletDamageEnabled" ):GetBool()
@@ -200,3 +223,21 @@ local function ProcessDamage( ent, dmg )
 	end
 end
 hook.Add( "EntityTakeDamage", "GAuto_TakeDamage", ProcessDamage )
+
+hook.Add( "vFireEntityStartedBurning", "GAuto_OnIgnite", function( ent )
+	local GAuto_ExplosionEnabled = GetConVar( "GAuto_Config_DamageExplosionEnabled" ):GetBool()
+	local GAuto_CharringTime = GetConVar( "GAuto_Config_CharringTime" ):GetInt()
+	if GAuto_ExplosionEnabled and GAuto_CharringTime >= 0 and !GAuto.IsBlackListed( ent ) and !timer.Exists( "GAuto_VehicleExplode"..ent:EntIndex() ) then
+		timer.Create( "GAuto_VehicleExplode"..ent:EntIndex(), GAuto_CharringTime, 1, function()
+			if !IsValid( ent ) then return end
+			GAuto.Explode( veh )
+			GAuto.CreateCharredProp( veh )
+		end )
+	end
+end )
+
+hook.Add( "vFireEntityStoppedBurning", "GAuto_OnExtinguish", function( ent )
+	if !GAuto.IsBlackListed( ent ) and timer.Exists( "GAuto_VehicleExplode"..ent:EntIndex() ) then
+		timer.Remove( "GAuto_VehicleExplode"..ent:EntIndex() )
+	end
+end )

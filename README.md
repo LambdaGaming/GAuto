@@ -4,6 +4,7 @@ GAuto is a lightweight vehicle system for Garry's Mod that extends the default f
 # Features
 ### Vehicle Health System
 - Vehicles will smoke when their health drops below 25%, and explode when their health reaches 0.
+- If VFire is installed, vehicles that remain on fire for too long will become charred and permanently unfixable.
 - Vehicles can be damaged through bullets, explosives, collisions, etc.
 - The repair tool weapon and repair kit entity can be used to restore vehicle health.
 #### Tire Damage
@@ -62,7 +63,7 @@ The smoke effect is placed at the position of the engine attachment that is buil
 If your car isn't smoking, its model likely does not have an engine attachment, or the attachment is located at the vehicle's origin and has been disabled to prevent it from looking weird. If your car isn't catching fire when its health reaches 0, you likely don't have VFire installed.
 
 # Development
-### Vehicle Creation
+### Adding Vehicle Support
  If you are a vehicle creator and would like to add GAuto support to your addons, you can use the GAuto Vehicle Creator tool to easily create a table to place in your vehicle's Lua file. When using this tool, left click will spawn passenger seats that you can physgun into place, right click will open a menu to edit values such as the vehicle's health and horn sound, and reload will remove the seats and generate vehicle data as either a Lua script or JSON table. Lua scripts need placed in a Lua file with a shared scope, and JSON files are automatically generated in the game's data folder. If you do add GAuto support to your vehicles, send me a link and I will add them to the collection linked at the top!
 ### Interfacing
 If you want to interface with this addon through Lua, see the [documentation](dev.md) for hooks, functions, and other things you can use.
