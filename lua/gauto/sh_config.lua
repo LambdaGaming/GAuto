@@ -24,13 +24,13 @@ CreateConVar( "gauto_fuel_enabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Veh
 CreateConVar( "gauto_fuel_amount", 100, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Amount of fuel vehicles spawn with." )
 CreateConVar( "gauto_no_fuel_god", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Vehicles that are out of fuel cannot be damaged." )
 CreateConVar( "gauto_cruise_enabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Drivers will be able to activate cruise control by pressing a specific button." )
-CreateConVar( "GAuto_Config_HealthOverride", 0, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Amount of health every vehicle spawns with no matter what. Set to 0 to disable." )
-CreateConVar( "GAuto_Config_DriverSeat", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Players will automatically enter the drivers seat if it is not taken. If set to 0, players will enter the closest detected seat." )
-CreateConVar( "GAuto_Config_SpikeModel", "models/props_phx/mechanics/slider2.mdl", { FCVAR_ARCHIVE }, "The model of the spikestrip." )
-CreateConVar( "GAuto_Config_SpikeModelOffset", 90, { FCVAR_ARCHIVE }, "Yaw offset that the spikestrip should be placed at." )
-CreateConVar( "GAuto_Config_FuelLoss", 0.5, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "How fast fuel should drain when the throttle is pressed. You probably shouldn't touch this unless you know what you're doing." )
-CreateConVar( "GAuto_Config_AutoPassenger", 1, { FCVAR_ARCHIVE }, "Unsupported vehicles will receive a single passenger seat next to the driver, if there is room for one." )
-CreateConVar( "GAuto_Config_ParticlesEnabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Particles such as engine smoke and wheel dust will be emitted." )
+CreateConVar( "gauto_health_override", 0, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Amount of health every vehicle spawns with no matter what. Set to 0 to disable." )
+CreateConVar( "gauto_driver_seat", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Players will automatically enter the drivers seat if it is not taken. If set to 0, players will enter the closest detected seat." )
+CreateConVar( "gauto_spike_model", "models/props_phx/mechanics/slider2.mdl", { FCVAR_ARCHIVE }, "The model of the spikestrip." )
+CreateConVar( "gauto_spike_model_offset", 90, { FCVAR_ARCHIVE }, "Yaw offset that the spikestrip should be placed at." )
+CreateConVar( "gauto_fuel_loss_rate", 0.5, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "How fast fuel should drain when the throttle is pressed. You probably shouldn't touch this unless you know what you're doing." )
+CreateConVar( "gauto_auto_passenger", 1, { FCVAR_ARCHIVE }, "Unsupported vehicles will receive a single passenger seat next to the driver, if there is room for one." )
+CreateConVar( "gauto_particles_enabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Particles such as engine smoke and wheel dust will be emitted." )
 
 --Blacklisted models that shouldn't be affected by GAuto, such as trains or other vehicles that use prop_vehicle_jeep as their base
 GAuto.Blacklist = {
