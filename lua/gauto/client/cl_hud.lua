@@ -131,7 +131,7 @@ local function HUDStuff()
 		surface.SetTextColor( color_white )
 		surface.SetFont( "GAuto_HUDFont2" )
 		surface.SetTextPos( name[1], name[2] )
-		surface.DrawText( "GAuto - By OPGman" )
+		surface.DrawText( "GAuto v"..GAuto.Version.." by OPGman" )
 	end
 end
 hook.Add( "HUDPaint", "GAuto_HUDStuff", HUDStuff )
