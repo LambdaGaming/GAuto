@@ -29,18 +29,12 @@ function GAuto.LoadVehicle( model )
 	local slashfix = GAuto.TrimModel( model )
 	local findvehicle = file.Read( "data_static/gauto/vehicles/"..slashfix..".json", "THIRDPARTY" )
 	local findvehicleextra = file.Read( "gauto/vehicles/"..slashfix..".json", "DATA" )
-	local filefoundinmaindir = false
-	if findvehicle == nil and findvehicleextra == nil then
+	local finalJson = findvehicle != nil and findvehicle or findvehicleextra
+	if finalJson == nil then
 		MsgC( color_red, "[GAuto] Warning: '"..model.."' is unsupported. Everything will still work, but passenger seats will be limited or unavailable.\n" )
 		return
-	else
-		filefoundinmaindir = true
 	end
-	if filefoundinmaindir then
-		GAuto.Vehicles[model] = util.JSONToTable( findvehicle )
-	else
-		GAuto.Vehicles[model] = util.JSONToTable( findvehicleextra )
-	end
+	GAuto.Vehicles[model] = util.JSONToTable( finalJson )
 	print( "[GAuto] Successfully loaded '"..model.."' from GAuto files." )
 end
 
