@@ -32,7 +32,7 @@ end
 if SERVER then
 	function SWEP:Think()
 		if self.NextThinkTime > CurTime() then return end
-		local GAuto_FuelEnabled = GetConVar( "GAuto_Config_FuelEnabled" ):GetBool()
+		local GAuto_FuelEnabled = GetConVar( "gauto_fuel_enabled" ):GetBool()
 		if !GAuto_FuelEnabled then return end
 		if self.Owner:KeyDown( IN_ATTACK ) then
 			local tr = self.Owner:GetEyeTrace().Entity
@@ -87,11 +87,11 @@ if CLIENT then
 		if !IsValid( wep ) or wep:GetClass() != "weapon_gauto_fuel" then return end
 
 		local tr = ply:GetEyeTrace().Entity
-		local GAuto_FuelEnabled = GetConVar( "GAuto_Config_FuelEnabled" ):GetBool()
+		local GAuto_FuelEnabled = GetConVar( "gauto_fuel_enabled" ):GetBool()
 		local posw = ScrW() / 2 - 95
 		local posh = ScrH() / 2 - 20
 		local vehpos = ply:GetPos():DistToSqr( tr:GetPos() )
-		local maxfuel = GetConVar( "GAuto_Config_FuelAmount" ):GetInt()
+		local maxfuel = GetConVar( "gauto_fuel_amount" ):GetInt()
 		local fuel = tr:GetNWInt( "GAuto_FuelAmount" )
 		local fuel25 = maxfuel * 0.25
 		local fuel75 = maxfuel * 0.75

@@ -87,14 +87,14 @@ local function InitVehicle( ent )
 	timer.Simple( 0.1, function() --Small timer because the model isn't seen the instant this hook is called
 		if GAuto.IsBlackListed( ent ) or !GAuto.IsDrivable( ent ) then return end --Prevents blacklisted models from being affected
 		local vehmodel = ent:GetModel()
-		local GAuto_HealthEnabled = GetConVar( "GAuto_Config_HealthEnabled" ):GetBool()
-		local GAuto_HealthOverride = GetConVar( "GAuto_Config_HealthOverride" ):GetInt()
-		local GAuto_HornEnabled = GetConVar( "GAuto_Config_HornEnabled" ):GetBool()
-		local GAuto_DoorLockEnabled = GetConVar( "GAuto_Config_LockEnabled" ):GetBool()
-		local GAuto_FuelEnabled = GetConVar( "GAuto_Config_FuelEnabled" ):GetBool()
-		local GAuto_FuelAmount = GetConVar( "GAuto_Config_FuelAmount" ):GetInt()
-		local GAuto_SeatsEnabled = GetConVar( "GAuto_Config_SeatsEnabled" ):GetBool()
-		local GAuto_ParticlesEnabled = GetConVar( "GAuto_Config_ParticlesEnabled" ):GetBool()
+		local GAuto_HealthEnabled = GetConVar( "gauto_health_enabled" ):GetBool()
+		local GAuto_HealthOverride = GetConVar( "gauto_health_override" ):GetInt()
+		local GAuto_HornEnabled = GetConVar( "gauto_horn_enabled" ):GetBool()
+		local GAuto_DoorLockEnabled = GetConVar( "gauto_lock_enabled" ):GetBool()
+		local GAuto_FuelEnabled = GetConVar( "gauto_fuel_enabled" ):GetBool()
+		local GAuto_FuelAmount = GetConVar( "gauto_fuel_amount" ):GetInt()
+		local GAuto_SeatsEnabled = GetConVar( "gauto_seats_enabled" ):GetBool()
+		local GAuto_ParticlesEnabled = GetConVar( "gauto_particles_enabled" ):GetBool()
 		if !GAuto.Vehicles[vehmodel] then
 			GAuto.LoadVehicle( vehmodel ) --Tries to load the vehicle from file if it doesn't exist in memory
 		end
@@ -124,7 +124,7 @@ local function InitVehicle( ent )
 			ent.FuelCooldown = 0
 		end
 		if GAuto_SeatsEnabled then
-			if ( !GAuto.Vehicles[vehmodel] or !GAuto.Vehicles[vehmodel].Seats ) and GetConVar( "GAuto_Config_AutoPassenger" ):GetBool() then
+			if ( !GAuto.Vehicles[vehmodel] or !GAuto.Vehicles[vehmodel].Seats ) and GetConVar( "gauto_auto_passenger" ):GetBool() then
 				local attachment = ent:GetAttachment( ent:LookupAttachment( "vehicle_driver_eyes" ) )
 				if attachment then
 					local driverPos = ent:WorldToLocal( attachment.Pos )

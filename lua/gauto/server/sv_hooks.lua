@@ -9,11 +9,11 @@ local allowedSurfaces = {
 local function VehicleThink( ply, veh, mv )
 	if GAuto.IsBlackListed( veh ) then return end
 	local vel = veh:GetVelocity():Length()
-	local GAuto_ParticlesEnabled = GetConVar( "GAuto_Config_ParticlesEnabled" ):GetBool()
+	local GAuto_ParticlesEnabled = GetConVar( "gauto_particles_enabled" ):GetBool()
 	if veh.FuelInit and !veh.NoFuel and IsValid( veh:GetDriver() ) then
-		local GAuto_FuelEnabled = GetConVar( "GAuto_Config_FuelEnabled" ):GetBool()
-		local GAuto_NoFuelGod = GetConVar( "GAuto_Config_NoFuelGod" ):GetBool()
-		local GAuto_FuelLoss = GetConVar( "GAuto_Config_FuelLoss" ):GetFloat()
+		local GAuto_FuelEnabled = GetConVar( "gauto_fuel_enabled" ):GetBool()
+		local GAuto_NoFuelGod = GetConVar( "gauto_no_fuel_god" ):GetBool()
+		local GAuto_FuelLoss = GetConVar( "gauto_fuel_loss_rate" ):GetFloat()
 		if vel > 100 then
 			if GAuto_FuelEnabled and !veh:GetNWBool( "IsGAutoSeat" ) and veh.FuelCooldown < CurTime() then
 				if veh:GetThrottle() >= 0.1 then
@@ -80,9 +80,9 @@ hook.Add( "PlayerEnteredVehicle", "GAuto_EnteredVehicle", EnteredVehicle )
 local function LeaveVehicle( ply, ent )
 	ent.GAuto_ExitCooldown = CurTime() + 1
 	if GAuto.IsBlackListed( ent ) or ent:GetNWBool( "IsGAutoSeat" ) then return end
-	local GAuto_WheelLockEnabled = GetConVar( "GAuto_Config_WheelLockEnabled" ):GetBool()
-	local GAuto_BrakeLockEnabled = GetConVar( "GAuto_Config_BrakeLockEnabled" ):GetBool()
-	local GAuto_ParticlesEnabled = GetConVar( "GAuto_Config_ParticlesEnabled" ):GetBool()
+	local GAuto_WheelLockEnabled = GetConVar( "gauto_wheel_lock_enabled" ):GetBool()
+	local GAuto_BrakeLockEnabled = GetConVar( "gauto_brake_lock_enabled" ):GetBool()
+	local GAuto_ParticlesEnabled = GetConVar( "gauto_particles_enabled" ):GetBool()
 	if GAuto_BrakeLockEnabled then
 		if ply:KeyDown( IN_JUMP ) then --Activates the parking brake if the player is holding the jump button when they exit
 			ent:Fire( "HandBrakeOn", "", 0.01 )
@@ -119,7 +119,7 @@ hook.Add( "PlayerLeaveVehicle", "GAuto_LeaveVehicle", LeaveVehicle )
 
 local function PlayerUseVeh( ply, ent )
 	if !IsValid( ply ) or !GAuto.IsDrivable( ent ) or GAuto.IsBlackListed( ent ) then return end
-	local GAuto_SeatsEnabled = GetConVar( "GAuto_Config_SeatsEnabled" ):GetBool()
+	local GAuto_SeatsEnabled = GetConVar( "gauto_seats_enabled" ):GetBool()
 	if ent.GAuto_ExitCooldown and ent.GAuto_ExitCooldown > CurTime() then return end
 	if ent:GetNWBool( "GAuto_DoorsLocked" ) then
 		if ent:GetNWEntity( "GAuto_LockOwner" ) == ply then
@@ -135,7 +135,7 @@ local function PlayerUseVeh( ply, ent )
 	end
 	if !ent:GetNWBool( "GAuto_DoorsLocked" ) and GAuto_SeatsEnabled then
 		if ply:InVehicle() or !ent.seat then return end
-		if GetConVar( "GAuto_Config_DriverSeat" ):GetBool() and !IsValid( ent:GetDriver() ) then
+		if GetConVar( "gauto_driver_seat" ):GetBool() and !IsValid( ent:GetDriver() ) then
 			ply:EnterVehicle( ent )
 			return
 		end
@@ -204,14 +204,14 @@ hook.Add( "GAuto_CanEjectPassenger", "Photon2_GAuto_Eject", Photon2NoSeatChange 
 
 --DarkRP stuff
 local function Lockpick( ply, ent, trace )
-	local GAuto_AlarmEnabled = GetConVar( "GAuto_Config_LockAlarmEnabled" ):GetBool()
+	local GAuto_AlarmEnabled = GetConVar( "gauto_lock_alarm_enabled" ):GetBool()
 	if !GAuto_AlarmEnabled or GAuto.IsBlackListed( ent ) or !GAuto.IsDrivable( ent ) then return end
 	ent:EmitSound( "gauto/alarm.mp3" )
 end
 hook.Add( "lockpickStarted", "DarkRP_GAuto_Lockpick", Lockpick )
 
 local function LockpickFinish( ply, success, ent )
-	local GAuto_AlarmEnabled = GetConVar( "GAuto_Config_LockAlarmEnabled" ):GetBool()
+	local GAuto_AlarmEnabled = GetConVar( "gauto_lock_alarm_enabled" ):GetBool()
 	if GAuto_AlarmEnabled and GAuto.IsDrivable( ent ) and success then
 		ent:SetNWBool( "GAuto_DoorsLocked", false )
 		ent:SetNWEntity( "GAuto_LockOwner", nil )

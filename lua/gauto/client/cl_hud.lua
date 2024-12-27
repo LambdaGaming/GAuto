@@ -37,8 +37,8 @@ local function HUDStuff()
 		local vehmaxhealth = vehicle:GetNWInt( "GAuto_VehicleMaxHealth" )
 		local godenabled = vehicle:GetNWBool( "GodMode" )
 		local issmoking = vehicle:GetNWBool( "GAuto_IsSmoking" )
-		local GAuto_FuelAmount = GetConVar( "GAuto_Config_FuelAmount" ):GetInt()
-		local GAuto_FuelEnabled = GetConVar( "GAuto_Config_FuelEnabled" ):GetBool()
+		local GAuto_FuelAmount = GetConVar( "gauto_fuel_amount" ):GetInt()
+		local GAuto_FuelEnabled = GetConVar( "gauto_fuel_enabled" ):GetBool()
 		
 		local background = HUDPositions.Background
 		local health = HUDPositions.Health
@@ -113,7 +113,7 @@ local function HUDStuff()
 			local throttle = vehicle:GetNWInt( "CruiseSpeed" )
 			local realthrottle = math.Round( throttle * 100 )
 			local label = ""
-			if GetConVar( "GAuto_Config_CruiseMPH" ):GetBool() then
+			if GetConVar( "gauto_cruise_mph" ):GetBool() then
 				speed = math.Round( velocity * 3600 / 63360 * 0.75 )
 				label = "MPH"
 			else

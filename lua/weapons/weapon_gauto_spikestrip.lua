@@ -34,7 +34,7 @@ function SWEP:PrimaryAttack()
 		if !self.SpawnedSpike then
 			local rand = math.random( 1, 3 )
 			local e = ents.Create( "ent_gauto_spikestrip" )
-			local offset = owner:GetAngles().y + GetConVar( "GAuto_Config_SpikeModelOffset" ):GetInt()
+			local offset = owner:GetAngles().y + GetConVar( "gauto_spike_model_offset" ):GetInt()
 			e:SetPos( hitpos )
 			e:SetAngles( Angle( 0, offset, 0 ) )
 			e:Spawn()

@@ -20,7 +20,7 @@ net.Receive( "GAuto_VehicleLock", GAuto.VehicleLock )
 
 util.AddNetworkString( "GAuto_VehicleHorn" )
 function GAuto.VehicleHorn( len, ply )
-	local GAuto_HornEnabled = GetConVar( "GAuto_Config_HornEnabled" ):GetBool()
+	local GAuto_HornEnabled = GetConVar( "gauto_horn_enabled" ):GetBool()
 	if GAuto_HornEnabled then
 		local veh = ply:GetVehicle()
 		local canHorn = hook.Run( "GAuto_CanUseHorn", ply, veh )
@@ -43,7 +43,7 @@ net.Receive( "GAuto_VehicleHornStop", GAuto.VehicleHornStop )
 
 util.AddNetworkString( "GAuto_CruiseControl" )
 function GAuto.CruiseControl( len, ply )
-	local GAuto_CruiseEnabled = GetConVar( "GAuto_Config_CruiseEnabled" ):GetBool()
+	local GAuto_CruiseEnabled = GetConVar( "gauto_cruise_enabled" ):GetBool()
 	if GAuto_CruiseEnabled then
 		local veh = ply:GetVehicle()
 		local canCruise = hook.Run( "GAuto_CanCruise", ply, veh )
@@ -154,8 +154,8 @@ util.AddNetworkString( "GAuto_EngineToggle" )
 function GAuto.EngineToggle( len, ply )
 	if ply:InVehicle() then
 		local veh = ply:GetVehicle()
-		local GAuto_HealthEnabled = GetConVar( "GAuto_Config_HealthEnabled" ):GetBool()
-		local GAuto_FuelEnabled = GetConVar( "GAuto_Config_FuelEnabled" ):GetBool()
+		local GAuto_HealthEnabled = GetConVar( "gauto_health_enabled" ):GetBool()
+		local GAuto_FuelEnabled = GetConVar( "gauto_fuel_enabled" ):GetBool()
 		local canToggle = hook.Run( "GAuto_CanToggleEngine", ply, veh )
 		if GAuto.IsBlackListed( veh ) or canToggle == false then return end
 		if GAuto_HealthEnabled and veh:GetNWInt( "GAuto_VehicleHealth" ) <= 0 then return end --Don't want players turning the car back on when it's destroyed or out of fuel

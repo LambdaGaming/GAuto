@@ -1,9 +1,9 @@
-CreateClientConVar( "GAuto_Control_HornKey", KEY_J, true, false, "Sets the key for the horn." )
-CreateClientConVar( "GAuto_Control_LockKey", KEY_N, true, false, "Sets the key for locking the doors." )
-CreateClientConVar( "GAuto_Control_CruiseKey", KEY_V, true, false, "Sets the key for toggling cruise control." )
-CreateClientConVar( "GAuto_Control_EngineKey", KEY_P, true, false, "Sets the key for toggling the engine." )
-CreateClientConVar( "GAuto_Control_EjectModifier", KEY_LALT, true, false, "Sets the modifier key that needs to be held while pressing a number key to kick a passenger out." )
-CreateClientConVar( "GAuto_Config_CruiseMPH", 1, true, false, "Enable or disable displaying cruise speed in MPH. Disable to set to KPH." )
+CreateClientConVar( "gauto_horn_key", KEY_J, true, false, "Sets the key for the horn." )
+CreateClientConVar( "gauto_lock_key", KEY_N, true, false, "Sets the key for locking the doors." )
+CreateClientConVar( "gauto_cruise_key", KEY_V, true, false, "Sets the key for toggling cruise control." )
+CreateClientConVar( "gauto_engine_key", KEY_P, true, false, "Sets the key for toggling the engine." )
+CreateClientConVar( "gauto_eject_modifier", KEY_LALT, true, false, "Sets the modifier key that needs to be held while pressing a number key to kick a passenger out." )
+CreateClientConVar( "gauto_cruise_mph", 1, true, false, "Enable or disable displaying cruise speed in MPH. Disable to set to KPH." )
 
 local function ControlMenu()
 	spawnmenu.AddToolMenuOption( "Options", "GAuto", "GAutoControls", "Controls", "", "", function( panel )
@@ -12,21 +12,21 @@ local function ControlMenu()
 		} )
 		panel:AddControl( "Numpad", {
 			Label = "Horn Key",
-			Command = "GAuto_Control_HornKey",
+			Command = "gauto_horn_key",
 			Label2 = "Lock Key",
-			Command2 = "GAuto_Control_LockKey"
+			Command2 = "gauto_lock_key"
 		} )
 		panel:AddControl( "Numpad", {
 			Label = "Cruise Control Key",
-			Command = "GAuto_Control_CruiseKey",
+			Command = "gauto_cruise_key",
 			Label2 = "Engine Toggle Key",
-			Command2 = "GAuto_Control_EngineKey"
+			Command2 = "gauto_engine_key"
 		} )
 		panel:AddControl( "Numpad", {
 			Label = "Eject Modifier Key",
-			Command = "GAuto_Control_EjectModifier"
+			Command = "gauto_eject_modifier"
 		} )
-		panel:CheckBox( "Cruise Control: Display in MPH", "GAuto_Config_CruiseMPH" )
+		panel:CheckBox( "Cruise Control: Display in MPH", "gauto_cruise_mph" )
 	end )
 end
 hook.Add( "PopulateToolMenu", "GAuto_ControlMenu", ControlMenu )

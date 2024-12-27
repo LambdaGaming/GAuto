@@ -15,7 +15,7 @@ local vehicles = {
 }
 
 function ENT:Initialize()
-    self:SetModel( GetConVar( "GAuto_Config_SpikeModel" ):GetString() )
+    self:SetModel( GetConVar( "gauto_spike_model" ):GetString() )
 	self:SetMoveType( MOVETYPE_NONE )
 	self:SetSolid( SOLID_VPHYSICS )
 	if SERVER then

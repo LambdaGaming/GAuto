@@ -14,7 +14,7 @@ if ( SERVER and game.SinglePlayer() ) or CLIENT then
 
 	local function KeyPressDown( ply, key )
 		if IsFirstTimePredicted() and ply:InVehicle() then
-			if key == GetConVar( "GAuto_Control_LockKey" ):GetInt() then
+			if key == GetConVar( "gauto_lock_key" ):GetInt() then
 				if CLIENT then
 					net.Start( "GAuto_VehicleLock" )
 					net.SendToServer()
@@ -22,7 +22,7 @@ if ( SERVER and game.SinglePlayer() ) or CLIENT then
 					GAuto.VehicleLock( nil, ply )
 				end
 			end
-			if key == GetConVar( "GAuto_Control_HornKey" ):GetInt() then
+			if key == GetConVar( "gauto_horn_key" ):GetInt() then
 				if CLIENT then
 					net.Start( "GAuto_VehicleHorn" )
 					net.SendToServer()
@@ -30,7 +30,7 @@ if ( SERVER and game.SinglePlayer() ) or CLIENT then
 					GAuto.VehicleHorn( nil, ply )
 				end
 			end
-			if key == GetConVar( "GAuto_Control_CruiseKey" ):GetInt() then
+			if key == GetConVar( "gauto_cruise_key" ):GetInt() then
 				if CLIENT then
 					net.Start( "GAuto_CruiseControl" )
 					net.SendToServer()
@@ -38,7 +38,7 @@ if ( SERVER and game.SinglePlayer() ) or CLIENT then
 					GAuto.CruiseControl( nil, ply )
 				end
 			end
-			if key == GetConVar( "GAuto_Control_EngineKey" ):GetInt() then
+			if key == GetConVar( "gauto_engine_key" ):GetInt() then
 				if CLIENT then
 					net.Start( "GAuto_EngineToggle" )
 					net.SendToServer()
@@ -47,7 +47,7 @@ if ( SERVER and game.SinglePlayer() ) or CLIENT then
 				end
 			end
 			if seatbuttons[key] then
-				if CLIENT and input.IsKeyDown( GetConVar( "GAuto_Control_EjectModifier" ):GetInt() ) then
+				if CLIENT and input.IsKeyDown( GetConVar( "gauto_eject_modifier" ):GetInt() ) then
 					if key == KEY_1 then
 						GAuto.Notify( "You can't eject yourself!" )
 						return
@@ -75,7 +75,7 @@ if ( SERVER and game.SinglePlayer() ) or CLIENT then
 	
 	local function KeyPressUp( ply, key )
 		if IsFirstTimePredicted() and ply:InVehicle() then
-			if key == GetConVar( "GAuto_Control_HornKey" ):GetInt() then
+			if key == GetConVar( "gauto_horn_key" ):GetInt() then
 				if CLIENT then
 					net.Start( "GAuto_VehicleHornStop" )
 					net.SendToServer()
