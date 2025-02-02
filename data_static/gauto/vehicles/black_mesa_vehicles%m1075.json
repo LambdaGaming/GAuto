@@ -1,0 +1,11 @@
+{
+	"HornSound": "gauto/truckhorn.wav",
+	"MaxHealth": 200,
+	"Seats": [
+		{
+			"pos": "[50 269 77]",
+			"ang": "{0 0 0}"
+		}
+		
+	]
+}

@@ -6,5 +6,5 @@
 		}
 	],
 	"HornSound": "gauto/truckhorn.wav",
-	"MaxHealth": 125.0
+	"MaxHealth": 150.0
 }
