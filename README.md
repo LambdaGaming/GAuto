@@ -52,11 +52,11 @@ GAuto is a lightweight vehicle system for Garry's Mod that extends the default f
 
 # FAQs
 ### Is a lighting system planned?
-No. For both regular and emergency lighting, I recommend [Photon Legacy](https://steamcommunity.com/sharedfiles/filedetails/?id=339648087) or [Photon 2](https://steamcommunity.com/sharedfiles/filedetails/?id=3128242636).
+No. Not only is that outside of my scope, it would also ruin the 'lightweight' aspect of the addon. If you want a lighting system to use with GAuto, I recommend [Photon Legacy](https://steamcommunity.com/sharedfiles/filedetails/?id=339648087) or [Photon 2](https://steamcommunity.com/sharedfiles/filedetails/?id=3128242636).
 ### Will you add support to [this car]?
 Probably not. Any vehicle I add support to going forward is only because I personally want to use it with GAuto. If you would like to add support yourself, I will accept a PR on GitHub, but otherwise it's up to vehicle creators to add support to their own vehicles, because I simply cannot fulfil every request.
 ### Will you add [this feature]?
-Maybe. If it'll make a significant improvement to the addon there's a good chance it will be added.
+At this point, new features are a low priority. GAuto has been in development since 2019 and I've added everything that I originally wanted to add, and more. I'll gladly take suggestions but there's no guarantee that they will be added.
 ### Why is smoke sometimes floating above the car?
 The smoke effect is placed at the position of the engine attachment that is built into the model. If the attachment isn't aligned properly, the smoke won't be aligned properly either. Some vehicle creators do this intentionally to make the vehicle drivable in deep water. Supported vehicles can have an engine offset parameter applied so the smoke appears in the right place.
 ### Why isn't my car smoking or catching fire when damaged?
@@ -69,18 +69,18 @@ If your car isn't smoking, its model likely does not have an engine attachment, 
 If you want to interface with this addon through Lua, see the [documentation](dev.md) for hooks, functions, and other things you can use.
 
 # Compatibilities
- - Photon Legacy is fully compatible. Both the HUD and default controls were designed to avoid conflicts with it.
- - Photon 2 is mostly compatible. The HUD will not overlap, but seat switching and ejection are disabled on Photon 2 vehicles due to how the controls are setup. All other controls should not conflict.
- - Simfphys and LVS vehicles are fully compatible. Nothing should conflict, and the spikestrip will pop tires from both systems.
- - VFire is supported. For the best destruction effects, it's recommended you have it installed.
- - DarkRP is fully compatible. The door lock status of vehicles is properly synced when using keys, an alarm will sound when lock picking a vehicle, and passengers will be ejected when using a battering ram on a vehicle.
- - Sligwolf's vehicles are compatible but blacklisted, meaning they can be installed alongside GAuto without any issues, but they won't use any GAuto features.
- - Other vehicle systems such as VCMod, SVMod, and Vehicle Damage 2 are NOT compatible. They will likely interfere with GAuto and cause various systems to break.
+ - Photon Legacy - Fully compatible. The HUD and default controls were designed to avoid conflicts with it.
+ - Photon 2 - Mostly compatible. Seat switching and ejection are disabled on Photon 2 vehicles due to how the controls are setup.
+ - Simfphys and LVS vehicles - Fully compatible. GAuto will not interfere with these systems, and the spikestrip will pop tires from both.
+ - VFire - Fully compatible. For the best destruction effects, it's recommended you have it installed.
+ - DarkRP - Fully compatible. The door lock status of vehicles is properly synced when using keys, an alarm will sound when lock picking a vehicle, and passengers will be ejected when using a battering ram on a vehicle.
+ - Sligwolf's Vehicles - Compatible but unsupported. They can be installed alongside GAuto without any issues, but they won't use any GAuto features.
+ - VCMod, SVMod, Vehicle Damage 2, Etc - NOT compatible. They will likely interfere with GAuto and cause various systems to break.
 
 # Issues & Pull Requests
  If you would like to contribute to this repository by creating an issue or pull request, please refer to the [contributing guidelines.](https://lambdagaming.github.io/contributing.html)
 
 # Credits
-- [Simfphys Base](https://github.com/Blu-x92/simfphys_base) - Reference for coding various systems including passenger seats and particle effects.
+- [Simfphys Base](https://github.com/Blu-x92/simfphys_base) - Reference for how to implement the passenger seat and particle effect systems.
 - Valve - Particle effects
 - SGM - Feature suggestions
