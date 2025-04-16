@@ -74,7 +74,7 @@ If you want to interface with this addon through Lua, see the [documentation](de
  - Simfphys and LVS vehicles - Fully compatible. GAuto will not interfere with these systems, and the spikestrip will pop tires from both.
  - VFire - Fully compatible. For the best destruction effects, it's recommended you have it installed.
  - DarkRP - Fully compatible. The door lock status of vehicles is properly synced when using keys, an alarm will sound when lock picking a vehicle, and passengers will be ejected when using a battering ram on a vehicle.
- - Sligwolf's Vehicles - Compatible but unsupported. They can be installed alongside GAuto without any issues, but they won't use any GAuto features.
+ - Sligwolf's Vehicles - Mostly compatible. Some vehicles are unsupported due to not using prop_vehicle_jeep as a base, but there shouldn't be any issues with the ones that are supported.
  - VCMod, SVMod, Vehicle Damage 2, Etc - NOT compatible. They will likely interfere with GAuto and cause various systems to break.
 
 # Issues & Pull Requests

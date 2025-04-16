@@ -41,14 +41,7 @@ GAuto.Blacklist = {
 	["models/nova/chair_wood01.mdl"] = true,
 	["models/nova/jalopy_seat.mdl"] = true,
 	["models/nova/jeep_seat.mdl"] = true,
-	["models/sligwolf/westernloco/western_locov2.mdl"] = true, --Sligwolf models (since his addons have their own mini vehicle system)
-	["models/sligwolf/truck/swtruck001.mdl"] = true,
-	["models/sligwolf/truck/swtruck002.mdl"] = true,
-	["models/sligwolf/truck/swtruck003.mdl"] = true,
-	["models/sligwolf/truck/swtruck004.mdl"] = true,
-	["models/sligwolf/truck/swtruck005.mdl"] = true,
-	["models/sligwolf/truck/swtruck006.mdl"] = true,
-	["models/sligwolf/truck/swtrucktrailer001.mdl"] = true,
+	["models/sligwolf/truck/swtrucktrailer001.mdl"] = true, --Sligwolf trailers
 	["models/sligwolf/truck/swtrucktrailer002.mdl"] = true,
 	["models/sligwolf/truck/swtrucktrailer003.mdl"] = true,
 	["models/sligwolf/truck/swtrucktrailer004.mdl"] = true,
@@ -58,16 +51,8 @@ GAuto.Blacklist = {
 	["models/sligwolf/truck/swtrucktrailer008.mdl"] = true,
 	["models/sligwolf/truck/swtrucktrailer009.mdl"] = true,
 	["models/sligwolf/truck/swtruck_camper.mdl"] = true,
-	["models/sligwolf/diesel/dieselv2.mdl"] = true,
-	["models/sligwolf/diesel/diesel_wagon.mdl"] = true,
-	["models/sligwolf/diesel/diesel_wagon2.mdl"] = true,
-	["models/sligwolf/diesel/diesel_wagon3.mdl"] = true,
-	["models/sligwolf/unique_props/seat.mdl"] = true,
-	["models/sligwolf/garbagetruck/sw_truck.mdl"] = true,
-	["models/sligwolf/tram/tram.mdl"] = true,
-	["models/sligwolf/tram/tram_half.mdl"] = true,
-	["models/sligwolf/forklift_truck/forklift_truck.mdl"] = true,
-	["models/lonewolfie/trailer_glass.mdl"] = true, --LW trailers (so they can't get damaged and explode)
+	["models/sligwolf/tractor/tractor_trailer.mdl"] = true,
+	["models/lonewolfie/trailer_glass.mdl"] = true, --LW trailers
 	["models/lonewolfie/trailer_livestock.mdl"] = true,
 	["models/lonewolfie/trailer_panel.mdl"] = true,
 	["models/lonewolfie/trailer_profiliner.mdl"] = true,
@@ -90,16 +75,17 @@ GAuto.Blacklist = {
 
 --Will allow airboats, jeeps that aren't in the list, and prisoner pods that are GAuto passenger seats
 function GAuto.IsBlackListed( veh )
-	if !IsValid( veh ) or !veh:IsVehicle() then return true end --Run basic checks first so they don't need done in every function
+	if !IsValid( veh ) or !veh:IsVehicle() then return true end
 	local class = veh:GetClass()
 	local model = veh:GetModel()
-	if GAuto.Blacklist[model] and class == "prop_vehicle_jeep" and !veh:GetNWBool( "IsGAutoSeat" ) then
+	if GAuto.Blacklist[model] and class == "prop_vehicle_jeep" then
 		return true
 	end
 	if class == "prop_vehicle_prisoner_pod" and !veh:GetNWBool( "IsGAutoSeat" ) then
 		return true
 	end
-	if veh.fphysSeat then --Avoid interference with Simfphys
+	if veh.fphysSeat then
+		--Avoid interference with Simfphys
 		return true
 	end
 	return false
