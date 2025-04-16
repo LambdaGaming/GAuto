@@ -92,17 +92,13 @@ local function LeaveVehicle( ply, ent )
 		end
 	end
 	if GAuto_WheelLockEnabled and ent:GetClass() == "prop_vehicle_jeep" then
-		local steering = ent:GetSteering()
-		timer.Simple( 0.01, function() --Small timer because it otherwise won't register
-			if !IsValid( ent ) then return end
-			if steering == 1 then
-				ent:SetSteering( 1, 1 )
-			elseif steering == -1 then
-				ent:SetSteering( -1, 1 )
-			elseif steering == 0 then
-				ent:SetSteering( 0, 0 )
-			end
-		end )
+		if ply:KeyDown( IN_MOVERIGHT ) then
+			ent:SetSteering( 1, 1 )
+		elseif ply:KeyDown( IN_MOVELEFT ) then
+			ent:SetSteering( -1, 1 )
+		else
+			ent:SetSteering( 0, 0 )
+		end
 	end
 	if GAuto_ParticlesEnabled and ent.particles then
 		local count = ent:GetWheelCount() - 1
