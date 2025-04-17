@@ -23,24 +23,13 @@ end
 function GAuto.SmokeCheck( veh )
 	local health = veh:GetNWInt( "GAuto_VehicleHealth" )
 	local maxhealth = veh:GetNWInt( "GAuto_VehicleMaxHealth" )
-	if health > ( maxhealth * 0.3 ) or health <= 0 then
-		if veh:GetNWBool( "GAuto_IsSmoking" ) then
-			veh:SetNWBool( "GAuto_IsSmoking", false )
-		end
-	else
-		if !veh:GetNWBool( "GAuto_IsSmoking" ) then
-			veh:SetNWBool( "GAuto_IsSmoking", true )
-		end
-	end
+	local canSmoke = health > ( maxhealth * 0.3 ) or health <= 0
+	veh:SetNWBool( "GAuto_IsSmoking", canSmoke )
 end
 
 function GAuto.ToggleGodMode( veh )
 	local enabled = veh:GetNWBool( "GodMode" )
-	if enabled then
-		veh:SetNWBool( "GodMode", false )
-		return
-	end
-	veh:SetNWBool( "GodMode", true )
+	veh:SetNWBool( "GodMode", !enabled )
 end
 
 function GAuto.GodModeEnabled( veh )
