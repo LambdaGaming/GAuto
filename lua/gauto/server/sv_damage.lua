@@ -38,11 +38,11 @@ end
 
 function GAuto.TakeDamage( veh, dam ) --Takes away health from the vehicle, also runs the destroy check every time the health is set
 	local GAuto_HealthEnabled = GetConVar( "gauto_health_enabled" ):GetBool()
-	if GAuto_HealthEnabled and !GAuto.GodModeEnabled( veh ) and dam > 0.5 then
+	if GAuto_HealthEnabled and !GAuto.GodModeEnabled( veh ) and dam >= 0.1 then
 		if veh.DamageCooldown and veh.DamageCooldown > CurTime() then return end
 		local health = veh:GetNWInt( "GAuto_VehicleHealth" )
 		local maxhealth = veh:GetNWInt( "GAuto_VehicleMaxHealth" )
-		local roundhp = math.Round( health - dam )
+		local roundhp = math.Round( health - dam, 2 )
 		local newhp = math.Clamp( roundhp, 0, maxhealth )
 		veh:SetNWInt( "GAuto_VehicleHealth", newhp )
 		GAuto.DestroyCheck( veh )
@@ -178,13 +178,13 @@ end
 
 local function ProcessDamage( ent, dmg )
 	local GAuto_HealthEnabled = GetConVar( "gauto_health_enabled" ):GetBool()
-	local GAuto_BulletDamageEnabled = GetConVar( "gauto_bullet_damage_enabled" ):GetBool()
-	local GAuto_ScalePlayerDamage = GetConVar( "gauto_scale_player_damage" ):GetBool()
+	local GAuto_BulletDamageMultiplier = GetConVar( "gauto_bullet_damage_multiplier" ):GetInt()
+	local GAuto_PlayerDamageMultiplier = GetConVar( "gauto_player_damage_multiplier" ):GetInt()
 	if GAuto_HealthEnabled then
 		if ent:IsOnFire() then return end --Prevent car from constantly igniting itself if it's on fire
 		if GAuto.IsDrivable( ent ) then
-			if dmg:IsBulletDamage() and GAuto_BulletDamageEnabled then
-				GAuto.TakeDamage( ent, dmg:GetDamage() * 450 )
+			if dmg:IsBulletDamage() then
+				GAuto.TakeDamage( ent, 0.5 * GAuto_BulletDamageMultiplier )
 				GAuto.PopCheck( dmg, ent )
 			else
 				GAuto.TakeDamage( ent, dmg:GetDamage() )
@@ -195,17 +195,18 @@ local function ProcessDamage( ent, dmg )
 				if !IsValid( v ) then return end
 				local driver = v:GetDriver()
 				if IsValid( driver ) then
-					if GAuto_ScalePlayerDamage then dmg:ScaleDamage( 0.35 ) end
+					dmg:ScaleDamage( GAuto_PlayerDamageMultiplier )
 					driver:TakeDamage( dmg:GetDamage() ) --Fix for passengers not taking damage
 				end
 			end
 		end
-		if GAuto_ScalePlayerDamage and ent:IsPlayer() then
+		if ent:IsPlayer() then
 			if dmg:GetAttacker():IsVehicle() then
 				dmg:SetDamageType( DMG_VEHICLE )
 			end
 			if dmg:IsDamageType( DMG_VEHICLE ) or ( ent:InVehicle() and dmg:IsDamageType( DMG_BLAST ) ) then
-				dmg:ScaleDamage( 0.35 ) --Scales damage for drivers, passengers, and players who are hit by vehicles
+				--Scales damage for drivers, passengers, and players who are hit by vehicles
+				dmg:ScaleDamage( GAuto_PlayerDamageMultiplier )
 				return dmg
 			end
 		end
