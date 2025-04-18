@@ -178,26 +178,16 @@ end
 
 local function ProcessDamage( ent, dmg )
 	local GAuto_HealthEnabled = GetConVar( "gauto_health_enabled" ):GetBool()
-	local GAuto_BulletDamageMultiplier = GetConVar( "gauto_bullet_damage_multiplier" ):GetInt()
-	local GAuto_PlayerDamageMultiplier = GetConVar( "gauto_player_damage_multiplier" ):GetInt()
+	local GAuto_BulletDamageMultiplier = GetConVar( "gauto_bullet_damage_multiplier" ):GetFloat()
+	local GAuto_PlayerDamageMultiplier = GetConVar( "gauto_player_damage_multiplier" ):GetFloat()
 	if GAuto_HealthEnabled then
 		if ent:IsOnFire() then return end --Prevent car from constantly igniting itself if it's on fire
 		if GAuto.IsDrivable( ent ) then
-			if dmg:IsBulletDamage() then
+			if dmg:IsDamageType( DMG_BULLET + DMG_SLASH + DMG_CLUB ) then
 				GAuto.TakeDamage( ent, 0.5 * GAuto_BulletDamageMultiplier )
 				GAuto.PopCheck( dmg, ent )
 			else
 				GAuto.TakeDamage( ent, dmg:GetDamage() )
-			end
-		end
-		if ent:IsVehicle() and ent.seat then
-			for k,v in pairs( ent.seat ) do
-				if !IsValid( v ) then return end
-				local driver = v:GetDriver()
-				if IsValid( driver ) then
-					dmg:ScaleDamage( GAuto_PlayerDamageMultiplier )
-					driver:TakeDamage( dmg:GetDamage() ) --Fix for passengers not taking damage
-				end
 			end
 		end
 		if ent:IsPlayer() then
@@ -205,9 +195,20 @@ local function ProcessDamage( ent, dmg )
 				dmg:SetDamageType( DMG_VEHICLE )
 			end
 			if dmg:IsDamageType( DMG_VEHICLE ) or ( ent:InVehicle() and dmg:IsDamageType( DMG_BLAST ) ) then
-				--Scales damage for drivers, passengers, and players who are hit by vehicles
+				--Scales damage for drivers and players who are hit by vehicles
 				dmg:ScaleDamage( GAuto_PlayerDamageMultiplier )
-				return dmg
+			end
+
+			--Make sure passengers take damage too
+			local veh = ent:GetVehicle()
+			if IsValid( veh ) and veh.seat then
+				for k,v in pairs( veh.seat ) do
+					if !IsValid( v ) then continue end
+					local driver = v:GetDriver()
+					if IsValid( driver ) then
+						driver:TakeDamage( dmg:GetDamage() )
+					end
+				end
 			end
 		end
 	end
