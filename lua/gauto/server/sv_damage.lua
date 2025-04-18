@@ -23,7 +23,7 @@ end
 function GAuto.SmokeCheck( veh )
 	local health = veh:GetNWInt( "GAuto_VehicleHealth" )
 	local maxhealth = veh:GetNWInt( "GAuto_VehicleMaxHealth" )
-	local canSmoke = health > ( maxhealth * 0.3 ) or health <= 0
+	local canSmoke = health < ( maxhealth * 0.3 ) and health > 0
 	veh:SetNWBool( "GAuto_IsSmoking", canSmoke )
 end
 
