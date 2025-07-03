@@ -143,6 +143,13 @@ end]]
 		if IsFirstTimePredicted() then
 			local owner = self:GetOwner()
 			if !owner:IsAdmin() or !self:CheckValid( tr ) then return end
+			if !GAuto.Tool then
+				GAuto.Tool = {
+					UseJSON = false,
+					Horn = "gauto/carhorn.wav",
+					Health = 100
+				}
+			end
 
 			local tbl
 			if GAuto.Tool.UseJSON then

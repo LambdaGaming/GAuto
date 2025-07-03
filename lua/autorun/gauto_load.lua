@@ -1,6 +1,6 @@
 AddCSLuaFile()
 
-GAuto = { Version = "2.12" }
+GAuto = { Version = "2.12.1" }
 
 for _,v in pairs( file.Find( "gauto/*", "LUA" ) ) do
 	include( "gauto/"..v )
