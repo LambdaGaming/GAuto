@@ -15,9 +15,10 @@ local function SmokeThink()
 	if !GAuto_ParticlesEnabled then return end
 	local ply = LocalPlayer()
 	local pos = ply:GetPos()
-	local find = ents.FindInSphere( pos, 2000 )
+	local find = ents.FindByClass( "prop_vehicle_jeep*" )
 	for k,v in ipairs( find ) do
-		if !string.find( v:GetClass(), "prop_vehicle_jeep" ) then continue end
+		local vehPos = v:GetPos()
+		if pos:DistToSqr( vehPos ) > 4000000 then continue end
 		local eng = v:GetAttachment( v:LookupAttachment( "vehicle_engine" ) )
 		if !eng or eng.Pos == vector_origin then continue end
 		if v:GetNWBool( "GAuto_IsSmoking" ) then
