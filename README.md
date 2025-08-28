@@ -7,7 +7,7 @@ GAuto is a lightweight vehicle system for Garry's Mod that extends the default f
 - If VFire is installed, vehicles that remain on fire for too long will become charred and permanently unfixable.
 - Vehicles can be damaged through bullets, explosives, collisions, etc.
 - The repair tool weapon and repair kit entity can be used to restore vehicle health.
-#### Tire Damage
+### Tire Damage
 - Tires will deflate after receiving enough damage from either bullets or spike strips.
 - Tires can be repaired with the secondary fire of the repair tool.
 - Deflated tires will cause the vehicle to slow down and become harder to control.
@@ -52,7 +52,7 @@ GAuto is a lightweight vehicle system for Garry's Mod that extends the default f
 
 # FAQs
 ### Is a lighting system planned?
-No. Not only is that outside of my scope, it would also ruin the 'lightweight' aspect of the addon. If you want a lighting system to use with GAuto, I recommend [Photon Legacy](https://steamcommunity.com/sharedfiles/filedetails/?id=339648087) or [Photon 2](https://steamcommunity.com/sharedfiles/filedetails/?id=3128242636).
+No. Not only is that outside of my scope, it would also ruin the 'lightweight' aspect of the addon. If you want a lighting system to use with GAuto, I recommend [Photon 1](https://steamcommunity.com/sharedfiles/filedetails/?id=339648087) or [Photon 2](https://steamcommunity.com/sharedfiles/filedetails/?id=3128242636).
 ### Will you add support to [this car]?
 Probably not. Any vehicle I add support to going forward is only because I personally want to use it with GAuto. If you would like to add support yourself, I will accept a PR on GitHub, but otherwise it's up to vehicle creators to add support to their own vehicles, because I simply cannot fulfil every request.
 ### Will you add [this feature]?
@@ -68,19 +68,32 @@ If your car isn't smoking, its model likely does not have an engine attachment, 
 ### Interfacing
 If you want to interface with this addon through Lua, see the [documentation](dev.md) for hooks, functions, and other things you can use.
 
-# Compatibilities
- - Photon Legacy - Fully compatible. The HUD and default controls were designed to avoid conflicts with it.
- - Photon 2 - Mostly compatible. Seat switching and ejection are disabled on Photon 2 vehicles due to how the controls are setup.
- - Simfphys and LVS vehicles - Fully compatible. GAuto will not interfere with these systems, and the spikestrip will pop tires from both.
- - VFire - Fully compatible. For the best destruction effects, it's recommended you have it installed.
- - DarkRP - Fully compatible. The door lock status of vehicles is properly synced when using keys, an alarm will sound when lock picking a vehicle, and passengers will be ejected when using a battering ram on a vehicle.
- - Sligwolf's Vehicles - Mostly compatible. Some vehicles are unsupported due to not using prop_vehicle_jeep as a base, but there shouldn't be any issues with the ones that are supported.
- - VCMod, SVMod, Vehicle Damage 2, Etc - NOT compatible. They will likely interfere with GAuto and cause various systems to break.
+# Addon Compatibilities & Integrations
+__Photon 1__  
+GAuto's HUD and default controls were designed to avoid conflicts with Photon 1.
+
+__Photon 2__  
+GAuto's HUD was designed to avoid conflicts with Photon 2's HUD, however to avoid conflicts with controls, seat switching and ejection are disabled on Photon 2 vehicles.
+
+__Simfphys & LVS__  
+Checks are in place to ensure GAuto can be used with these addons without issue. The spikestrip will also pop tires from both systems.
+
+__VFire__  
+Some destruction effects rely on hooks from VFire to work. For the best experience it's recommended that you have it installed.
+
+__DarkRP__  
+The door lock status of vehicles is properly synced when using keys, an alarm will sound when lock picking a vehicle, and passengers will be ejected when using a battering ram on a vehicle.
+
+__Sligwolf's Vehicles__  
+Most vehicles should work fine with GAuto, but there are a handful that are unsupported because they don't use prop_vehicle_jeep as a base.
+
+__VCMod, SVMod, Vehicle Damage 2, Etc__  
+Vehicle systems like these are NOT compatible. They will likely interfere with GAuto and cause various systems to break.
 
 # Issues & Pull Requests
  If you would like to contribute to this repository by creating an issue or pull request, please refer to the [contributing guidelines.](https://lambdagaming.github.io/contributing.html)
 
 # Credits
 - [Simfphys Base](https://github.com/Blu-x92/simfphys_base) - Reference for how to implement the passenger seat and particle effect systems.
-- Valve - Particle effects
 - SGM - Feature suggestions
+- rp_truenorth_v1a - Map used in screenshots and thumbnail on the Steam workshop
