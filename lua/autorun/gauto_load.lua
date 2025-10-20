@@ -20,4 +20,4 @@ if SERVER then
 	end
 end
 
-MsgC( Color( 255, 0, 0 ), "GAuto v"..GAuto.Version.." by OPGman successfully loaded.\n" )
+print( "GAuto v"..GAuto.Version.." by OPGman successfully loaded.\n" )
