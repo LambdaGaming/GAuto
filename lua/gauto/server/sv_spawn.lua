@@ -23,7 +23,7 @@ end
 
 function GAuto.LoadVehicle( model )
 	if !model then
-		MsgC( color_red, "[GAuto] ERROR: Invalid argument for GAuto.LoadVehicle()." )
+		error( "Invalid argument for GAuto.LoadVehicle()." )
 		return
 	end
 	local slashfix = GAuto.TrimModel( model )
@@ -31,11 +31,10 @@ function GAuto.LoadVehicle( model )
 	local findvehicleextra = file.Read( "gauto/vehicles/"..slashfix..".json", "DATA" )
 	local finalJson = findvehicle != nil and findvehicle or findvehicleextra
 	if finalJson == nil then
-		MsgC( color_red, "[GAuto] Warning: '"..model.."' is unsupported. Everything will still work, but passenger seats will be limited or unavailable.\n" )
+		MsgC( color_red, "[GAuto] Warning: '"..model.."' is unsupported. Certain features will be limited or unavailable.\n" )
 		return
 	end
 	GAuto.Vehicles[model] = util.JSONToTable( finalJson )
-	print( "[GAuto] Successfully loaded '"..model.."' from GAuto files." )
 end
 
 local function PhysicsCollide( veh, data )
