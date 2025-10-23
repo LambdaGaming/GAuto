@@ -9,8 +9,8 @@ PrecacheParticleSystem( "smoke_burning_engine_01" )
 --Feature toggles
 CreateConVar( "gauto_health_enabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Vehicles will take damage." )
 CreateConVar( "gauto_damage_explosion_enabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE } , "Vehicles explode when their health reaches 0." )
-CreateConVar( "gauto_brake_lock_enabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Brakes will lock up and prevent the vehicle from moving if the driver holds jump while exiting." )
-CreateConVar( "gauto_wheel_lock_enabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Wheels will remain turned when the driver exits the vehicle." )
+CreateConVar( "gauto_brake_lock_enabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Brakes will stay locked when the driver holds jump while exiting." )
+CreateConVar( "gauto_wheel_lock_enabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Front wheels will remain turned when the driver exits the vehicle." )
 CreateConVar( "gauto_seats_enabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Supported vehicles will spawn with passenger seats." )
 CreateConVar( "gauto_horn_enabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Drivers will be able to sound a horn by pressing a specific button." )
 CreateConVar( "gauto_lock_enabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Drivers will be able to lock their vehicles by pressing a specific button." )
@@ -21,6 +21,7 @@ CreateConVar( "gauto_cruise_enabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "D
 CreateConVar( "gauto_particles_enabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Particles such as engine smoke and wheel dust will be emitted." )
 
 --Health & Damage
+CreateConVar( "gauto_phys_damage_multiplier", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Multiplier for physical damage done to vehicles. Does nothing if gauto_health_enabled is disabled." )
 CreateConVar( "gauto_bullet_damage_multiplier", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Multiplier for vehicle bullet damage. Does nothing if gauto_health_enabled is disabled." )
 CreateConVar( "gauto_player_damage_multiplier", 0.35, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Damage multiplier for players in vehicles." )
 CreateConVar( "gauto_tire_health", 10, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Amount of health each wheel/tire has." )

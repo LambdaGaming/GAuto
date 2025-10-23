@@ -45,9 +45,12 @@ local function PhysicsCollide( veh, data )
 		return
 	end
 	for k,v in pairs( constraint.GetTable( veh ) ) do
-		if v.Ent1 == hitent then return end --Prevents objects that may be part of the vehicle from damaging it
+		--Prevents objects that may be part of the vehicle from damaging it
+		if v.Ent1 == hitent then return end
 	end
-	local formula = speed / 98 --Not at all realistic especially since mass isn't a factor, but it provides a good balance between too spongy and too fragile
+	--Not at all realistic especially since mass isn't a factor, but it provides a good balance between too spongy and too fragile
+	local GAuto_PhysDamageMultiplier = GetConVar( "gauto_phys_damage_multiplier" ):GetFloat()
+	local formula = ( speed / 98 ) * GAuto_PhysDamageMultiplier
 	if speed > 400 then
 		if hitent:IsPlayer() or hitent:IsNPC() then return end
 		GAuto.TakeDamage( veh, formula )
