@@ -44,11 +44,11 @@ local function VehicleThink( ply, veh, mv )
 			if ground then
 				local name = util.GetSurfacePropName( id )
 				if allowedSurfaces[name] and vel > 100 then
-					veh.particles[i]:Fire( "Start" )
+					veh.particles.wheel[i]:Fire( "Start" )
 					continue
 				end
 			end
-			veh.particles[i]:Fire( "Stop" )
+			veh.particles.wheel[i]:Fire( "Stop" )
 		end
 	end
 end
@@ -57,7 +57,8 @@ hook.Add( "VehicleMove", "GAuto_VehicleThink", VehicleThink )
 local function KeyPressServer( ply, key )
 	if ply:InVehicle() then
 		local veh = ply:GetVehicle()
-		if veh:GetNWBool( "IsGAutoSeat" ) and key == IN_USE then --Fix to get players out of passenger seats. Without this, players will enter the closest passenger seat without a way of getting out
+		if veh:GetNWBool( "IsGAutoSeat" ) and key == IN_USE then
+			--Without this, players will enter the closest passenger seat without a way of getting out
 			ply:ExitVehicle()
 			ply.GAuto_SeatCooldown = CurTime() + 1
 		end
@@ -73,7 +74,8 @@ end
 hook.Add( "CanPlayerEnterVehicle", "GAuto_CanEnterVehicle", CanEnterVehicle )
 
 local function EnteredVehicle( ply, veh, role )
-	if veh:GetNWBool( "IsGAutoSeat" ) then veh:SetCameraDistance( 5 ) end --Sets camera distance relatively close to the default driver's seat distance
+	--Sets camera distance relatively close to the default driver's seat distance
+	if veh:GetNWBool( "IsGAutoSeat" ) then veh:SetCameraDistance( 5 ) end
 end
 hook.Add( "PlayerEnteredVehicle", "GAuto_EnteredVehicle", EnteredVehicle )
 
@@ -103,7 +105,7 @@ local function LeaveVehicle( ply, ent )
 	if GAuto_ParticlesEnabled and ent.particles then
 		local count = ent:GetWheelCount() - 1
 		for i = 0, count do
-			ent.particles[i]:Fire( "Stop" )
+			ent.particles.wheel[i]:Fire( "Stop" )
 		end
 	end
 	if ent:GetNWBool( "CruiseActive" ) then

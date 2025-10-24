@@ -40,13 +40,12 @@ These are various values tied to GAuto vehicles that might be useful.
 |GAuto_EngineOffset|Shared|Networked Vector|Offset of the engine position used for particle effects.|
 |GAuto_HasExploded|Shared|Networked Bool|Whether or not the vehicle has exploded.|
 |GAuto_HornSound|Shared|Networked String|Sound path for the vehicle's horn.|
-|GAuto_IsSmoking|Shared|Networked Bool|Whether or not the vehicle is currently smoking.|
 |GAuto_VehicleHealth|Shared|Networked Int|Current value of the vehicle's health.|
 |GAuto_VehicleMaxHealth|Shared|Networked Int|Max value the vehicle's health can be.|
 |Vehicle.FuelCooldown|Server|Number|Used internally to determine when fuel should be consumed next.|
 |Vehicle.FuelInit|Server|Bool|Indicates that the vehicle's fuel system has been initialized. Only false for a split second when the vehicle first spawns.|
 |Vehicle.FuelLoss|Server|Number|Current rate at which fuel is being consumed.|
-|Vehicle.particles|Server|Table|Holds the particle system entities for each wheel.|
+|Vehicle.particles|Server|Table|Holds the particle system entities that are attached to the vehicle.|
 |Vehicle.seat|Server|Table|Holds all of the passenger seat entities.|
 
 # ConVars

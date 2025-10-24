@@ -36,7 +36,6 @@ local function HUDStuff()
 		local vehhealth = vehicle:GetNWInt( "GAuto_VehicleHealth" )
 		local vehmaxhealth = vehicle:GetNWInt( "GAuto_VehicleMaxHealth" )
 		local godenabled = vehicle:GetNWBool( "GodMode" )
-		local issmoking = vehicle:GetNWBool( "GAuto_IsSmoking" )
 		local GAuto_FuelAmount = GetConVar( "gauto_fuel_amount" ):GetInt()
 		local GAuto_FuelEnabled = GetConVar( "gauto_fuel_enabled" ):GetBool()
 		
@@ -57,7 +56,7 @@ local function HUDStuff()
 
 		if godenabled then
 			surface.SetTextColor( 0, 255, 0 )
-		elseif issmoking or vehhealth <= vehmaxhealth * 0.25 then
+		elseif vehhealth <= vehmaxhealth * 0.3 then
 			surface.SetTextColor( 255, 0, 0, 255 )
 		else
 			surface.SetTextColor( color_white )

@@ -56,29 +56,6 @@ local function PhysicsCollide( veh, data )
 	end
 end
 
-function GAuto.SpawnSeat( index, ent, pos, ang )
-	ent.seat[index] = ents.Create( "prop_vehicle_prisoner_pod" )
-	ent.seat[index]:SetModel( "models/nova/airboat_seat.mdl" )
-	ent.seat[index]:SetParent( ent )
-	ent.seat[index]:SetPos( ent:LocalToWorld( pos ) ) --Gotta keep the vectors local to the vehicle so the seats always spawn in the right place, no matter where the vehicle is on the map
-	ent.seat[index]:SetAngles( ent:LocalToWorldAngles( ang ) )
-	ent.seat[index]:Spawn()
-	ent.seat[index]:SetKeyValue( "limitview", 0 ) --Disables the limited view that you get with the default prisoner pods
-	ent.seat[index]:SetVehicleEntryAnim( false ) --Disables the long entry animation
-	ent.seat[index]:SetNoDraw( true )
-	ent.seat[index]:SetNotSolid( true )
-	ent.seat[index]:DrawShadow( false )
-	ent.seat[index]:AddEFlags( EFL_NO_THINK_FUNCTION ) --Disables the entity's think function to reduce network usage
-	table.Merge( ent.seat[index], { HandleAnimation = function( _, ply )
-		return ply:SelectWeightedSequence( ACT_HL2MP_SIT ) --Sets the animation to the sitting animation, taken from the Gmod wiki
-	end } )
-	ent:DeleteOnRemove( ent.seat[index] )
-	ent.seat[index]:SetNWBool( "IsGAutoSeat", true )
-	ent.seat[index].VehicleTable = {} --Prevents photon from spamming console when it can't find each seat's VehicleTable
-	ent.seat[index].ID = index --Useful for identifying the seat without having to use loops
-	ent.seat[index].DoNotDuplicate = true --Prevents seats from spawning twice if the vehicle is duped or saved
-end
-
 local function InitVehicle( ent )
 	timer.Simple( 0.1, function() --Small timer because the model isn't seen the instant this hook is called
 		if GAuto.IsBlackListed( ent ) or !GAuto.IsDrivable( ent ) then return end --Prevents blacklisted models from being affected
@@ -99,10 +76,9 @@ local function InitVehicle( ent )
 				ent:SetNWInt( "GAuto_VehicleHealth", GAuto_HealthOverride )
 				ent:SetNWInt( "GAuto_VehicleMaxHealth", GAuto_HealthOverride )
 			else
-				ent:SetNWInt( "GAuto_VehicleHealth", GAuto.VehicleHealth( vehmodel ) ) --Sets vehicle health if the health system is enabled
+				ent:SetNWInt( "GAuto_VehicleHealth", GAuto.VehicleHealth( vehmodel ) )
 				ent:SetNWInt( "GAuto_VehicleMaxHealth", GAuto.VehicleHealth( vehmodel ) )
 			end
-			ent:SetNWBool( "GAuto_IsSmoking", false )
 			ent:SetNWBool( "GAuto_HasExploded", false )
 			ent:SetNWVector( "GAuto_EngineOffset", GAuto.EngineOffset( vehmodel ) )
 			ent:AddCallback( "PhysicsCollide", PhysicsCollide )
@@ -139,27 +115,44 @@ local function InitVehicle( ent )
 				if numseats > 0 then
 					ent.seat = {}
 					for i=1, numseats do
-						GAuto.SpawnSeat( i, ent, vehseats[i].pos, vehseats[i].ang )
+						ent.seat[i] = ents.Create( "prop_vehicle_prisoner_pod" )
+						ent.seat[i]:SetModel( "models/nova/airboat_seat.mdl" )
+						ent.seat[i]:SetParent( ent )
+						ent.seat[i]:SetPos( ent:LocalToWorld( vehseats[i].pos ) )
+						ent.seat[i]:SetAngles( ent:LocalToWorldAngles( vehseats[i].ang ) )
+						ent.seat[i]:Spawn()
+						ent.seat[i]:SetKeyValue( "limitview", 0 ) --Disable prisoner pod view
+						ent.seat[i]:SetVehicleEntryAnim( false ) --Disable long entry animation
+						ent.seat[i]:SetNoDraw( true )
+						ent.seat[i]:SetNotSolid( true )
+						ent.seat[i]:DrawShadow( false )
+						ent.seat[i]:AddEFlags( EFL_NO_THINK_FUNCTION ) --Disable think function to reduce network usage
+						table.Merge( ent.seat[i], { HandleAnimation = function( _, ply )
+							--Set player sitting anim, taken from the Gmod wiki
+							return ply:SelectWeightedSequence( ACT_HL2MP_SIT )
+						end } )
+						ent:DeleteOnRemove( ent.seat[i] )
+						ent.seat[i]:SetNWBool( "IsGAutoSeat", true )
+						ent.seat[i].VehicleTable = {} --Prevents Photon console spam
+						ent.seat[i].ID = index
+						ent.seat[i].DoNotDuplicate = true --Prevent seats from being duped since they'll spawn twice
 					end
 				end
 			end
 		end
 		if GAuto_ParticlesEnabled then
-			ent.particles = {}
+			ent.particles = { wheel = {} }
 			for i = 0, ent:GetWheelCount() - 1 do
 				local wheel = ent:GetWheel( i )
 				local height = ent:GetWheelTotalHeight( i )
-				ent.particles[i] = ents.Create( "info_particle_system" )
-				ent.particles[i]:SetKeyValue( "effect_name", "WheelDust" )
-				ent.particles[i]:SetKeyValue( "start_active", 0 )
-				ent.particles[i]:SetOwner( ent )
-				ent.particles[i]:SetPos( wheel:GetPos() + Vector( 0, 0, -height ) )
-				ent.particles[i]:SetAngles( wheel:GetAngles() )
-				ent.particles[i]:Spawn()
-				ent.particles[i]:Activate()
-				ent.particles[i]:SetParent( ent )
-				ent.particles[i].DoNotDuplicate = true
+				local pos = wheel:GetPos() + Vector( 0, 0, -height )
+				ent.particles.wheel[i] = GAuto.CreateParticleEffect( ent, "WheelDust", pos )
 			end
+			local eng = ent:GetAttachment( ent:LookupAttachment( "vehicle_engine" ) )
+			local offset = ent:GetNWVector( "GAuto_EngineOffset" )
+			local enginePos = eng.Pos + offset
+			ent.particles.engineSmoke = GAuto.CreateParticleEffect( ent, "smoke_burning_engine_01", enginePos )
+			ent.particles.engineFire = GAuto.CreateParticleEffect( ent, "burning_engine_fire", enginePos )
 		end
 	end )
 end

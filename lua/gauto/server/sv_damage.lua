@@ -20,11 +20,24 @@ function GAuto.DestroyCheck( veh ) --Disables the engine and sets the vehicle on
 	end
 end
 
-function GAuto.SmokeCheck( veh )
+function GAuto.UpdateDamageEffects( veh )
+	if !GetConVar( "gauto_particles_enabled" ):GetBool() then return end
 	local health = veh:GetNWInt( "GAuto_VehicleHealth" )
-	local maxhealth = veh:GetNWInt( "GAuto_VehicleMaxHealth" )
-	local canSmoke = health < ( maxhealth * 0.3 ) and health > 0
-	veh:SetNWBool( "GAuto_IsSmoking", canSmoke )
+	local maxHealth = veh:GetNWInt( "GAuto_VehicleMaxHealth" )
+	local canFlame = health == 0
+	local canSmoke = health <= ( maxHealth * 0.3 ) and health > 0
+	local fire = veh.particles.engineFire
+	local smoke = veh.particles.engineSmoke
+	if canFlame then
+		smoke:Fire( "Stop" )
+		fire:Fire( "Start" )
+	elseif canSmoke then
+		smoke:Fire( "Start" )
+		fire:Fire( "Stop" )
+	else
+		smoke:Fire( "Stop" )
+		fire:Fire( "Stop" )
+	end
 end
 
 function GAuto.ToggleGodMode( veh )
@@ -46,7 +59,7 @@ function GAuto.TakeDamage( veh, dam ) --Takes away health from the vehicle, also
 		local newhp = math.Clamp( roundhp, 0, maxhealth )
 		veh:SetNWInt( "GAuto_VehicleHealth", newhp )
 		GAuto.DestroyCheck( veh )
-		GAuto.SmokeCheck( veh )
+		GAuto.UpdateDamageEffects( veh )
 		hook.Run( "GAuto_OnTakeDamage", veh, dam )
 	end
 end
@@ -61,7 +74,7 @@ function GAuto.AddHealth( veh, hp ) --Adds health to the vehicle, nothing specia
 	end
 	veh:SetNWInt( "GAuto_VehicleHealth", newhp )
 	hook.Run( "GAuto_OnAddHealth", veh, hp )
-	GAuto.SmokeCheck( veh )
+	GAuto.UpdateDamageEffects( veh )
 end
 
 function GAuto.SetFuel( veh, amount )

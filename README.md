@@ -57,10 +57,8 @@ No. Not only is that outside of my scope, it would also ruin the 'lightweight' a
 Probably not. Any vehicle I add support to going forward is only because I personally want to use it with GAuto. If you would like to add support yourself, I will accept a PR on GitHub, but otherwise it's up to vehicle creators to add support to their own vehicles, because I simply cannot fulfil every request.
 ### Will you add [this feature]?
 At this point, new features are a low priority. GAuto has been in development since 2019 and I've added everything that I originally wanted to add, and more. I'll gladly take suggestions but there's no guarantee that they will be added.
-### Why is smoke sometimes floating above the car?
-The smoke effect is placed at the position of the engine attachment that is built into the model. If the attachment isn't aligned properly, the smoke won't be aligned properly either. Some vehicle creators do this intentionally to make the vehicle drivable in deep water. Supported vehicles can have an engine offset parameter applied so the smoke appears in the right place.
-### Why isn't my car smoking or catching fire when damaged?
-If your car isn't smoking, its model likely does not have an engine attachment, or the attachment is located at the vehicle's origin and has been disabled to prevent it from looking weird. If your car isn't catching fire when its health reaches 0, you likely don't have VFire installed.
+### Why is smoke and fire sometimes floating above the car?
+The smoke and fire effects are placed at the position of the engine attachment that is built into the vehicle's model. If the attachment isn't aligned properly, the smoke won't be aligned properly either. Some vehicle creators do this intentionally to make the vehicle drivable in deep water. Supported vehicles can have an engine offset parameter applied so the smoke appears in the right place.
 
 # Development
 ### Adding Vehicle Support

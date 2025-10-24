@@ -38,4 +38,17 @@ if SERVER then
 		end
 		return ""
 	end
+
+	function GAuto.CreateParticleEffect( veh, effect, pos )
+		local p = ents.Create( "info_particle_system" )
+		p:SetKeyValue( "effect_name", effect )
+		p:SetKeyValue( "start_active", 0 )
+		p:SetOwner( veh )
+		p:SetPos( pos )
+		p:Spawn()
+		p:Activate()
+		p:SetParent( veh )
+		p.DoNotDuplicate = true
+		return p
+	end
 end
