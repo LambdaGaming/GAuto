@@ -5,6 +5,7 @@ game.AddParticles( "particles/fire_01.pcf" )
 PrecacheParticleSystem( "WheelDust" )
 PrecacheParticleSystem( "burning_engine_fire" )
 PrecacheParticleSystem( "smoke_burning_engine_01" )
+PrecacheParticleSystem( "smoke_exhaust_01" )
 
 --Feature toggles
 CreateConVar( "gauto_health_enabled", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Vehicles will take damage." )

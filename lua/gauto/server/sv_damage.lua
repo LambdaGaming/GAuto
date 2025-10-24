@@ -171,9 +171,10 @@ function GAuto.Explode( veh )
 end
 
 function GAuto.CreateCharredProp( veh )
-	local GAuto_ExplosionEnabled = GetConVar( "gauto_damage_explosion_enabled" ):GetBool()
+	local eng = veh:GetAttachment( veh:LookupAttachment( "vehicle_engine" ) )
+	local offset = veh:GetNWVector( "GAuto_EngineOffset" )
+	local engPos = eng and ( eng.Pos + offset ) or vector_origin
 	local GAuto_ExplodeRemoveTime = GetConVar( "gauto_explode_remove_time" ):GetInt()
-	local GAuto_CharringTime = GetConVar( "gauto_charring_time" ):GetInt()
 	local e = ents.Create( "prop_physics" )
 	e:SetPos( veh:GetPos() )
 	e:SetModel( veh:GetModel() )
@@ -182,6 +183,8 @@ function GAuto.CreateCharredProp( veh )
 	e:SetMaterial( "models/props_foliage/tree_deciduous_01a_trunk" )
 	e:Spawn()
 	veh:Remove()
+	local smoke = GAuto.CreateParticleEffect( e, "smoke_exhaust_01", engPos )
+	smoke:Fire( "Start" )
 	if GAuto_ExplodeRemoveTime >= 0 then
 		timer.Simple( GAuto_ExplodeRemoveTime, function()
 			if IsValid( veh ) then veh:Remove() end
