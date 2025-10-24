@@ -3,7 +3,7 @@ GAuto is a lightweight vehicle system for Garry's Mod that extends the default f
 
 # Features
 ### Vehicle Health System
-- Vehicles will smoke when their health drops below 25%, and explode when their health reaches 0.
+- Vehicles will smoke when their health drops to 30% or below, and they will catch fire and explode when their health reaches 0.
 - If VFire is installed, vehicles that remain on fire for too long will become charred and permanently unfixable.
 - Vehicles can be damaged through bullets, explosives, collisions, etc.
 - The repair tool weapon and repair kit entity can be used to restore vehicle health.
@@ -19,7 +19,7 @@ GAuto is a lightweight vehicle system for Garry's Mod that extends the default f
 - Brakes can be released with the vehicle management tool for towing purposes if the vehicle is locked and cannot be driven away.
 ### Steering Wheel Locking
 - The front wheels will lock into a turned position if the driver keeps them turned as they exit the vehicle.
-- Not supported on airboats since it causes them to spin indefinitely.
+- Doesn't work on airboats since it causes them to spin forever.
 ### Passenger Seats
 - Supported vehicles will spawn with multiple passenger seats.
 - Players can switch between seats using the number keys.
@@ -46,8 +46,10 @@ GAuto is a lightweight vehicle system for Garry's Mod that extends the default f
 - All controls besides the seat number keys can be reassigned.
 ### Particles
 - Dust will emit from the wheels when driving on certain surfaces including dirt, grass, and sand.
-- Engine emits a large cloud of smoke when vehicle is heavily damaged.
-- Can be disabled server-side if it causes performance issues.
+- Engine emits a plume of smoke when vehicle is heavily damaged.
+- Engine emits a small flame when vehicle is destroyed.
+- Charred vehicles will emit a small cloud of smoke.
+- All particles can be disabled server-side if it causes performance issues.
 - Not supported on airboats due to the lack of an engine attachment (and wheels).
 
 # FAQs
@@ -74,7 +76,7 @@ __Photon 2__
 GAuto's HUD was designed to avoid conflicts with Photon 2's HUD, however to avoid conflicts with controls, seat switching and ejection are disabled on Photon 2 vehicles.
 
 __Simfphys & LVS__  
-Checks are in place to ensure GAuto can be used with these addons without issue. The spikestrip will also pop tires from both systems.
+Checks are in place to ensure GAuto can be used with these addons without issue. The spike strip will also pop tires from both systems.
 
 __VFire__  
 Some destruction effects rely on hooks from VFire to work. For the best experience it's recommended that you have it installed.
@@ -92,6 +94,6 @@ Vehicle systems like these are NOT compatible. They will likely interfere with G
  If you would like to contribute to this repository by creating an issue or pull request, please refer to the [contributing guidelines.](https://lambdagaming.github.io/contributing.html)
 
 # Credits
-- [Simfphys Base](https://github.com/Blu-x92/simfphys_base) - Reference for how to implement the passenger seat and particle effect systems.
-- SGM - Feature suggestions
+- Lambda Gaming Community - Beta testing and feature suggestions
 - rp_truenorth_v1a - Map used in screenshots and thumbnail on the Steam workshop
+- SGM - Feature suggestions
