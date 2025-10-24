@@ -25,7 +25,7 @@ function GAuto.UpdateDamageEffects( veh )
 	local health = veh:GetNWInt( "GAuto_VehicleHealth" )
 	local maxHealth = veh:GetNWInt( "GAuto_VehicleMaxHealth" )
 	local canFlame = health == 0
-	local canSmoke = health <= ( maxHealth * 0.3 ) and health > 0
+	local canSmoke = health <= ( maxHealth * 0.25 ) and health > 0
 	local fire = veh.particles.engineFire
 	local smoke = veh.particles.engineSmoke
 	if canFlame then

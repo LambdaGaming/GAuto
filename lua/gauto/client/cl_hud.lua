@@ -56,7 +56,7 @@ local function HUDStuff()
 
 		if godenabled then
 			surface.SetTextColor( 0, 255, 0 )
-		elseif vehhealth <= vehmaxhealth * 0.3 then
+		elseif vehhealth <= vehmaxhealth * 0.25 then
 			surface.SetTextColor( 255, 0, 0, 255 )
 		else
 			surface.SetTextColor( color_white )
