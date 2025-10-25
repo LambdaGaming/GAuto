@@ -54,13 +54,13 @@ GAuto is a lightweight vehicle system for Garry's Mod that extends the default f
 
 # FAQs
 ### Is a lighting system planned?
-No. Not only is that outside of my scope, it would also ruin the 'lightweight' aspect of the addon. If you want a lighting system to use with GAuto, I recommend [Photon 1](https://steamcommunity.com/sharedfiles/filedetails/?id=339648087) or [Photon 2](https://steamcommunity.com/sharedfiles/filedetails/?id=3128242636).
+No. Large systems like this are outside the scope of this addon. If you want a lighting system to use with GAuto, I recommend [Photon 1](https://steamcommunity.com/sharedfiles/filedetails/?id=339648087) or [Photon 2](https://steamcommunity.com/sharedfiles/filedetails/?id=3128242636).
 ### Will you add support to [this car]?
-Probably not. Any vehicle I add support to going forward is only because I personally want to use it with GAuto. If you would like to add support yourself, I will accept a PR on GitHub, but otherwise it's up to vehicle creators to add support to their own vehicles, because I simply cannot fulfil every request.
+I occasionally add support for more vehicles but I usually don't take requests for it. Ideally, vehicle creators should be adding support to their own vehicles. You can also add support yourself and submit a PR for it on GitHub.
 ### Will you add [this feature]?
-At this point, new features are a low priority. GAuto has been in development since 2019 and I've added everything that I originally wanted to add, and more. I'll gladly take suggestions but there's no guarantee that they will be added.
+At this point, new features are a low priority. GAuto has been in development since 2019 and I've added everything that I originally wanted to add, and more. I'll gladly take requests but there's no guarantee that they will be added.
 ### Why is smoke and fire sometimes floating above the car?
-The smoke and fire effects are placed at the position of the engine attachment that is built into the vehicle's model. If the attachment isn't aligned properly, the smoke won't be aligned properly either. Some vehicle creators do this intentionally to make the vehicle drivable in deep water. Supported vehicles can have an engine offset parameter applied so the smoke appears in the right place.
+The smoke and fire effects are placed at the position of the engine attachment that is built into the vehicle's model. If the attachment isn't aligned properly, the effects won't be aligned properly either. Some vehicle creators do this intentionally to make the vehicle drivable in deep water. Supported vehicles can have an engine offset parameter applied so the effects appear in the right place.
 
 # Development
 ### Adding Vehicle Support
