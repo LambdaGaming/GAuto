@@ -77,7 +77,7 @@ if CLIENT then
 	local function DrawRepairHUD()
 		local ply = LocalPlayer()
 		local wep = ply:GetActiveWeapon()
-		if !IsValid( wep ) or wep:GetClass() != "weapon_gauto_repair" then return end
+		if !IsValid( wep ) or wep:GetClass() != "weapon_gauto_repair" or ply:InVehicle() then return end
 		
 		local posw = ScrW() / 2 - 95
 		local posh = ScrH() / 2 - 20
@@ -100,7 +100,7 @@ if CLIENT then
 			elseif health > health25 and health < health75 then
 				surface.SetTextColor( 196, 145, 2 )
 			end
-			surface.DrawText( "Vehicle Health: "..health )
+			surface.DrawText( "Vehicle Health: "..math.Round( health, 2 ).."%" )
 		else
 			surface.DrawText( "No vehicle detected." )
 		end

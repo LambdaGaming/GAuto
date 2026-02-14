@@ -84,7 +84,7 @@ if CLIENT then
 	local function DrawFuelHUD()
 		local ply = LocalPlayer()
 		local wep = ply:GetActiveWeapon()
-		if !IsValid( wep ) or wep:GetClass() != "weapon_gauto_fuel" then return end
+		if !IsValid( wep ) or wep:GetClass() != "weapon_gauto_fuel" or ply:InVehicle() then return end
 
 		local tr = ply:GetEyeTrace().Entity
 		local GAuto_FuelEnabled = GetConVar( "gauto_fuel_enabled" ):GetBool()
@@ -108,7 +108,7 @@ if CLIENT then
 			elseif fuel > fuel25 and fuel < fuel75 then
 				surface.SetTextColor( 196, 145, 2 )
 			end
-			surface.DrawText( "Vehicle Fuel Level: "..fuel )
+			surface.DrawText( "Vehicle Fuel Level: "..math.Round( fuel, 2 ).."%" )
 		else
 			surface.DrawText( "No vehicle detected." )
 		end
