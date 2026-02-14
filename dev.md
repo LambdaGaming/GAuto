@@ -83,3 +83,4 @@ These are various values tied to GAuto vehicles that might be useful.
 |gauto_engine_key|Client|Sets the key for toggling the engine.|
 |gauto_eject_modifier|Client|Sets the modifier key that needs to be held while pressing a number key to kick a passenger out.|
 |gauto_cruise_mph|Client|Enable or disable displaying cruise speed in MPH. Disable to set to KPH.|
+|gauto_disable_hud|Client|Prevents the HUD from rendering if enabled.|

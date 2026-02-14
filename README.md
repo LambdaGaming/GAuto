@@ -1,72 +1,68 @@
 # GAuto
-GAuto is a lightweight vehicle system for Garry's Mod that extends the default functionality of vehicles based on the built-in jeep and airboat entities. All vehicles made by popular creators TDM, SGM, and LW before September 2023 are supported out of the box. A few select vehicles outside of these creators are also supported. I will not be adding support to any more vehicles myself, but contributions that add support are welcome, and vehicle creators are encouraged to add support to their own addons. A full list of supported addons can be found [here.](https://steamcommunity.com/sharedfiles/filedetails/?id=3018834846) GAuto is now also available on the [Steam workshop.](https://steamcommunity.com/sharedfiles/filedetails/?id=3048040907)
+GAuto is a lightweight vehicle system for Garry's Mod that extends the default functionality of vehicles based on the default jeep and airboat entities. All vehicles made by popular creators TDM, SGM, and LW before September 2023 are supported out of the box. A few select vehicles from other creators are also supported. A full list of supported addons can be found [here.](https://steamcommunity.com/sharedfiles/filedetails/?id=3018834846) GAuto is now also available on the [Steam workshop.](https://steamcommunity.com/sharedfiles/filedetails/?id=3048040907)
 
 # Features
 ### Vehicle Health System
-- Vehicles will smoke when their health drops to 30% or below, and they will catch fire and explode when their health reaches 0.
-- If VFire is installed, vehicles that remain on fire for too long will become charred and permanently unfixable.
-- Vehicles can be damaged through bullets, explosives, collisions, etc.
-- The repair tool weapon and repair kit entity can be used to restore vehicle health.
+Vehicles can be damaged by bullets, explosives, collisions, and more. Vehicles will start smoking when their health is 30% or less, and will catch fire and explode when their health reaches 0. Health can be restored with the repair tool weapon or repair kit entity. If VFire is installed, vehicles that remain on fire for too long will become charred and permanently unfixable.
+
 ### Tire Damage
-- Tires will deflate after receiving enough damage from either bullets or spike strips.
-- Tires can be repaired with the secondary fire of the repair tool.
-- Deflated tires will cause the vehicle to slow down and become harder to control.
-### Vehicle HUD
-- HUD appears on the right when player enters the driver's seat.
-- Displays vehicle's health, fuel level, door lock status, and cruise control status.
-### Brake Locking
-- Brakes will only lock on a vehicle if the driver holds their jump key as they exit the vehicle.
-- Brakes can be released with the vehicle management tool for towing purposes if the vehicle is locked and cannot be driven away.
-### Steering Wheel Locking
-- The front wheels will lock into a turned position if the driver keeps them turned as they exit the vehicle.
-- Doesn't work on airboats since it causes them to spin forever.
+Tires can be popped by bullets and spike strips. Deflated tires will cause the vehicle to slow down and become harder to control. They can be fixed with the secondary fire of the vehicle repair tool.
+
 ### Passenger Seats
-- Supported vehicles will spawn with multiple passenger seats.
-- Players can switch between seats using the number keys.
-- The driver can kick passengers out by holding alt and pressing the number keys.
-- Unsupported vehicles will have a single passenger seat automatically placed next to the driver's seat if there's enough room.
-### Horns
-- All vehicles, both supported and unsupported, have a horn that can be used by pressing J.
-- GAuto comes with 3 horn sounds, but when adding support to a vehicle, any sound can be used.
+Most vehicles have at least one passenger seat, supported vehicles can have up to 9. You can switch between them using the number keys. Drivers are able to eject players by holding alt and pressing any of the number keys.
+
+### Vehicle HUD
+A small HUD will appear on the right side of the screen when you enter the driver's seat. It displays vehicle info including health, fuel level, door lock status, and cruise control status.
+
 ### Door Locking
-- Drivers can lock their doors to prevent any other players from getting in, even when the driver leaves, by pressing N.
-- Locking the doors does not prevent passengers from getting out.
+Drivers can lock their doors to prevent other players from entering by pressing N. This will not prevent passengers from leaving.
+
+### Brake Locking
+Brakes can be locked by holding jump when leaving the driver's seat. Not doing this could cause the vehicle to roll away. Locked brakes will automatically release when entering the driver's seat again, but they can also be released from the outside using the vehicle management tool.
+
+### Steering Wheel Locking
+The front wheels will lock into a turned position if the driver keeps them turned as they exit the vehicle. This doesn't work on airboat-based vehicles since it causes them to spin forever.
+
+### Horns
+All vehicles have a horn that can be used by pressing J. GAuto comes with 3 horn sounds, but when adding support to a vehicle, any sound can be used.
+
 ### Fuel System
-- Fuel is consumed when the throttle is pressed.
-- Fuel can be replenished through the fuel can entity or weapon.
+All vehicles spawn with a full fuel tank by default. Fuel is consumed when the throttle is pressed. It can be replenished through the fuel can entity or weapon.
+
 ### Cruise Control
-- Toggled by pressing V as the driver.
-- Throttle will always start out slow. Drivers can increase/decrease cruise speed by pressing forward/backward.
+Cruise control allows you to keep the throttle at a certain position for more precise speed control. It can be toggled by pressing V. Cruise speed can be increased/decreased by pressing forward/backward.
+
 ### Vehicle Data
-- Data tables for each vehicle that contain info about health, seat positions, horn sound, etc. are stored in formatted JSON files for easy editing.
-- A vehicle creation tool is also included to easily add GAuto support to your own vehicles.
+Data tables for each vehicle that contain info about health, seat positions, horn sound, etc. are stored in formatted JSON files for easy editing. A vehicle creation tool is also included to easily add GAuto support to your own vehicles. (More info about that below.)
+
 ### Engine Toggle
-- Pressing P will turn off the engine without requiring the driver to leave the vehicle.
+Pressing P will turn off the engine without requiring the driver to leave the vehicle. Useful for when you're trying to talk to someone.
+
 ### Customizable Controls
-- All controls besides the seat number keys can be reassigned.
+All controls besides the seat number keys can be reassigned through the Options tab in the spawn menu.
+
 ### Particles
-- Dust will emit from the wheels when driving on certain surfaces including dirt, grass, and sand.
-- Engine emits a plume of smoke when vehicle is heavily damaged.
-- Engine emits a small flame when vehicle is destroyed.
-- Charred vehicles will emit a small cloud of smoke.
-- All particles can be disabled server-side if it causes performance issues.
-- Not supported on airboats due to the lack of an engine attachment (and wheels).
+Dust will emit from wheels when driving on dirt, grass, and sand. The engine will emit smoke or fire depending on how damaged the vehicle is. Charred vehicles will emit a small cloud of smoke. All particle effects can be disabled server-side if needed. Particles aren't supported on airboat-based vehicles due to the lack of an engine attachment and wheels.
 
 # FAQs
 ### Is a lighting system planned?
 No. Large systems like this are outside the scope of this addon. If you want a lighting system to use with GAuto, I recommend [Photon 1](https://steamcommunity.com/sharedfiles/filedetails/?id=339648087) or [Photon 2](https://steamcommunity.com/sharedfiles/filedetails/?id=3128242636).
 ### Will you add support to [this car]?
-I occasionally add support for more vehicles but I usually don't take requests for it. Ideally, vehicle creators should be adding support to their own vehicles. You can also add support yourself and submit a PR for it on GitHub.
+I occasionally add support for more vehicles but I usually don't take requests for it. Ideally, vehicle creators should be adding support to their own vehicles. You can also add support by submitting a PR for it on GitHub.
 ### Will you add [this feature]?
 At this point, new features are a low priority. GAuto has been in development since 2019 and I've added everything that I originally wanted to add, and more. I'll gladly take requests but there's no guarantee that they will be added.
 ### Why is smoke and fire sometimes floating above the car?
 The smoke and fire effects are placed at the position of the engine attachment that is built into the vehicle's model. If the attachment isn't aligned properly, the effects won't be aligned properly either. Some vehicle creators do this intentionally to make the vehicle drivable in deep water. Supported vehicles can have an engine offset parameter applied so the effects appear in the right place.
 
 # Development
-### Adding Vehicle Support
- If you are a vehicle creator and would like to add GAuto support to your addons, you can use the GAuto Vehicle Creator tool to easily create a table to place in your vehicle's Lua file. When using this tool, left click will spawn passenger seats that you can physgun into place, right click will open a menu to edit values such as the vehicle's health and horn sound, and reload will remove the seats and generate vehicle data as either a Lua script or JSON table. Lua scripts need placed in a Lua file with a shared scope, and JSON files are automatically generated in the game's data folder. If you do add GAuto support to your vehicles, send me a link and I will add them to the collection linked at the top!
 ### Interfacing
 If you want to interface with this addon through Lua, see the [documentation](dev.md) for hooks, functions, and other things you can use.
+
+### Customization
+There are [many ConVars](dev.md#convars) you can use to disable and tweak certain systems. Feel free to request more if these aren't enough to fit your needs.
+
+### Adding Vehicle Support
+You can use the vehicle creator tool to easily create a Lua table or JSON file that contains custom vehicle data such as seat positions, horn sounds, and engine offsets. When using this tool, left click will spawn passenger seats that you can physgun into place, right click will open a menu to edit certain parameters, and reload will remove the seats and generate vehicle data in the selected format. Lua scripts need placed in a Lua file with a shared scope, and JSON files are automatically generated in the game's data folder. If you do add GAuto support to your vehicles, send me a link and I will add them to the collection linked at the top!
 
 # Addon Compatibilities & Integrations
 __Photon 1__  
@@ -75,8 +71,8 @@ GAuto's HUD and default controls were designed to avoid conflicts with Photon 1.
 __Photon 2__  
 GAuto's HUD was designed to avoid conflicts with Photon 2's HUD, however to avoid conflicts with controls, seat switching and ejection are disabled on Photon 2 vehicles.
 
-__Simfphys & LVS__  
-Checks are in place to ensure GAuto can be used with these addons without issue. The spike strip will also pop tires from both systems.
+__Simfphys / LVS / Glide__  
+Checks are in place to ensure GAuto can be used with these addons without issue. The spike strip will also pop tires from all three systems.
 
 __VFire__  
 Some destruction effects rely on hooks from VFire to work. For the best experience it's recommended that you have it installed.
