@@ -38,7 +38,7 @@ function SWEP:SecondaryAttack()
 		tr:EmitSound( "physics/rubber/rubber_tire_impact_hard"..rand..".wav" )
 		GAuto.Notify( self.Owner, "Vehicle tires repaired." )
 	end
-	self:SetNextSecondaryFire( CurTime() + 0.5 )
+	self:SetNextSecondaryFire( CurTime() + 2 )
 end
 
 if SERVER then

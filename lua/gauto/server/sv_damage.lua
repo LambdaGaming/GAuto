@@ -95,19 +95,11 @@ function GAuto.PopTire( veh, wheel )
 		local canPop = hook.Run( "GAuto_CanPopTire", veh, wheel )
 		if canPop == false then return end
 
-		--Simulates the tire slowly losing air
-		local spring = 500.1
 		local deflatesound = CreateSound( veh, "ambient/gas/steam2.wav" )
-		local index = veh:EntIndex()
 		deflatesound:Play()
 		deflatesound:ChangeVolume( 0.8 )
-		deflatesound:FadeOut( 12 )
-		timer.Create( "GAuto_PopTimer"..index..wheel, 1, 12, function()
-			if spring > 499 and IsValid( veh ) then
-				spring = spring - 0.1
-				veh:SetSpringLength( wheel, spring )
-			end
-		end )
+		deflatesound:FadeOut( 5 )
+		veh:GetWheel( wheel ):EnableCollisions( false )
 
 		veh:EmitSound( "HL1/ambience/steamburst1.wav" )
 		veh.WheelHealth = veh.WheelHealth or {}
@@ -145,15 +137,25 @@ function GAuto.RepairTire( veh, wheel )
 	local GAuto_TirePopEnabled = GetConVar( "gauto_tire_damage_enabled" ):GetBool()
 	if GAuto_TirePopEnabled and !GAuto.IsBlackListed( veh ) then
 		if wheel then
-			veh:SetSpringLength( wheel, 500.1 )
-			veh:GetWheel( wheel ):SetDamping( 0, 0 )
+			local phys = veh:GetPhysicsObject()
+			phys:ApplyForceCenter( phys:GetMass() * Vector( 0, 0, 80 ) )
+			timer.Simple( 0.3, function()
+				--Wait till the vehicle is in the air before enabling collisions
+				--Prevents wheels from getting stuck in the ground
+				if !IsValid( veh ) then return end
+				veh:GetWheel( wheel ):EnableCollisions( true )
+			end )
 			veh.WheelHealth[wheel] = nil
 			hook.Run( "GAuto_OnTireRepaired", veh, wheel )
 			return
 		end
 		for i = 0, veh:GetWheelCount() - 1 do
-			veh:SetSpringLength( i, 500.1 )
-			veh:GetWheel( i ):SetDamping( 0, 0 )
+			local phys = veh:GetPhysicsObject()
+			phys:ApplyForceCenter( phys:GetMass() * Vector( 0, 0, 80 ) )
+			timer.Simple( 0.3, function()
+				if !IsValid( veh ) then return end
+				veh:GetWheel( i ):EnableCollisions( true )
+			end )
 			veh.WheelHealth = {}
 			hook.Run( "GAuto_OnTireRepaired", veh, -1 )
 		end
