@@ -4,6 +4,7 @@ CreateClientConVar( "gauto_cruise_key", KEY_V, true, false, "Sets the key for to
 CreateClientConVar( "gauto_engine_key", KEY_P, true, false, "Sets the key for toggling the engine." )
 CreateClientConVar( "gauto_eject_modifier", KEY_LALT, true, false, "Sets the modifier key that needs to be held while pressing a number key to kick a passenger out." )
 CreateClientConVar( "gauto_cruise_mph", 1, true, false, "Enable or disable displaying cruise speed in MPH. Disable to set to KPH." )
+CreateClientConVar( "gauto_disable_hud", 0, true, false, "Prevents the HUD from rendering if enabled." )
 
 local function ControlMenu()
 	spawnmenu.AddToolMenuOption( "Options", "GAuto", "GAutoControls", "Controls", "", "", function( panel )

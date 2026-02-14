@@ -41,6 +41,9 @@ end
 
 local color_gray = Color( 30, 30, 30, 230 )
 local function HUDStuff()
+	local disabled = GetConVar( "gauto_disable_hud" ):GetBool()
+	if disabled then return end
+
 	local ply = LocalPlayer()
 	local vehicle = ply:GetVehicle()
 	if ply:InVehicle() and GAuto.IsDrivable( vehicle ) then
