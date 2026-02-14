@@ -14,6 +14,19 @@ local vehicles = {
 	["jeep_owned_by_reckless_driver_kleiner"] = true
 }
 
+function ENT:SpawnFunction( ply, tr, name )
+	if ( !tr.Hit ) then return end
+	local pos = tr.HitPos + tr.HitNormal
+	local offset = ply:GetAngles().y + GetConVar( "gauto_spike_model_offset" ):GetInt()
+	local e = ents.Create( name )
+	e:SetPos( pos )
+	e:SetAngles( Angle( 0, offset, 0 ) )
+	e:Spawn()
+	e:Activate()
+	e:SetOwner( ply )
+	return e
+end
+
 function ENT:Initialize()
     self:SetModel( GetConVar( "gauto_spike_model" ):GetString() )
 	self:SetMoveType( MOVETYPE_NONE )
@@ -21,7 +34,8 @@ function ENT:Initialize()
 	if SERVER then
 		self:PhysicsInit( SOLID_VPHYSICS )
 		self:SetUseType( SIMPLE_USE )
-		if DarkRP then --RP support that removes the spikestrip after 10 minutes to prevent abuse, should work with any DarkRP-based gamemode even if it's name was changed
+		if DarkRP then
+			--RP support that removes the spikestrip after 10 minutes to prevent abuse, should work with any DarkRP-based gamemode even if it's name was changed
 			local index = self:EntIndex()
 			if !timer.Exists( "Spike_Remove_Timer"..index ) then
 				timer.Create( "Spike_Remove_Timer"..index, 600, 1, function()
