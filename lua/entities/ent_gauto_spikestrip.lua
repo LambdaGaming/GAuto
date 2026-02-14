@@ -103,6 +103,16 @@ function ENT:StartTouch( ent )
 	elseif class == "lvs_wheeldrive_wheel" or scripted_ents.IsBasedOn( class, "lvs_wheeldrive_wheel" ) then --LVS support
 		ent:SetSuspensionHeight( -1 )
 		ent:SetSuspensionStiffness( 1 )
+	elseif ent.IsGlideVehicle then --Glide support
+		local wheelpos = {}
+		for i = 1, #ent.wheels do
+			local wheel = ent.wheels[i]
+			if !IsValid( wheel ) then return end
+			local sqrpos = wheel:GetPos():DistToSqr( self:GetPos() )
+			table.insert( wheelpos, { i, sqrpos } )
+		end
+		table.sort( wheelpos, function( a, b ) return a[2] < b[2] end )
+		ent.wheels[wheelpos[1][1]]:Blow()
 	end
 end
 
