@@ -140,7 +140,7 @@ local function InitVehicle( ent )
 				end
 			end
 		end
-		if GAuto_ParticlesEnabled then
+		if GAuto_ParticlesEnabled and !GAuto.IsAirboat( ent ) then
 			ent.particles = { wheel = {} }
 			for i = 0, ent:GetWheelCount() - 1 do
 				local wheel = ent:GetWheel( i )

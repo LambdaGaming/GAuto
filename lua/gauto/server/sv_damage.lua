@@ -21,7 +21,7 @@ function GAuto.DestroyCheck( veh ) --Disables the engine and sets the vehicle on
 end
 
 function GAuto.UpdateDamageEffects( veh )
-	if !GetConVar( "gauto_particles_enabled" ):GetBool() then return end
+	if !GetConVar( "gauto_particles_enabled" ):GetBool() or GAuto.IsAirboat( veh ) then return end
 	local health = veh:GetNWInt( "GAuto_VehicleHealth" )
 	local maxHealth = veh:GetNWInt( "GAuto_VehicleMaxHealth" )
 	local canFlame = health == 0

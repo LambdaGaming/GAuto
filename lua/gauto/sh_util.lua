@@ -21,6 +21,10 @@ function GAuto.IsDrivable( ent )
 	return IsValid( ent ) and ( ent:GetClass() == "prop_vehicle_jeep" or ent:GetClass() == "prop_vehicle_airboat" )
 end
 
+function GAuto.IsAirboat( ent )
+	return ent:GetClass() == "prop_vehicle_airboat"
+end
+
 if SERVER then
 	util.AddNetworkString( "GAuto_Notify" )
 	function GAuto.Notify( ply, text )
