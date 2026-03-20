@@ -5,7 +5,7 @@ SWEP.Category = "GAuto"
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.Base = "weapon_base"
-SWEP.Author = "Lambda Gaming"
+SWEP.Author = "OPGman"
 SWEP.Slot = 2
 
 SWEP.ViewModel = ""
@@ -81,11 +81,9 @@ if CLIENT then
 		model:DrawModel()
 	end
 
-	local function DrawFuelHUD()
-		local ply = LocalPlayer()
-		local wep = ply:GetActiveWeapon()
-		if !IsValid( wep ) or wep:GetClass() != "weapon_gauto_fuel" or ply:InVehicle() then return end
-
+	function SWEP:DrawHUD()
+		local ply = self:GetOwner()
+		if ply:InVehicle() then return end
 		local tr = ply:GetEyeTrace().Entity
 		local GAuto_FuelEnabled = GetConVar( "gauto_fuel_enabled" ):GetBool()
 		local posw = ScrW() / 2 - 95
@@ -113,5 +111,4 @@ if CLIENT then
 			surface.DrawText( "No vehicle detected." )
 		end
 	end
-	hook.Add( "HUDPaint", "GAuto_FuelHUD", DrawFuelHUD )
 end

@@ -5,7 +5,7 @@ SWEP.Category = "GAuto"
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.Base = "weapon_base"
-SWEP.Author = "Lambda Gaming"
+SWEP.Author = "OPGman"
 SWEP.Slot = 2
 
 SWEP.ViewModel = "models/weapons/v_crowbar.mdl"
@@ -74,11 +74,9 @@ if SERVER then
 end
 
 if CLIENT then
-	local function DrawRepairHUD()
-		local ply = LocalPlayer()
-		local wep = ply:GetActiveWeapon()
-		if !IsValid( wep ) or wep:GetClass() != "weapon_gauto_repair" or ply:InVehicle() then return end
-		
+	function SWEP:DrawHUD()
+		local ply = self:GetOwner()
+		if ply:InVehicle() then return end
 		local posw = ScrW() / 2 - 95
 		local posh = ScrH() / 2 - 20
 		local tr = ply:GetEyeTrace().Entity
@@ -105,5 +103,4 @@ if CLIENT then
 			surface.DrawText( "No vehicle detected." )
 		end
 	end
-	hook.Add( "HUDPaint", "GAuto_RepairHUD", DrawRepairHUD )
 end

@@ -3,7 +3,7 @@ AddCSLuaFile()
 ENT.Type = "anim"
 ENT.Base = "base_gmodentity"
 ENT.PrintName = "Spikestrip"
-ENT.Author = "Lambda Gaming"
+ENT.Author = "OPGman"
 ENT.Spawnable = true
 ENT.AdminOnly = true
 ENT.Category = "GAuto"

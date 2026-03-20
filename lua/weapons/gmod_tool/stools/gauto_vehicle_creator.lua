@@ -55,35 +55,10 @@ if CLIENT then
 end
 
 if SERVER then
-	local seatJson = [[{
-			"pos": %s,
-			"ang": %s
-		}%s
-		]]
-	
-	local bodyJson = [[{
-	"HornSound": "%s",
-	"MaxHealth": %s,
-	"Seats": [
-		%s
-	]
-}]]
-
-	local seatLua = [[{
-				pos = %s,
-				ang = %s
-			}%s
-			]]
-
-	local bodyLua = [[if GAuto and GAuto.Vehicles then
-	GAuto.Vehicles["%s"] = {
-		HornSound = "%s",
-		MaxHealth = %s,
-		Seats = {
-			%s
-		}
-	}
-end]]
+	local seatJson = '{\n\t\t\t"pos": %s,\n\t\t\t"ang": %s\n\t\t}%s\n\t\t'
+	local bodyJson = '{\n\t"HornSound": "%s",\n\t"MaxHealth": %s,\n\t"Seats": [\n\t\t%s\n\t]\n}'
+	local seatLua = '{\n\t\t\t\tpos = %s,\n\t\t\t\tang = %s\n\t\t\t}%s\n\t\t\t'
+	local bodyLua = 'if GAuto and GAuto.Vehicles then\n\tGAuto.Vehicles["%s"] = {\n\t\tHornSound = "%s",\n\t\tMaxHealth = %s,\n\t\tSeats = {\n\t\t\t%s\n\t\t}\n\t}\nend'
 
 	function TOOL:CheckValid( tr )
 		local owner = self:GetOwner()
