@@ -24,7 +24,7 @@ function ENT:Initialize()
 	self.FuelPercent = 0.75
 end
 
-local function Splash( ent )
+function ENT:Splash()
 	local ed = EffectData()
 	ed:SetOrigin( ent:GetPos() )
 	ed:SetNormal( VectorRand() )
@@ -41,7 +41,7 @@ function ENT:StartTouch( ent )
 		local fuelpercent = self.FuelPercent
 		if fuel >= maxfuel then return end
 		GAuto.SetFuel( ent, fuel + ( maxfuel * fuelpercent ) )
-		Splash( self )
+		self:Splash()
 		self:Remove()
 	end
 end
@@ -50,7 +50,12 @@ function ENT:OnTakeDamage( dmg )
 	self:SetHealth( self:Health() - dmg:GetDamage() )
 	if self:Health() <= 0 and ( dmg:GetDamageType() == DMG_BULLET or dmg:GetDamageType() == DMG_BLAST ) then
 		local cans = #ents.FindByClass( "ent_gauto_fuel" )
-		if cans > 3 then self:Remove() Splash( self ) return end --Prevents a chain of explosions from going off, causing the server to freeze or crash if VFire is installed
+		if cans > 3 then
+			--Prevents a chain of explosions from going off, causing the server to freeze or crash if VFire is installed
+			self:Remove()
+			self:Splash()
+			return
+		end
 		self:Explode()
 	end
 end
@@ -60,7 +65,7 @@ function ENT:Explode()
 	self.Exploding = true
 	local explosion = ents.Create( "env_explosion" )			
 	explosion:SetPos( self:GetPos() )
-	explosion:SetKeyValue( "iMagnitude", 200 )
+	explosion:SetKeyValue( "iMagnitude", 150 )
 	explosion:Spawn()
 	explosion:Activate()
 	explosion:Fire( "Explode", 0, 0 )
