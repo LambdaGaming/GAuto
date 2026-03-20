@@ -4,9 +4,6 @@ function GAuto.DestroyCheck( veh ) --Disables the engine and sets the vehicle on
 		local GAuto_ExplodeRemoveTime = GetConVar( "gauto_explode_remove_time" ):GetInt()
 		local GAuto_CharringTime = GetConVar( "gauto_charring_time" ):GetInt()
 		veh:Fire( "turnoff", "", 0.01 )
-		if vFireInstalled then --Only ignites the vehicle if VFire is installed since otherwise it looks weird
-			veh:Ignite()
-		end
 		if GAuto_ExplosionEnabled then
 			GAuto.Explode( veh )
 			if ( !vFireInstalled or GAuto_CharringTime < 0 ) and GAuto_ExplodeRemoveTime >= 0 then
