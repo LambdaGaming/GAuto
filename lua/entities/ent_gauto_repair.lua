@@ -10,16 +10,12 @@ ENT.Category = "GAuto"
 
 function ENT:Initialize()
     self:SetModel( "models/Items/HealthKit.mdl" )
-	self:SetMoveType(MOVETYPE_VPHYSICS)
-	self:SetSolid(SOLID_VPHYSICS)
+	self:SetMoveType( MOVETYPE_VPHYSICS )
+	self:SetSolid( SOLID_VPHYSICS )
 	if SERVER then
-		self:PhysicsInit(SOLID_VPHYSICS)
+		self:PhysicsInit( SOLID_VPHYSICS )
 	end
- 
-    local phys = self:GetPhysicsObject()
-	if phys:IsValid() then
-		phys:Wake()
-	end
+	self:PhysWake()
 	self.HealthPercent = 0.3
 end
 

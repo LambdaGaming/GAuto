@@ -10,17 +10,13 @@ ENT.Category = "GAuto"
 
 function ENT:Initialize()
     self:SetModel( "models/props_junk/gascan001a.mdl" )
-	self:SetMoveType(MOVETYPE_VPHYSICS)
-	self:SetSolid(SOLID_VPHYSICS)
+	self:SetMoveType( MOVETYPE_VPHYSICS )
+	self:SetSolid( SOLID_VPHYSICS )
 	if SERVER then
-		self:PhysicsInit(SOLID_VPHYSICS)
+		self:PhysicsInit( SOLID_VPHYSICS )
 		self:SetHealth( 25 )
 	end
- 
-    local phys = self:GetPhysicsObject()
-	if phys:IsValid() then
-		phys:Wake()
-	end
+	self:PhysWake()
 	self.FuelPercent = 0.75
 end
 
