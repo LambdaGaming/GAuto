@@ -6,6 +6,9 @@ CreateClientConVar( "gauto_eject_modifier", KEY_LALT, true, false, "Sets the mod
 CreateClientConVar( "gauto_cruise_mph", 1, true, false, "Enable or disable displaying cruise speed in MPH. Disable to set to KPH." )
 CreateClientConVar( "gauto_disable_hud", 0, true, false, "Prevents the HUD from rendering if enabled." )
 
+--Spawn menu category icon
+list.Set( "ContentCategoryIcons", "GAuto", "icon16/car.png" )
+
 local function ControlMenu()
 	spawnmenu.AddToolMenuOption( "Options", "GAuto", "GAutoControls", "Controls", "", "", function( panel )
 		panel:AddControl( "Header", { --This is deprecated but all default gmod tools still use it?
