@@ -1,6 +1,7 @@
 {
 	"HornSound": "gauto/truckhorn.wav",
 	"MaxHealth": 200,
+	"NoTireDamage": true,
 	"Seats": [
 		{
 			"pos": "[50 269 77]",

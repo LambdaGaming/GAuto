@@ -17,11 +17,16 @@ if CLIENT then
 			draw.RoundedBox( 4, 0, 0, w, h, Color( 30, 30, 30, 230 ) )
 		end
 	
-		local checkBox = vgui.Create( "DCheckBoxLabel", main )
-		checkBox:Dock( TOP )
-		checkBox:DockMargin( 0, 0, 0, 20 )
-		checkBox:SetText( "Generate JSON instead of Lua" )
-		checkBox:SizeToContents()
+		local json = vgui.Create( "DCheckBoxLabel", main )
+		json:Dock( TOP )
+		json:DockMargin( 0, 0, 0, 20 )
+		json:SetText( "Generate JSON instead of Lua" )
+		json:SizeToContents()
+		local tire = vgui.Create( "DCheckBoxLabel", main )
+		tire:Dock( TOP )
+		tire:DockMargin( 0, 0, 0, 20 )
+		tire:SetText( "Disable tire damage" )
+		tire:SizeToContents()
 		local hornLabel = vgui.Create( "DLabel", main )
 		hornLabel:Dock( TOP )
 		hornLabel:SetText( "Horn Sound" )
@@ -45,7 +50,8 @@ if CLIENT then
 		save:SetText( "Save" )
 		save.DoClick = function()
 			net.Start( "GAuto_VehicleCreatorMenu" )
-			net.WriteBool( checkBox:GetChecked() )
+			net.WriteBool( json:GetChecked() )
+			net.WriteBool( tire:GetChecked() )
 			net.WriteString( horn:GetValue() )
 			net.WriteUInt( health:GetValue(), 10 )
 			net.SendToServer()
@@ -56,9 +62,9 @@ end
 
 if SERVER then
 	local seatJson = '{\n\t\t\t"pos": %s,\n\t\t\t"ang": %s\n\t\t}%s\n\t\t'
-	local bodyJson = '{\n\t"HornSound": "%s",\n\t"MaxHealth": %s,\n\t"Seats": [\n\t\t%s\n\t]\n}'
+	local bodyJson = '{\n\t"HornSound": "%s",\n\t"MaxHealth": %s,\n\t"NoTireDamage": %s,\n\t"Seats": [\n\t\t%s\n\t]\n}'
 	local seatLua = '{\n\t\t\t\tpos = %s,\n\t\t\t\tang = %s\n\t\t\t}%s\n\t\t\t'
-	local bodyLua = 'if GAuto and GAuto.Vehicles then\n\tGAuto.Vehicles["%s"] = {\n\t\tHornSound = "%s",\n\t\tMaxHealth = %s,\n\t\tSeats = {\n\t\t\t%s\n\t\t}\n\t}\nend'
+	local bodyLua = 'if GAuto and GAuto.Vehicles then\n\tGAuto.Vehicles["%s"] = {\n\t\tHornSound = "%s",\n\t\tMaxHealth = %s,\n\t\tNoTireDamage = %s,\n\t\tSeats = {\n\t\t\t%s\n\t\t}\n\t}\nend'
 
 	function TOOL:CheckValid( tr )
 		local owner = self:GetOwner()
@@ -121,6 +127,7 @@ if SERVER then
 			if !GAuto.Tool then
 				GAuto.Tool = {
 					UseJSON = false,
+					Tire = false,
 					Horn = "gauto/carhorn.wav",
 					Health = 100
 				}
@@ -137,7 +144,7 @@ if SERVER then
 					seat = seat..seatJson
 					seat = string.format( seat, FormatVector( self.Vehicle:WorldToLocal( v:GetPos() ), true ), FormatAngle( self.Vehicle:WorldToLocalAngles( v:GetAngles() ), true ), comma )
 				end
-				tbl = string.format( bodyJson, GAuto.Tool.Horn, GAuto.Tool.Health, seat )
+				tbl = string.format( bodyJson, GAuto.Tool.Horn, GAuto.Tool.Health, GAuto.Tool.Tire, seat )
 				file.CreateDir( "gauto/vehicles" )
 				file.Write( "gauto/vehicles/"..filename..".json", tbl )
 				owner:ChatPrint( "Generated JSON has been printed to the server console and written to the server's data folder." )
@@ -150,7 +157,7 @@ if SERVER then
 					seat = seat..seatLua
 					seat = string.format( seat, FormatVector( self.Vehicle:WorldToLocal( v:GetPos() ) ), FormatAngle( self.Vehicle:WorldToLocalAngles( v:GetAngles() ) ), comma )
 				end
-				tbl = string.format( bodyLua, self.Vehicle:GetModel(), GAuto.Tool.Horn, GAuto.Tool.Health, seat )
+				tbl = string.format( bodyLua, self.Vehicle:GetModel(), GAuto.Tool.Horn, GAuto.Tool.Health, GAuto.Tool.Tire, seat )
 				owner:ChatPrint( "Generated code has been printed to the server console. Put it in a Lua file that both the client and server have access to." )
 			end
 			
@@ -166,10 +173,12 @@ if SERVER then
 	net.Receive( "GAuto_VehicleCreatorMenu", function( len, ply )
 		if !ply:IsAdmin() then return end
 		local json = net.ReadBool()
+		local tire = net.ReadBool()
 		local horn = net.ReadString()
 		local health = net.ReadUInt( 10 )
 		GAuto.Tool = {
 			UseJSON = json,
+			Tire = tire,
 			Horn = horn,
 			Health = health
 		}

@@ -18,6 +18,10 @@ Feel free to request additional hooks if none of these suit your needs.
 Functions that are meant to only be used internally are not listed here.
 | Name | Scope | Arguments | Returns | Description |
 |------|-------|-----------|---------|-------------|
+|GAuto.HornSound|Server|String `model`|String `sound`|Returns the horn sound associated with the specified vehicle model, or `gauto/carhorn.wav` if the parameter doesn't exist.|
+|GAuto.VehicleHealth|Server|String `model`|Number `health`|Returns the max health associated with the specified vehicle model, or 100 if the parameter doesn't exist.|
+|GAuto.EngineOffset|Server|String `model`|Vector `offset`|Returns the engine offset vector associated with the specified vehicle model, or 0,0,0 if the parameter doesn't exist.|
+|GAuto.NoTireDamage|Server|String `model`|Bool `noDamage`|Returns whether or not the specified vehicle model has tire damage disabled.|
 |GAuto.AddHealth|Server|Vehicle `veh`, Number `hp`|N/A|Adds a set amount of health to the specified vehicle. Will automatically clamp health at max value, and check to see if the vehicle should smoke.|
 |GAuto.GodModeEnabled|Server|Vehicle `veh`|Bool `enabled`|Returns whether or not the specified vehicle has god mode enabled.|
 |GAuto.IsBlackListed|Shared|Vehicle `veh`|Bool `blacklisted`|Returns whether or not the specified vehicle is considered blacklisted by GAuto.|

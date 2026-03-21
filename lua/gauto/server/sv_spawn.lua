@@ -21,6 +21,10 @@ function GAuto.EngineOffset( model )
 	return vector_origin
 end
 
+function GAuto.NoTireDamage( model )
+	return GAuto.Vehicles[model] and GAuto.Vehicles[model].NoTireDamage
+end
+
 function GAuto.LoadVehicle( model )
 	if !model then
 		error( "Invalid argument for GAuto.LoadVehicle()." )
@@ -57,8 +61,8 @@ local function PhysicsCollide( veh, data )
 end
 
 local function InitVehicle( ent )
-	timer.Simple( 0.1, function() --Small timer because the model isn't seen the instant this hook is called
-		if GAuto.IsBlackListed( ent ) or !GAuto.IsDrivable( ent ) then return end --Prevents blacklisted models from being affected
+	timer.Simple( 0.1, function()
+		if GAuto.IsBlackListed( ent ) or !GAuto.IsDrivable( ent ) then return end
 		local vehmodel = ent:GetModel()
 		local GAuto_HealthEnabled = GetConVar( "gauto_health_enabled" ):GetBool()
 		local GAuto_HealthOverride = GetConVar( "gauto_health_override" ):GetInt()
@@ -84,10 +88,10 @@ local function InitVehicle( ent )
 			ent:AddCallback( "PhysicsCollide", PhysicsCollide )
 		end
 		if GAuto_HornEnabled then
-			ent:SetNWString( "GAuto_HornSound", GAuto.HornSound( vehmodel ) ) --Sets horn sound of the setting is enabled
+			ent:SetNWString( "GAuto_HornSound", GAuto.HornSound( vehmodel ) )
 		end
 		if GAuto_DoorLockEnabled then
-			ent:SetNWBool( "GAuto_DoorsLocked", false ) --Sets door lock status if the setting is enabled
+			ent:SetNWBool( "GAuto_DoorsLocked", false )
 		end
 		if GAuto_FuelEnabled then
 			ent:SetNWInt( "GAuto_FuelAmount", GAuto_FuelAmount )
@@ -101,11 +105,12 @@ local function InitVehicle( ent )
 				if attachment then
 					local driverPos = ent:WorldToLocal( attachment.Pos )
 					driverPos:Sub( Vector( driverPos.x * 2, 0, 35 ) )
-					if math.abs( driverPos.x ) > 5 then --Don't spawn seat if players would be too close to each other
+					if math.abs( driverPos.x ) > 5 then
 						if !GAuto.Vehicles[vehmodel] then
 							GAuto.Vehicles[vehmodel] = {}
 						end
-						GAuto.Vehicles[vehmodel].Seats = { { pos = driverPos, ang = angle_zero } } --Add single passenger seat as a fallback if vehicle isn't supported
+						--Add single passenger seat as a fallback if vehicle isn't supported
+						GAuto.Vehicles[vehmodel].Seats = { { pos = driverPos, ang = angle_zero } }
 					end
 				end
 			end
@@ -135,7 +140,7 @@ local function InitVehicle( ent )
 						ent.seat[i]:SetNWBool( "IsGAutoSeat", true )
 						ent.seat[i].VehicleTable = {} --Prevents Photon console spam
 						ent.seat[i].ID = index
-						ent.seat[i].DoNotDuplicate = true --Prevent seats from being duped since they'll spawn twice
+						ent.seat[i].DoNotDuplicate = true --Don't copy seats when duping a vehicle since they'll spawn twice
 					end
 				end
 			end

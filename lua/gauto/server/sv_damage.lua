@@ -91,7 +91,7 @@ end
 
 function GAuto.PopTire( veh, wheel )
 	local GAuto_TirePopEnabled = GetConVar( "gauto_tire_damage_enabled" ):GetBool()
-	if GAuto_TirePopEnabled and !GAuto.IsBlackListed( veh ) then
+	if GAuto_TirePopEnabled and !GAuto.IsBlackListed( veh ) and !GAuto.NoTireDamage( veh:GetModel() ) then
 		local canPop = hook.Run( "GAuto_CanPopTire", veh, wheel )
 		if canPop == false then return end
 
@@ -111,7 +111,7 @@ end
 function GAuto.PopCheck( dmg, veh )
 	local GAuto_TirePopEnabled = GetConVar( "gauto_tire_damage_enabled" ):GetBool()
 	local GAuto_TireHealth = GetConVar( "gauto_tire_health" ):GetInt()
-	if GAuto_TirePopEnabled and !GAuto.IsBlackListed( veh ) then
+	if GAuto_TirePopEnabled and !GAuto.IsBlackListed( veh ) and !GAuto.NoTireDamage( veh:GetModel() ) then
 		local pos = dmg:GetDamagePosition()
 		local dmgamount = dmg:GetDamage() * 300
 		for i = 0, veh:GetWheelCount() - 1 do
@@ -135,7 +135,7 @@ end
 
 function GAuto.RepairTire( veh, wheel )
 	local GAuto_TirePopEnabled = GetConVar( "gauto_tire_damage_enabled" ):GetBool()
-	if GAuto_TirePopEnabled and !GAuto.IsBlackListed( veh ) then
+	if GAuto_TirePopEnabled and !GAuto.IsBlackListed( veh ) and !GAuto.NoTireDamage( veh:GetModel() ) then
 		if wheel then
 			local phys = veh:GetPhysicsObject()
 			phys:ApplyForceCenter( phys:GetMass() * Vector( 0, 0, 80 ) )

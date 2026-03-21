@@ -1,4 +1,5 @@
 {
 	"HornSound": "gauto/truckhorn.wav",
-	"MaxHealth": 200
+	"MaxHealth": 200,
+	"NoTireDamage": true
 }
