@@ -1,8 +1,8 @@
 function GAuto.DestroyCheck( veh ) --Disables the engine and sets the vehicle on fire if it's health is 0
 	if veh:GetNWInt( "GAuto_VehicleHealth" ) <= 0 and !veh:GetNWBool( "GAuto_HasExploded" ) then
-		local GAuto_ExplosionEnabled = GetConVar( "gauto_damage_explosion_enabled" ):GetBool()
-		local GAuto_ExplodeRemoveTime = GetConVar( "gauto_explode_remove_time" ):GetInt()
-		local GAuto_CharringTime = GetConVar( "gauto_charring_time" ):GetInt()
+		local GAuto_ExplosionEnabled = cvars.Bool( "gauto_damage_explosion_enabled" )
+		local GAuto_ExplodeRemoveTime = cvars.Number( "gauto_explode_remove_time" )
+		local GAuto_CharringTime = cvars.Number( "gauto_charring_time" )
 		veh:Fire( "turnoff", "", 0.01 )
 		if vFireInstalled then --Only ignites the vehicle if VFire is installed since otherwise it looks weird
 			veh:Ignite()
@@ -21,7 +21,7 @@ function GAuto.DestroyCheck( veh ) --Disables the engine and sets the vehicle on
 end
 
 function GAuto.UpdateDamageEffects( veh )
-	if !GetConVar( "gauto_particles_enabled" ):GetBool() or GAuto.IsAirboat( veh ) then return end
+	if !cvars.Bool( "gauto_particles_enabled" ) or GAuto.IsAirboat( veh ) then return end
 	local health = veh:GetNWInt( "GAuto_VehicleHealth" )
 	local maxHealth = veh:GetNWInt( "GAuto_VehicleMaxHealth" )
 	local canFlame = health == 0
@@ -50,14 +50,14 @@ function GAuto.GodModeEnabled( veh )
 end
 
 function GAuto.TakeDamage( veh, dam ) --Takes away health from the vehicle, also runs the destroy check every time the health is set
-	local GAuto_HealthEnabled = GetConVar( "gauto_health_enabled" ):GetBool()
+	local GAuto_HealthEnabled = cvars.Bool( "gauto_health_enabled" )
 	if GAuto_HealthEnabled and !GAuto.GodModeEnabled( veh ) and dam >= 0.1 then
 		if veh.DamageCooldown and veh.DamageCooldown > CurTime() then return end
 		local health = veh:GetNWInt( "GAuto_VehicleHealth" )
-		local maxhealth = veh:GetNWInt( "GAuto_VehicleMaxHealth" )
-		local roundhp = math.Round( health - dam, 2 )
-		local newhp = math.Clamp( roundhp, 0, maxhealth )
-		veh:SetNWInt( "GAuto_VehicleHealth", newhp )
+		local maxHealth = veh:GetNWInt( "GAuto_VehicleMaxHealth" )
+		local rounded = math.Round( health - dam, 2 )
+		local newHp = math.Clamp( rounded, 0, maxHealth )
+		veh:SetNWInt( "GAuto_VehicleHealth", newHp )
 		GAuto.DestroyCheck( veh )
 		GAuto.UpdateDamageEffects( veh )
 		hook.Run( "GAuto_OnTakeDamage", veh, dam )
@@ -66,22 +66,22 @@ end
 
 function GAuto.AddHealth( veh, hp ) --Adds health to the vehicle, nothing special
 	local health = veh:GetNWInt( "GAuto_VehicleHealth" )
-	local maxhealth = veh:GetNWInt( "GAuto_VehicleMaxHealth" )
-	local roundhp = math.Round( health + hp, 2 )
-	local newhp = math.Clamp( roundhp, 0, maxhealth )
+	local maxHealth = veh:GetNWInt( "GAuto_VehicleMaxHealth" )
+	local rounded = math.Round( health + hp, 2 )
+	local newHp = math.Clamp( rounded, 0, maxHealth )
 	if veh:GetNWBool( "GAuto_HasExploded" ) then
 		veh:SetNWBool( "GAuto_HasExploded", false )
 	end
-	veh:SetNWInt( "GAuto_VehicleHealth", newhp )
+	veh:SetNWInt( "GAuto_VehicleHealth", newHp )
 	hook.Run( "GAuto_OnAddHealth", veh, hp )
 	GAuto.UpdateDamageEffects( veh )
 end
 
 function GAuto.SetFuel( veh, amount )
 	if GAuto.IsBlackListed( veh ) then return end
-	local GAuto_FuelAmount = GetConVar( "gauto_fuel_amount" ):GetInt()
-	local clampedamount = math.Clamp( amount, 0, GAuto_FuelAmount )
-	veh:SetNWInt( "GAuto_FuelAmount", clampedamount )
+	local GAuto_FuelAmount = cvars.Number( "gauto_fuel_amount" )
+	local clampedAmount = math.Clamp( amount, 0, GAuto_FuelAmount )
+	veh:SetNWInt( "GAuto_FuelAmount", clampedAmount )
 	if amount > 0 and veh.NoFuel then
 		veh.NoFuel = false
 		veh:Fire( "turnon", "", 0.01 )
@@ -90,15 +90,15 @@ function GAuto.SetFuel( veh, amount )
 end
 
 function GAuto.PopTire( veh, wheel )
-	local GAuto_TirePopEnabled = GetConVar( "gauto_tire_damage_enabled" ):GetBool()
+	local GAuto_TirePopEnabled = cvars.Bool( "gauto_tire_damage_enabled" )
 	if GAuto_TirePopEnabled and !GAuto.IsBlackListed( veh ) and !GAuto.NoTireDamage( veh:GetModel() ) then
 		local canPop = hook.Run( "GAuto_CanPopTire", veh, wheel )
 		if canPop == false then return end
 
-		local deflatesound = CreateSound( veh, "ambient/gas/steam2.wav" )
-		deflatesound:Play()
-		deflatesound:ChangeVolume( 0.8 )
-		deflatesound:FadeOut( 5 )
+		local deflateSound = CreateSound( veh, "ambient/gas/steam2.wav" )
+		deflateSound:Play()
+		deflateSound:ChangeVolume( 0.8 )
+		deflateSound:FadeOut( 5 )
 		veh:GetWheel( wheel ):EnableCollisions( false )
 
 		veh:EmitSound( "HL1/ambience/steamburst1.wav" )
@@ -109,11 +109,11 @@ function GAuto.PopTire( veh, wheel )
 end
 
 function GAuto.PopCheck( dmg, veh )
-	local GAuto_TirePopEnabled = GetConVar( "gauto_tire_damage_enabled" ):GetBool()
-	local GAuto_TireHealth = GetConVar( "gauto_tire_health" ):GetInt()
+	local GAuto_TirePopEnabled = cvars.Bool( "gauto_tire_damage_enabled" )
+	local GAuto_TireHealth = cvars.Number( "gauto_tire_health" )
 	if GAuto_TirePopEnabled and !GAuto.IsBlackListed( veh ) and !GAuto.NoTireDamage( veh:GetModel() ) then
 		local pos = dmg:GetDamagePosition()
-		local dmgamount = dmg:GetDamage() * 300
+		local dmgAmount = dmg:GetDamage() * 300
 		for i = 0, veh:GetWheelCount() - 1 do
 			local wheel = veh:GetWheel( i )
 			if !IsValid( wheel ) or ( veh.WheelHealth and veh.WheelHealth[i] and veh.WheelHealth[i] <= 0 ) then
@@ -124,7 +124,7 @@ function GAuto.PopCheck( dmg, veh )
 			local diameter = veh:GetWheelBaseHeight( i ) * 16 --Increase diameter since the base height doesn't cover the whole visible wheel
 			if dist <= diameter then --Only deal damage if the bullets hit within the wheel's diameter
 				veh.WheelHealth = veh.WheelHealth or {}
-				veh.WheelHealth[i] = ( veh.WheelHealth[i] or GAuto_TireHealth ) - dmgamount
+				veh.WheelHealth[i] = ( veh.WheelHealth[i] or GAuto_TireHealth ) - dmgAmount
 				if veh.WheelHealth[i] <= 0 then
 					GAuto.PopTire( veh, i )
 				end
@@ -134,7 +134,7 @@ function GAuto.PopCheck( dmg, veh )
 end
 
 function GAuto.RepairTire( veh, wheel )
-	local GAuto_TirePopEnabled = GetConVar( "gauto_tire_damage_enabled" ):GetBool()
+	local GAuto_TirePopEnabled = cvars.Bool( "gauto_tire_damage_enabled" )
 	if GAuto_TirePopEnabled and !GAuto.IsBlackListed( veh ) and !GAuto.NoTireDamage( veh:GetModel() ) then
 		if wheel then
 			local phys = veh:GetPhysicsObject()
@@ -176,7 +176,7 @@ function GAuto.CreateCharredProp( veh )
 	local eng = veh:GetAttachment( veh:LookupAttachment( "vehicle_engine" ) )
 	local offset = veh:GetNWVector( "GAuto_EngineOffset" )
 	local engPos = eng and ( eng.Pos + offset ) or vector_origin
-	local GAuto_ExplodeRemoveTime = GetConVar( "gauto_explode_remove_time" ):GetInt()
+	local GAuto_ExplodeRemoveTime = cvars.Number( "gauto_explode_remove_time" )
 	local e = ents.Create( "prop_physics" )
 	e:SetPos( veh:GetPos() )
 	e:SetModel( veh:GetModel() )
@@ -194,10 +194,10 @@ function GAuto.CreateCharredProp( veh )
 	end
 end
 
-local function ProcessDamage( ent, dmg )
-	local GAuto_HealthEnabled = GetConVar( "gauto_health_enabled" ):GetBool()
-	local GAuto_BulletDamageMultiplier = GetConVar( "gauto_bullet_damage_multiplier" ):GetFloat()
-	local GAuto_PlayerDamageMultiplier = GetConVar( "gauto_player_damage_multiplier" ):GetFloat()
+hook.Add( "EntityTakeDamage", "GAuto_TakeDamage", function( ent, dmg )
+	local GAuto_HealthEnabled = cvars.Bool( "gauto_health_enabled" )
+	local GAuto_BulletDamageMultiplier = cvars.Number( "gauto_bullet_damage_multiplier" )
+	local GAuto_PlayerDamageMultiplier = cvars.Number( "gauto_player_damage_multiplier" )
 	if GAuto_HealthEnabled then
 		if ent:IsOnFire() then return end --Prevent car from constantly igniting itself if it's on fire
 		if GAuto.IsDrivable( ent ) then
@@ -230,12 +230,11 @@ local function ProcessDamage( ent, dmg )
 			end
 		end
 	end
-end
-hook.Add( "EntityTakeDamage", "GAuto_TakeDamage", ProcessDamage )
+end )
 
 hook.Add( "vFireEntityStartedBurning", "GAuto_OnIgnite", function( ent )
-	local GAuto_ExplosionEnabled = GetConVar( "gauto_damage_explosion_enabled" ):GetBool()
-	local GAuto_CharringTime = GetConVar( "gauto_charring_time" ):GetInt()
+	local GAuto_ExplosionEnabled = cvars.Bool( "gauto_damage_explosion_enabled" )
+	local GAuto_CharringTime = cvars.Number( "gauto_charring_time" )
 	if GAuto_ExplosionEnabled and GAuto_CharringTime >= 0 and !GAuto.IsBlackListed( ent ) and !timer.Exists( "GAuto_VehicleExplode"..ent:EntIndex() ) then
 		timer.Create( "GAuto_VehicleExplode"..ent:EntIndex(), GAuto_CharringTime, 1, function()
 			if !IsValid( ent ) then return end

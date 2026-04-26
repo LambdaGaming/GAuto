@@ -77,22 +77,22 @@ if CLIENT then
 	function SWEP:DrawHUD()
 		local ply = self:GetOwner()
 		if ply:InVehicle() then return end
-		local posw = ScrW() / 2 - 95
-		local posh = ScrH() / 2 - 20
+		local w = ScrW() / 2 - 95
+		local h = ScrH() / 2 - 20
 		local tr = ply:GetEyeTrace().Entity
-		local vehpos = ply:GetPos():DistToSqr( tr:GetPos() )
+		local pos = ply:GetPos():DistToSqr( tr:GetPos() )
 		local health = tr:GetNWInt( "GAuto_VehicleHealth" )
-		local maxhealth = tr:GetNWInt( "GAuto_VehicleMaxHealth" )
-		local health25 = maxhealth * 0.25
-		local health75 = maxhealth * 0.75
-		draw.RoundedBox( 4, posw, posh, 190, 40, Color( 30, 30, 30, 230 ) )
+		local maxHealth = tr:GetNWInt( "GAuto_VehicleMaxHealth" )
+		local health25 = maxHealth * 0.25
+		local health75 = maxHealth * 0.75
+		draw.RoundedBox( 4, w, h, 190, 40, Color( 30, 30, 30, 230 ) )
 		surface.SetFont( "GAuto_HUDFont1" )
-		surface.SetTextPos( posw + 15, posh + 10 )
+		surface.SetTextPos( w + 15, h + 10 )
 		surface.SetTextColor( color_white )
 		
-		if IsValid( tr ) and !GAuto.IsBlackListed( tr ) and maxhealth <= 0 then
+		if IsValid( tr ) and !GAuto.IsBlackListed( tr ) and maxHealth <= 0 then
 			surface.DrawText( "Vehicle damage disabled." )
-		elseif IsValid( tr ) and !GAuto.IsBlackListed( tr ) and vehpos <= 40000 then
+		elseif IsValid( tr ) and !GAuto.IsBlackListed( tr ) and pos <= 40000 then
 			if health <= health25 then
 				surface.SetTextColor( 255, 0, 0 )
 			elseif health > health25 and health < health75 then

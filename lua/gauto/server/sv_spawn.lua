@@ -30,10 +30,10 @@ function GAuto.LoadVehicle( model )
 		error( "Invalid argument for GAuto.LoadVehicle()." )
 		return
 	end
-	local slashfix = GAuto.TrimModel( model )
-	local findvehicle = file.Read( "data_static/gauto/vehicles/"..slashfix..".json", "THIRDPARTY" )
-	local findvehicleextra = file.Read( "gauto/vehicles/"..slashfix..".json", "DATA" )
-	local finalJson = findvehicle != nil and findvehicle or findvehicleextra
+	local slashFix = GAuto.TrimModel( model )
+	local findVehicle = file.Read( "data_static/gauto/vehicles/"..slashFix..".json", "THIRDPARTY" )
+	local findVehicleExtra = file.Read( "gauto/vehicles/"..slashFix..".json", "DATA" )
+	local finalJson = findVehicle != nil and findVehicle or findVehicleExtra
 	if finalJson == nil then
 		MsgC( color_red, "[GAuto] Warning: '"..model.."' is unsupported. Certain features will be limited or unavailable.\n" )
 		return
@@ -43,52 +43,52 @@ end
 
 local function PhysicsCollide( veh, data )
 	local speed = data.Speed
-	local hitent = data.HitEntity
-	if IsValid( hitent:GetPhysicsObject() ) and hitent:GetPhysicsObject():GetMass() < 300 and !hitent:IsWorld() then
+	local ent = data.HitEntity
+	if IsValid( ent:GetPhysicsObject() ) and ent:GetPhysicsObject():GetMass() < 300 and !ent:IsWorld() then
 		return
 	end
 	for k,v in pairs( constraint.GetTable( veh ) ) do
 		--Prevents objects that may be part of the vehicle from damaging it
-		if v.Ent1 == hitent then return end
+		if v.Ent1 == ent then return end
 	end
 	--Not at all realistic especially since mass isn't a factor, but it provides a good balance between too spongy and too fragile
-	local GAuto_PhysDamageMultiplier = GetConVar( "gauto_phys_damage_multiplier" ):GetFloat()
+	local GAuto_PhysDamageMultiplier = cvars.Number( "gauto_phys_damage_multiplier" )
 	local formula = ( speed / 98 ) * GAuto_PhysDamageMultiplier
 	if speed > 400 then
-		if hitent:IsPlayer() or hitent:IsNPC() then return end
+		if ent:IsPlayer() or ent:IsNPC() then return end
 		GAuto.TakeDamage( veh, formula )
 	end
 end
 
-local function InitVehicle( ent )
+hook.Add( "OnEntityCreated", "GAuto_InitVehicle", function( ent )
 	timer.Simple( 0.1, function()
 		if GAuto.IsBlackListed( ent ) or !GAuto.IsDrivable( ent ) then return end
-		local vehmodel = ent:GetModel()
-		local GAuto_HealthEnabled = GetConVar( "gauto_health_enabled" ):GetBool()
-		local GAuto_HealthOverride = GetConVar( "gauto_health_override" ):GetInt()
-		local GAuto_HornEnabled = GetConVar( "gauto_horn_enabled" ):GetBool()
-		local GAuto_DoorLockEnabled = GetConVar( "gauto_lock_enabled" ):GetBool()
-		local GAuto_FuelEnabled = GetConVar( "gauto_fuel_enabled" ):GetBool()
-		local GAuto_FuelAmount = GetConVar( "gauto_fuel_amount" ):GetInt()
-		local GAuto_SeatsEnabled = GetConVar( "gauto_seats_enabled" ):GetBool()
-		local GAuto_ParticlesEnabled = GetConVar( "gauto_particles_enabled" ):GetBool()
-		if !GAuto.Vehicles[vehmodel] then
-			GAuto.LoadVehicle( vehmodel ) --Tries to load the vehicle from file if it doesn't exist in memory
+		local model = ent:GetModel()
+		local GAuto_HealthEnabled = cvars.Bool( "gauto_health_enabled" )
+		local GAuto_HealthOverride = cvars.Number( "gauto_health_override" )
+		local GAuto_HornEnabled = cvars.Bool( "gauto_horn_enabled" )
+		local GAuto_DoorLockEnabled = cvars.Bool( "gauto_lock_enabled" )
+		local GAuto_FuelEnabled = cvars.Bool( "gauto_fuel_enabled" )
+		local GAuto_FuelAmount = cvars.Number( "gauto_fuel_amount" )
+		local GAuto_SeatsEnabled = cvars.Bool( "gauto_seats_enabled" )
+		local GAuto_ParticlesEnabled = cvars.Bool( "gauto_particles_enabled" )
+		if !GAuto.Vehicles[model] then
+			GAuto.LoadVehicle( model ) --Tries to load the vehicle from file if it doesn't exist in memory
 		end
 		if GAuto_HealthEnabled then
 			if GAuto_HealthOverride > 0 then
 				ent:SetNWInt( "GAuto_VehicleHealth", GAuto_HealthOverride )
 				ent:SetNWInt( "GAuto_VehicleMaxHealth", GAuto_HealthOverride )
 			else
-				ent:SetNWInt( "GAuto_VehicleHealth", GAuto.VehicleHealth( vehmodel ) )
-				ent:SetNWInt( "GAuto_VehicleMaxHealth", GAuto.VehicleHealth( vehmodel ) )
+				ent:SetNWInt( "GAuto_VehicleHealth", GAuto.VehicleHealth( model ) )
+				ent:SetNWInt( "GAuto_VehicleMaxHealth", GAuto.VehicleHealth( model ) )
 			end
 			ent:SetNWBool( "GAuto_HasExploded", false )
-			ent:SetNWVector( "GAuto_EngineOffset", GAuto.EngineOffset( vehmodel ) )
+			ent:SetNWVector( "GAuto_EngineOffset", GAuto.EngineOffset( model ) )
 			ent:AddCallback( "PhysicsCollide", PhysicsCollide )
 		end
 		if GAuto_HornEnabled then
-			ent:SetNWString( "GAuto_HornSound", GAuto.HornSound( vehmodel ) )
+			ent:SetNWString( "GAuto_HornSound", GAuto.HornSound( model ) )
 		end
 		if GAuto_DoorLockEnabled then
 			ent:SetNWBool( "GAuto_DoorsLocked", false )
@@ -100,31 +100,31 @@ local function InitVehicle( ent )
 			ent.FuelCooldown = 0
 		end
 		if GAuto_SeatsEnabled then
-			if ( !GAuto.Vehicles[vehmodel] or !GAuto.Vehicles[vehmodel].Seats ) and GetConVar( "gauto_auto_passenger" ):GetBool() then
+			if ( !GAuto.Vehicles[model] or !GAuto.Vehicles[model].Seats ) and cvars.Bool( "gauto_auto_passenger" ) then
 				local attachment = ent:GetAttachment( ent:LookupAttachment( "vehicle_driver_eyes" ) )
 				if attachment then
 					local driverPos = ent:WorldToLocal( attachment.Pos )
 					driverPos:Sub( Vector( driverPos.x * 2, 0, 35 ) )
 					if math.abs( driverPos.x ) > 5 then
-						if !GAuto.Vehicles[vehmodel] then
-							GAuto.Vehicles[vehmodel] = {}
+						if !GAuto.Vehicles[model] then
+							GAuto.Vehicles[model] = {}
 						end
 						--Add single passenger seat as a fallback if vehicle isn't supported
-						GAuto.Vehicles[vehmodel].Seats = { { pos = driverPos, ang = angle_zero } }
+						GAuto.Vehicles[model].Seats = { { pos = driverPos, ang = angle_zero } }
 					end
 				end
 			end
-			if GAuto.Vehicles[vehmodel] and GAuto.Vehicles[vehmodel].Seats then
-				local vehseats = GAuto.Vehicles[vehmodel].Seats
-				local numseats = table.Count( vehseats )
-				if numseats > 0 then
+			if GAuto.Vehicles[model] and GAuto.Vehicles[model].Seats then
+				local seats = GAuto.Vehicles[model].Seats
+				local num = table.Count( seats )
+				if num > 0 then
 					ent.seat = {}
-					for i=1, numseats do
+					for i=1, num do
 						ent.seat[i] = ents.Create( "prop_vehicle_prisoner_pod" )
 						ent.seat[i]:SetModel( "models/nova/airboat_seat.mdl" )
 						ent.seat[i]:SetParent( ent )
-						ent.seat[i]:SetPos( ent:LocalToWorld( vehseats[i].pos ) )
-						ent.seat[i]:SetAngles( ent:LocalToWorldAngles( vehseats[i].ang ) )
+						ent.seat[i]:SetPos( ent:LocalToWorld( seats[i].pos ) )
+						ent.seat[i]:SetAngles( ent:LocalToWorldAngles( seats[i].ang ) )
 						ent.seat[i]:Spawn()
 						ent.seat[i]:SetKeyValue( "limitview", 0 ) --Disable prisoner pod view
 						ent.seat[i]:SetVehicleEntryAnim( false ) --Disable long entry animation
@@ -160,5 +160,4 @@ local function InitVehicle( ent )
 			ent.particles.engineFire = GAuto.CreateParticleEffect( ent, "burning_engine_fire", enginePos )
 		end
 	end )
-end
-hook.Add( "OnEntityCreated", "GAuto_InitVehicle", InitVehicle )
+end )

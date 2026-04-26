@@ -12,53 +12,45 @@ if ( SERVER and game.SinglePlayer() ) or CLIENT then
 		[KEY_0] = 10
 	}
 
-	local function KeyPressDown( ply, key )
+	hook.Add( "PlayerButtonDown", "GAuto_KeyPressDown", function( ply, key )
 		if IsFirstTimePredicted() and ply:InVehicle() then
-			if key == GetConVar( "gauto_lock_key" ):GetInt() then
+			if key == cvars.Number( "gauto_lock_key" ) then
 				if CLIENT then
 					net.Start( "GAuto_VehicleLock" )
 					net.SendToServer()
 				else
 					GAuto.VehicleLock( nil, ply )
 				end
-			end
-			if key == GetConVar( "gauto_horn_key" ):GetInt() then
+			elseif key == cvars.Number( "gauto_horn_key" ) then
 				if CLIENT then
 					net.Start( "GAuto_VehicleHorn" )
 					net.SendToServer()
 				else
 					GAuto.VehicleHorn( nil, ply )
 				end
-			end
-			if key == GetConVar( "gauto_cruise_key" ):GetInt() then
+			elseif key == cvars.Number( "gauto_cruise_key" ) then
 				if CLIENT then
 					net.Start( "GAuto_CruiseControl" )
 					net.SendToServer()
 				else
 					GAuto.CruiseControl( nil, ply )
 				end
-			end
-			if key == GetConVar( "gauto_engine_key" ):GetInt() then
+			elseif key == cvars.Number( "gauto_engine_key" ) then
 				if CLIENT then
 					net.Start( "GAuto_EngineToggle" )
 					net.SendToServer()
 				else
 					GAuto.EngineToggle( nil, ply )
 				end
-			end
-			if seatbuttons[key] then
-				if CLIENT and input.IsKeyDown( GetConVar( "gauto_eject_modifier" ):GetInt() ) then
+			elseif seatbuttons[key] then
+				if CLIENT and input.IsKeyDown( cvars.Number( "gauto_eject_modifier" ) ) then
 					if key == KEY_1 then
 						GAuto.Notify( "You can't eject yourself!" )
 						return
 					end
-					if CLIENT then
-						net.Start( "GAuto_EjectPassenger" )
-						net.WriteInt( seatbuttons[key], 32 )
-						net.SendToServer()
-					else
-						GAuto.EjectPassenger( nil, ply, seatbuttons[key] )
-					end
+					net.Start( "GAuto_EjectPassenger" )
+					net.WriteInt( seatbuttons[key], 32 )
+					net.SendToServer()
 				else
 					if CLIENT then
 						net.Start( "GAuto_ChangeSeats" )
@@ -70,12 +62,11 @@ if ( SERVER and game.SinglePlayer() ) or CLIENT then
 				end
 			end
 		end
-	end
-	hook.Add( "PlayerButtonDown", "GAuto_KeyPressDown", KeyPressDown )
+	end )
 	
-	local function KeyPressUp( ply, key )
+	hook.Add( "PlayerButtonUp", "GAuto_KeyPressUp", function( ply, key )
 		if IsFirstTimePredicted() and ply:InVehicle() then
-			if key == GetConVar( "gauto_horn_key" ):GetInt() then
+			if key == cvars.Number( "gauto_horn_key" ) then
 				if CLIENT then
 					net.Start( "GAuto_VehicleHornStop" )
 					net.SendToServer()
@@ -84,6 +75,5 @@ if ( SERVER and game.SinglePlayer() ) or CLIENT then
 				end
 			end
 		end
-	end
-	hook.Add( "PlayerButtonUp", "GAuto_KeyPressUp", KeyPressUp )
+	end )
 end

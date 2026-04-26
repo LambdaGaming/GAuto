@@ -6,22 +6,22 @@ local allowedSurfaces = {
 	["antlionsand"] = true
 }
 
-local function VehicleThink( ply, veh, mv )
+hook.Add( "VehicleMove", "GAuto_VehicleThink", function( ply, veh, mv )
 	if GAuto.IsBlackListed( veh ) then return end
 	local vel = veh:GetVelocity():Length()
-	local GAuto_ParticlesEnabled = GetConVar( "gauto_particles_enabled" ):GetBool()
+	local GAuto_ParticlesEnabled = cvars.Bool( "gauto_particles_enabled" )
 	if veh.FuelInit and !veh.NoFuel and IsValid( veh:GetDriver() ) then
-		local GAuto_FuelEnabled = GetConVar( "gauto_fuel_enabled" ):GetBool()
-		local GAuto_NoFuelGod = GetConVar( "gauto_no_fuel_god" ):GetBool()
-		local GAuto_FuelLoss = GetConVar( "gauto_fuel_loss_rate" ):GetFloat()
+		local GAuto_FuelEnabled = cvars.Bool( "gauto_fuel_enabled" )
+		local GAuto_NoFuelGod = cvars.Bool( "gauto_no_fuel_god" )
+		local GAuto_FuelLoss = cvars.Number( "gauto_fuel_loss_rate" )
 		if vel > 100 then
 			if GAuto_FuelEnabled and !veh:GetNWBool( "IsGAutoSeat" ) and veh.FuelCooldown < CurTime() then
 				if veh:GetThrottle() >= 0.1 then
 					veh.FuelLoss = GAuto_FuelLoss
 				end
-				local fuellevel = veh:GetNWInt( "GAuto_FuelAmount" )
-				if fuellevel > 0 then
-					veh:SetNWInt( "GAuto_FuelAmount", fuellevel - veh.FuelLoss )
+				local fuelLevel = veh:GetNWInt( "GAuto_FuelAmount" )
+				if fuelLevel > 0 then
+					veh:SetNWInt( "GAuto_FuelAmount", fuelLevel - veh.FuelLoss )
 					veh.FuelCooldown = CurTime() + 5
 					veh.NoFuel = false
 				else
@@ -51,10 +51,9 @@ local function VehicleThink( ply, veh, mv )
 			veh.particles.wheel[i]:Fire( "Stop" )
 		end
 	end
-end
-hook.Add( "VehicleMove", "GAuto_VehicleThink", VehicleThink )
+end )
 
-local function KeyPressServer( ply, key )
+hook.Add( "KeyPress", "GAuto_KeyPressServer", function( ply, key )
 	if ply:InVehicle() then
 		local veh = ply:GetVehicle()
 		if veh:GetNWBool( "IsGAutoSeat" ) and key == IN_USE then
@@ -63,28 +62,25 @@ local function KeyPressServer( ply, key )
 			ply.GAuto_SeatCooldown = CurTime() + 1
 		end
 	end
-end
-hook.Add( "KeyPress", "GAuto_KeyPressServer", KeyPressServer )
+end )
 
-local function CanEnterVehicle( ply, veh, role )
+hook.Add( "CanPlayerEnterVehicle", "GAuto_CanEnterVehicle", function( ply, veh, role )
 	if ply.GAuto_SeatCooldown and ply.GAuto_SeatCooldown > CurTime() and !ply.IsSwitching then
 		return false --Cooldown to make sure players don't unlock their car the instant they exit it
 	end 
-end
-hook.Add( "CanPlayerEnterVehicle", "GAuto_CanEnterVehicle", CanEnterVehicle )
+end )
 
-local function EnteredVehicle( ply, veh, role )
+hook.Add( "PlayerEnteredVehicle", "GAuto_EnteredVehicle", function( ply, veh, role )
 	--Sets camera distance relatively close to the default driver's seat distance
 	if veh:GetNWBool( "IsGAutoSeat" ) then veh:SetCameraDistance( 5 ) end
-end
-hook.Add( "PlayerEnteredVehicle", "GAuto_EnteredVehicle", EnteredVehicle )
+end )
 
-local function LeaveVehicle( ply, ent )
+hook.Add( "PlayerLeaveVehicle", "GAuto_LeaveVehicle", function( ply, ent )
 	ent.GAuto_ExitCooldown = CurTime() + 1
 	if GAuto.IsBlackListed( ent ) or ent:GetNWBool( "IsGAutoSeat" ) then return end
-	local GAuto_WheelLockEnabled = GetConVar( "gauto_wheel_lock_enabled" ):GetBool()
-	local GAuto_BrakeLockEnabled = GetConVar( "gauto_brake_lock_enabled" ):GetBool()
-	local GAuto_ParticlesEnabled = GetConVar( "gauto_particles_enabled" ):GetBool()
+	local GAuto_WheelLockEnabled = cvars.Bool( "gauto_wheel_lock_enabled" )
+	local GAuto_BrakeLockEnabled = cvars.Bool( "gauto_brake_lock_enabled" )
+	local GAuto_ParticlesEnabled = cvars.Bool( "gauto_particles_enabled" )
 	if GAuto_BrakeLockEnabled then
 		if ply:KeyDown( IN_JUMP ) then --Activates the parking brake if the player is holding the jump button when they exit
 			ent:Fire( "HandBrakeOn", "", 0.01 )
@@ -112,12 +108,11 @@ local function LeaveVehicle( ply, ent )
 		ent:SetNWBool( "CruiseActive", false )
 	end
 	if ent.GAuto_CarHorn then ent.GAuto_CarHorn:Stop() end
-end
-hook.Add( "PlayerLeaveVehicle", "GAuto_LeaveVehicle", LeaveVehicle )
+end )
 
-local function PlayerUseVeh( ply, ent )
+hook.Add( "PlayerUse", "GAuto_PlayerUseVeh", function( ply, ent )
 	if !IsValid( ply ) or !GAuto.IsDrivable( ent ) or GAuto.IsBlackListed( ent ) then return end
-	local GAuto_SeatsEnabled = GetConVar( "gauto_seats_enabled" ):GetBool()
+	local GAuto_SeatsEnabled = cvars.Bool( "gauto_seats_enabled" )
 	if ent.GAuto_ExitCooldown and ent.GAuto_ExitCooldown > CurTime() then return end
 	if ent:GetNWBool( "GAuto_DoorsLocked" ) then
 		if ent:GetNWEntity( "GAuto_LockOwner" ) == ply then
@@ -133,43 +128,40 @@ local function PlayerUseVeh( ply, ent )
 	end
 	if !ent:GetNWBool( "GAuto_DoorsLocked" ) and GAuto_SeatsEnabled then
 		if ply:InVehicle() or !ent.seat then return end
-		if GetConVar( "gauto_driver_seat" ):GetBool() and !IsValid( ent:GetDriver() ) then
+		if cvars.Bool( "gauto_driver_seat" ) and !IsValid( ent:GetDriver() ) then
 			ply:EnterVehicle( ent )
 			return
 		end
-		local starttime = CurTime()
-		local seatlist = { ent } --Throw the driver's seat in with the passenger seats incase the vehicle doesn't have a driver
-		local foundseat = false
+		local seatList = { ent } --Throw the driver's seat in with the passenger seats in case the vehicle doesn't have a driver
+		local foundSeat = false
 		for k,v in pairs( ent.seat ) do
-			table.insert( seatlist, v ) --FINALLY found a better working method, probably not the best but it works and I don't see a drop in performance so it's good enough
+			table.insert( seatList, v ) --Probably not the best method but it works and I don't see a drop in performance so it's good enough
 		end
-		table.sort( seatlist, function( a, b ) return ply:WorldToLocal( a:GetPos() ):Length() < ply:WorldToLocal( b:GetPos() ):Length() end )
-		for i = 1, #seatlist do
-			if IsValid( seatlist[i] ) and !IsValid( seatlist[i]:GetDriver() ) then --Make sure the closest seat doesn't have a driver, and if it does, pick the next closest seat
-				ply:EnterVehicle( seatlist[i] )
-				foundseat = true
+		table.sort( seatList, function( a, b ) return ply:WorldToLocal( a:GetPos() ):Length() < ply:WorldToLocal( b:GetPos() ):Length() end )
+		for i = 1, #seatList do
+			if IsValid( seatList[i] ) and !IsValid( seatList[i]:GetDriver() ) then --Make sure the closest seat doesn't have a driver, and if it does, pick the next closest seat
+				ply:EnterVehicle( seatList[i] )
+				foundSeat = true
 				break
 			end
 		end
-		if !foundseat then
+		if !foundSeat then
 			GAuto.Notify( ply, "All seats in this vehicle are taken." )
 		end
 	end
 	ply.GAuto_SeatCooldown = CurTime() + 1 --Prevents players from sometimes teleporting to the last detected seat instead of the first
-end
-hook.Add( "PlayerUse", "GAuto_PlayerUseVeh", PlayerUseVeh )
+end )
 
-local function CruiseThink()
+hook.Add( "Think", "GAuto_CruiseThink", function()
 	for k,v in ipairs( ents.FindByClass( "prop_vehicle_*" ) ) do
 		if GAuto.IsBlackListed( v ) then return end
 		if v:GetNWBool( "CruiseActive" ) then
 			v:SetThrottle( v:GetNWInt( "CruiseSpeed" ) )
 		end
 	end
-end
-hook.Add( "Think", "GAuto_CruiseThink", CruiseThink )
+end )
 
-local function CruiseController( ply, key )
+hook.Add( "KeyPress", "GAuto_CruiseController", function( ply, key )
 	if !IsFirstTimePredicted() or !ply:InVehicle() then return end
 	local veh = ply:GetVehicle()
 	if GAuto.IsBlackListed( veh ) then return end
@@ -187,8 +179,7 @@ local function CruiseController( ply, key )
 			veh:SetNWInt( "CruiseSpeed", math.Clamp( speed - 0.10, 0.05, 1 ) )
 		end
 	end
-end
-hook.Add( "KeyPress", "GAuto_CruiseController", CruiseController )
+end )
 
 --Prevent seat changing and ejection in Photon 2 vehicles due to control conflicts
 local function Photon2NoSeatChange( ply, veh, seat )
@@ -201,36 +192,32 @@ hook.Add( "GAuto_CanChangeSeats", "Photon2_GAuto_SeatChange", Photon2NoSeatChang
 hook.Add( "GAuto_CanEjectPassenger", "Photon2_GAuto_Eject", Photon2NoSeatChange )
 
 --DarkRP stuff
-local function Lockpick( ply, ent, trace )
-	local GAuto_AlarmEnabled = GetConVar( "gauto_lock_alarm_enabled" ):GetBool()
+hook.Add( "lockpickStarted", "DarkRP_GAuto_Lockpick", function( ply, ent, tr )
+	local GAuto_AlarmEnabled = cvars.Bool( "gauto_lock_alarm_enabled" )
 	if !GAuto_AlarmEnabled or GAuto.IsBlackListed( ent ) or !GAuto.IsDrivable( ent ) then return end
 	ent:EmitSound( "gauto/alarm.mp3" )
-end
-hook.Add( "lockpickStarted", "DarkRP_GAuto_Lockpick", Lockpick )
+end )
 
-local function LockpickFinish( ply, success, ent )
-	local GAuto_AlarmEnabled = GetConVar( "gauto_lock_alarm_enabled" ):GetBool()
+hook.Add( "onLockpickCompleted", "DarkRP_GAuto_LockpickFinish", function( ply, success, ent )
+	local GAuto_AlarmEnabled = cvars.Bool( "gauto_lock_alarm_enabled" )
 	if GAuto_AlarmEnabled and GAuto.IsDrivable( ent ) and success then
 		ent:SetNWBool( "GAuto_DoorsLocked", false )
 		ent:SetNWEntity( "GAuto_LockOwner", nil )
 	end
-end
-hook.Add( "onLockpickCompleted", "DarkRP_GAuto_LockpickFinish", LockpickFinish )
+end )
 
-local function DarkRPKeysLocked( ent )
+hook.Add( "onKeysLocked", "DarkRP_GAuto_KeysLocked", function( ent )
 	if GAuto.IsBlackListed( ent ) then return end
 	ent:SetNWBool( "GAuto_DoorsLocked", true )
-end
-hook.Add( "onKeysLocked", "DarkRP_GAuto_KeysLocked", DarkRPKeysLocked )
+end )
 
-local function DarkRPKeysLocked( ent )
+hook.Add( "onKeysUnlocked", "DarkRP_GAuto_KeysUnlocked", function( ent )
 	if GAuto.IsBlackListed( ent ) then return end
 	ent:SetNWBool( "GAuto_DoorsLocked", false )
-end
-hook.Add( "onKeysUnlocked", "DarkRP_GAuto_KeysUnlocked", DarkRPKeysLocked )
+end )
 
 --Eject passengers when battering ram is used on vehicle
-local function DarkRPDoorRam( success, ply, tr )
+hook.Add( "onDoorRamUsed", "DarkRP_GAuto_DoorRam", function( success, ply, tr )
 	local ent = tr.Entity
 	if !success or !IsValid( ent ) or !ent.seat then return end
 	for k,v in pairs( ent.seat ) do
@@ -239,5 +226,4 @@ local function DarkRPDoorRam( success, ply, tr )
 			passenger:ExitVehicle()
 		end
 	end
-end
-hook.Add( "onDoorRamUsed", "DarkRP_GAuto_DoorRam", DarkRPDoorRam )
+end )

@@ -32,7 +32,7 @@ end
 if SERVER then
 	function SWEP:Think()
 		if self.NextThinkTime > CurTime() then return end
-		local GAuto_FuelEnabled = GetConVar( "gauto_fuel_enabled" ):GetBool()
+		local GAuto_FuelEnabled = cvars.Bool( "gauto_fuel_enabled" )
 		if !GAuto_FuelEnabled then return end
 		if self.Owner:KeyDown( IN_ATTACK ) then
 			local tr = self.Owner:GetEyeTrace().Entity
@@ -85,22 +85,22 @@ if CLIENT then
 		local ply = self:GetOwner()
 		if ply:InVehicle() then return end
 		local tr = ply:GetEyeTrace().Entity
-		local GAuto_FuelEnabled = GetConVar( "gauto_fuel_enabled" ):GetBool()
-		local posw = ScrW() / 2 - 95
-		local posh = ScrH() / 2 - 20
-		local vehpos = ply:GetPos():DistToSqr( tr:GetPos() )
-		local maxfuel = GetConVar( "gauto_fuel_amount" ):GetInt()
+		local GAuto_FuelEnabled = cvars.Bool( "gauto_fuel_enabled" )
+		local w = ScrW() / 2 - 95
+		local h = ScrH() / 2 - 20
+		local pos = ply:GetPos():DistToSqr( tr:GetPos() )
+		local maxFuel = cvars.Number( "gauto_fuel_amount" )
 		local fuel = tr:GetNWInt( "GAuto_FuelAmount" )
-		local fuel25 = maxfuel * 0.25
-		local fuel75 = maxfuel * 0.75
-		draw.RoundedBox( 4, posw, posh, 190, 40, Color( 30, 30, 30, 230 ) )
+		local fuel25 = maxFuel * 0.25
+		local fuel75 = maxFuel * 0.75
+		draw.RoundedBox( 4, w, h, 190, 40, Color( 30, 30, 30, 230 ) )
 		surface.SetFont( "GAuto_HUDFont1" )
-		surface.SetTextPos( posw + 15, posh + 10 )
+		surface.SetTextPos( w + 15, h + 10 )
 		surface.SetTextColor( color_white )
 
 		if !GAuto_FuelEnabled then
 			surface.DrawText( "Vehicle fuel disabled." )
-		elseif GAuto.IsDrivable( tr ) and vehpos <= 40000 then
+		elseif GAuto.IsDrivable( tr ) and pos <= 40000 then
 			if GAuto_FuelEnabled and fuel <= fuel25 then
 				surface.SetTextColor( 255, 0, 0 )
 			elseif fuel > fuel25 and fuel < fuel75 then

@@ -9,7 +9,7 @@ CreateClientConVar( "gauto_disable_hud", 0, true, false, "Prevents the HUD from 
 --Spawn menu category icon
 list.Set( "ContentCategoryIcons", "GAuto", "icon16/car.png" )
 
-local function ControlMenu()
+hook.Add( "PopulateToolMenu", "GAuto_ControlMenu", function()
 	spawnmenu.AddToolMenuOption( "Options", "GAuto", "GAutoControls", "Controls", "", "", function( panel )
 		panel:AddControl( "Header", { --This is deprecated but all default gmod tools still use it?
 			Description = "Change your GAuto controls here."
@@ -32,5 +32,4 @@ local function ControlMenu()
 		} )
 		panel:CheckBox( "Cruise Control: Display in MPH", "gauto_cruise_mph" )
 	end )
-end
-hook.Add( "PopulateToolMenu", "GAuto_ControlMenu", ControlMenu )
+end )

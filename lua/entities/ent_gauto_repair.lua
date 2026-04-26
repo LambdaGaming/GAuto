@@ -32,13 +32,13 @@ end
 function ENT:StartTouch( ent )
 	if GAuto.IsDrivable( ent ) then
 		local health = ent:GetNWInt( "GAuto_VehicleHealth" )
-		local maxhealth = ent:GetNWInt( "GAuto_VehicleMaxHealth" )
-		local healthpercent = self.HealthPercent
-		if health >= maxhealth then return end
+		local maxHealth = ent:GetNWInt( "GAuto_VehicleMaxHealth" )
+		local healthPercent = self.HealthPercent
+		if health >= maxHealth then return end
 		if health <= 0 then
 			ent:Fire( "turnon", "", 0.01 )
 		end
-		GAuto.AddHealth( ent, maxhealth * healthpercent )
+		GAuto.AddHealth( ent, maxHealth * healthPercent )
 		Spark( self )
 		self:EmitSound( "items/smallmedkit1.wav" )
 		self:Remove()

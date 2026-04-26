@@ -33,10 +33,10 @@ end
 function ENT:StartTouch( ent )
 	if GAuto.IsDrivable( ent ) then
 		local fuel = ent:GetNWInt( "GAuto_FuelAmount" )
-		local maxfuel = GetConVar( "gauto_fuel_amount" ):GetInt()
-		local fuelpercent = self.FuelPercent
-		if fuel >= maxfuel then return end
-		GAuto.SetFuel( ent, fuel + ( maxfuel * fuelpercent ) )
+		local maxFuel = cvars.Number( "gauto_fuel_amount" )
+		local fuelPercent = self.FuelPercent
+		if fuel >= maxFuel then return end
+		GAuto.SetFuel( ent, fuel + ( maxFuel * fuelPercent ) )
 		self:Splash()
 		self:Remove()
 	end

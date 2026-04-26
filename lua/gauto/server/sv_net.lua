@@ -20,7 +20,7 @@ net.Receive( "GAuto_VehicleLock", GAuto.VehicleLock )
 
 util.AddNetworkString( "GAuto_VehicleHorn" )
 function GAuto.VehicleHorn( len, ply )
-	local GAuto_HornEnabled = GetConVar( "gauto_horn_enabled" ):GetBool()
+	local GAuto_HornEnabled = cvars.Bool( "gauto_horn_enabled" )
 	if GAuto_HornEnabled then
 		local veh = ply:GetVehicle()
 		local canHorn = hook.Run( "GAuto_CanUseHorn", ply, veh )
@@ -43,13 +43,13 @@ net.Receive( "GAuto_VehicleHornStop", GAuto.VehicleHornStop )
 
 util.AddNetworkString( "GAuto_CruiseControl" )
 function GAuto.CruiseControl( len, ply )
-	local GAuto_CruiseEnabled = GetConVar( "gauto_cruise_enabled" ):GetBool()
+	local GAuto_CruiseEnabled = cvars.Bool( "gauto_cruise_enabled" )
 	if GAuto_CruiseEnabled then
 		local veh = ply:GetVehicle()
 		local canCruise = hook.Run( "GAuto_CanCruise", ply, veh )
 		if GAuto.IsBlackListed( veh ) or !veh:IsEngineStarted() or canCruise == false then return end
-		local cruiseactive = veh:GetNWBool( "CruiseActive" )
-		if cruiseactive then
+		local cruiseActive = veh:GetNWBool( "CruiseActive" )
+		if cruiseActive then
 			veh:SetNWBool( "CruiseActive", false )
 			GAuto.Notify( ply, "Cruise control is now disabled." )
 			return
@@ -66,8 +66,8 @@ function GAuto.ChangeSeats( len, ply, seat )
 	local key = seat or net.ReadInt( 32 )
 	local veh = ply:GetVehicle()
 	if GAuto.IsBlackListed( veh ) then return end
-	local vehparent = veh:GetParent()
-	local realseat = key - 1 --Need to subtract 1 since the driver's seat doesn't count as a passenger seat
+	local parent = veh:GetParent()
+	local realSeat = key - 1 --Need to subtract 1 since the driver's seat doesn't count as a passenger seat
 	local canChange = hook.Run( "GAuto_CanChangeSeats", ply, veh, seat )
 	if canChange == false then return end
 	if GAuto.IsDrivable( veh ) then
@@ -75,11 +75,11 @@ function GAuto.ChangeSeats( len, ply, seat )
 			GAuto.Notify( ply, "You are already sitting in the selected seat." )
 			return
 		else
-			if veh.seat and IsValid( veh.seat[realseat] ) then
-				if !IsValid( veh.seat[realseat]:GetDriver() ) then
+			if veh.seat and IsValid( veh.seat[realSeat] ) then
+				if !IsValid( veh.seat[realSeat]:GetDriver() ) then
 					ply.IsSwitching = true --Fix for players getting kicked out while the seat cooldown is in effect
-					ply:EnterVehicle( veh.seat[realseat] )
-					ply:SetEyeAngles( Angle( veh.seat[realseat]:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) ) --Fix for the seats setting random eye angles
+					ply:EnterVehicle( veh.seat[realSeat] )
+					ply:SetEyeAngles( Angle( veh.seat[realSeat]:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) ) --Fix for the seats setting random eye angles
 					ply.IsSwitching = nil
 				else
 					GAuto.Notify( ply, "Selected seat is already taken." )
@@ -91,12 +91,12 @@ function GAuto.ChangeSeats( len, ply, seat )
 			end
 		end
 	else
-		if !IsValid( vehparent ) then return end
+		if !IsValid( parent ) then return end
 		if key == 1 then
-			if !IsValid( vehparent:GetDriver() ) then
+			if !IsValid( parent:GetDriver() ) then
 				ply.IsSwitching = true
-				ply:EnterVehicle( vehparent )
-				ply:SetEyeAngles( Angle( vehparent:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) )
+				ply:EnterVehicle( parent )
+				ply:SetEyeAngles( Angle( parent:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) )
 				ply.IsSwitching = nil
 				return
 			else
@@ -104,15 +104,15 @@ function GAuto.ChangeSeats( len, ply, seat )
 				return
 			end
 		end
-		if vehparent.seat[realseat] == veh then
+		if parent.seat[realSeat] == veh then
 			GAuto.Notify( ply, "You are already sitting in the selected seat." )
 			return
 		end
-		if IsValid( vehparent ) and vehparent.seat and IsValid( vehparent.seat[realseat] ) then	
-			if !IsValid( vehparent.seat[realseat]:GetDriver() ) then
+		if IsValid( parent ) and parent.seat and IsValid( parent.seat[realSeat] ) then	
+			if !IsValid( parent.seat[realSeat]:GetDriver() ) then
 				ply.IsSwitching = true
-				ply:EnterVehicle( vehparent.seat[realseat] )
-				ply:SetEyeAngles( Angle( vehparent.seat[realseat]:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) )
+				ply:EnterVehicle( parent.seat[realSeat] )
+				ply:SetEyeAngles( Angle( parent.seat[realSeat]:GetAngles():Normalize() ) + Angle( 0, 90, 0 ) )
 				ply.IsSwitching = nil
 			else
 				GAuto.Notify( ply, "Selected seat is already taken." )
@@ -130,16 +130,16 @@ util.AddNetworkString( "GAuto_EjectPassenger" )
 function GAuto.EjectPassenger( len, ply, seat )
 	local key = seat or net.ReadInt( 32 )
 	local veh = ply:GetVehicle()
-	local realseat = key - 1
+	local realSeat = key - 1
 	local canEject = hook.Run( "GAuto_CanEjectPassenger", ply, veh, seat )
 	if GAuto.IsBlackListed( veh ) or !GAuto.IsDrivable( veh ) or canEject == false then return end
-	if veh.seat and IsValid( veh.seat[realseat] ) then
-		local passenger = veh.seat[realseat]:GetDriver()
+	if veh.seat and IsValid( veh.seat[realSeat] ) then
+		local passenger = veh.seat[realSeat]:GetDriver()
 		if IsValid( passenger ) then
 			local nick = ply:Nick()
-			local passengernick = passenger:Nick()
+			local nick2 = passenger:Nick()
 			passenger:ExitVehicle()
-			GAuto.Notify( ply, "Ejected "..passengernick.." from the vehicle." )
+			GAuto.Notify( ply, "Ejected "..nick2.." from the vehicle." )
 			GAuto.Notify( passenger, "You have been ejected from the vehicle by "..nick.."." )
 		else
 			GAuto.Notify( ply, "Selected seat doesn't have a passenger to eject." )
@@ -154,8 +154,8 @@ util.AddNetworkString( "GAuto_EngineToggle" )
 function GAuto.EngineToggle( len, ply )
 	if ply:InVehicle() then
 		local veh = ply:GetVehicle()
-		local GAuto_HealthEnabled = GetConVar( "gauto_health_enabled" ):GetBool()
-		local GAuto_FuelEnabled = GetConVar( "gauto_fuel_enabled" ):GetBool()
+		local GAuto_HealthEnabled = cvars.Bool( "gauto_health_enabled" )
+		local GAuto_FuelEnabled = cvars.Bool( "gauto_fuel_enabled" )
 		local canToggle = hook.Run( "GAuto_CanToggleEngine", ply, veh )
 		if GAuto.IsBlackListed( veh ) or canToggle == false then return end
 		if GAuto_HealthEnabled and veh:GetNWInt( "GAuto_VehicleHealth" ) <= 0 then return end --Don't want players turning the car back on when it's destroyed or out of fuel

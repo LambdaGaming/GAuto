@@ -29,13 +29,13 @@ function SWEP:PrimaryAttack()
 	if !IsFirstTimePredicted() or CLIENT then return end
 	local owner = self:GetOwner()
 	local tr = owner:GetEyeTrace()
-	local hitpos = tr.HitPos
-    if owner:GetPos():DistToSqr( hitpos ) < 10000 then
+	local hitPos = tr.HitPos
+    if owner:GetPos():DistToSqr( hitPos ) < 10000 then
 		if !self.SpawnedSpike then
 			local rand = math.random( 1, 3 )
+			local offset = owner:GetAngles().y + cvars.Number( "gauto_spike_model_offset" )
 			local e = ents.Create( "ent_gauto_spikestrip" )
-			local offset = owner:GetAngles().y + GetConVar( "gauto_spike_model_offset" ):GetInt()
-			e:SetPos( hitpos )
+			e:SetPos( hitPos )
 			e:SetAngles( Angle( 0, offset, 0 ) )
 			e:Spawn()
 			e:SetOwner( owner )

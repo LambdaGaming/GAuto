@@ -17,7 +17,7 @@ local vehicles = {
 function ENT:SpawnFunction( ply, tr, name )
 	if ( !tr.Hit ) then return end
 	local pos = tr.HitPos + tr.HitNormal
-	local offset = ply:GetAngles().y + GetConVar( "gauto_spike_model_offset" ):GetInt()
+	local offset = ply:GetAngles().y + cvars.Number( "gauto_spike_model_offset" )
 	local e = ents.Create( name )
 	e:SetPos( pos )
 	e:SetAngles( Angle( 0, offset, 0 ) )
@@ -28,24 +28,21 @@ function ENT:SpawnFunction( ply, tr, name )
 end
 
 function ENT:Initialize()
-    self:SetModel( GetConVar( "gauto_spike_model" ):GetString() )
+    self:SetModel( cvars.String( "gauto_spike_model" ) )
 	self:SetMoveType( MOVETYPE_NONE )
 	self:SetSolid( SOLID_VPHYSICS )
 	if SERVER then
 		self:PhysicsInit( SOLID_VPHYSICS )
 		self:SetUseType( SIMPLE_USE )
 		if DarkRP then
-			--RP support that removes the spikestrip after 10 minutes to prevent abuse, should work with any DarkRP-based gamemode even if it's name was changed
+			--Removes the spikestrip after 10 minutes to prevent abuse, works with any DarkRP-based gamemode
 			local index = self:EntIndex()
 			if !timer.Exists( "Spike_Remove_Timer"..index ) then
 				timer.Create( "Spike_Remove_Timer"..index, 600, 1, function()
-					if !IsValid( self:GetOwner() ) then --Checks to see if the player is still on the server
-						self:Remove()
-						return
-					end
-					if self:GetOwner():isCP() then --Makes sure the player is still a cop so a civi doesn't get a free spikestrip
-						self:GetOwner():Give( "weapon_gauto_spikestrip" )
-						GAuto.Notify( self:GetOwner(), "Your spikestrip has been returned to you." )
+					local owner = self:GetOwner()
+					if IsValid( owner ) and owner:isCP() then
+						owner:Give( "weapon_gauto_spikestrip" )
+						GAuto.Notify( owner, "Your spikestrip has been returned to you." )
 					end
 					self:Remove()
 				end )
@@ -67,7 +64,7 @@ function ENT:Use( ply )
 		return
 	end
 	if self:GetOwner() == ply then
-		if DarkRP and !ply:isCP() then --Prevents former cops from taking back their old strips as a civi
+		if DarkRP and !ply:isCP() then
 			GAuto.Notify( ply, "You are no longer a cop. Your old spikestrip will be removed." )
 			self:Remove()
 			return
@@ -89,30 +86,31 @@ function ENT:StartTouch( ent )
 	if GAuto.IsBlackListed( ent ) then return end
 	local class = ent:GetClass()
 	if vehicles[class] then
-		local wheelpos = {}
+		--Checks to see what wheel is closest to the strip since there's no easy way of finding out which wheel is actually touching
+		local wheelPos = {}
 		for i = 0, ent:GetWheelCount() - 1 do
 			local wheel = ent:GetWheel( i )
 			if !IsValid( wheel ) then return end
-			local sqrpos = wheel:GetPos():DistToSqr( self:GetPos() )
-			table.insert( wheelpos, { i, sqrpos } )
+			local sqrPos = wheel:GetPos():DistToSqr( self:GetPos() )
+			table.insert( wheelPos, { i, sqrPos } )
 		end
-		table.sort( wheelpos, function( a, b ) return a[2] < b[2] end ) --Checks to see what wheel is closest to the strip since there's no easy way of finding out which wheel is actually touching
-		GAuto.PopTire( ent, wheelpos[1][1] )
-	elseif class == "gmod_sent_vehicle_fphysics_wheel" then --Simfphy's support
+		table.sort( wheelPos, function( a, b ) return a[2] < b[2] end )
+		GAuto.PopTire( ent, wheelPos[1][1] )
+	elseif class == "gmod_sent_vehicle_fphysics_wheel" then --Simfphys support
 		ent:SetDamaged( true )
 	elseif class == "lvs_wheeldrive_wheel" or scripted_ents.IsBasedOn( class, "lvs_wheeldrive_wheel" ) then --LVS support
 		ent:SetSuspensionHeight( -1 )
 		ent:SetSuspensionStiffness( 1 )
 	elseif ent.IsGlideVehicle then --Glide support
-		local wheelpos = {}
+		local wheelPos = {}
 		for i = 1, #ent.wheels do
 			local wheel = ent.wheels[i]
 			if !IsValid( wheel ) then return end
-			local sqrpos = wheel:GetPos():DistToSqr( self:GetPos() )
-			table.insert( wheelpos, { i, sqrpos } )
+			local sqrPos = wheel:GetPos():DistToSqr( self:GetPos() )
+			table.insert( wheelPos, { i, sqrPos } )
 		end
-		table.sort( wheelpos, function( a, b ) return a[2] < b[2] end )
-		ent.wheels[wheelpos[1][1]]:Blow()
+		table.sort( wheelPos, function( a, b ) return a[2] < b[2] end )
+		ent.wheels[wheelPos[1][1]]:Blow()
 	end
 end
 
