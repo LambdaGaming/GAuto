@@ -59,7 +59,7 @@ The smoke and fire effects are placed at the position of the engine attachment t
 If you want to interface with this addon through Lua, see the [documentation](dev.md) for hooks, functions, and other things you can use.
 
 ### Customization
-There are [many ConVars](dev.md#convars) you can use to disable and tweak certain systems. Feel free to request more if these aren't enough to fit your needs.
+There are [many ConVars](dev.md#convars) you can use to disable and tweak certain systems. Feel free to request more if these aren't enough to fit your needs. Server admins can also modify certain vehicle properties through the context menu.
 
 ### Adding Vehicle Support
 You can use the vehicle creator tool to easily create a Lua table or JSON file that contains custom vehicle data such as seat positions, horn sounds, and engine offsets. When using this tool, left click will spawn passenger seats that you can physgun into place, right click will open a menu to edit certain parameters, and reload will remove the seats and generate vehicle data in the selected format. Lua scripts need placed in a Lua file with a shared scope, and JSON files are automatically generated in the game's data folder. If you do add GAuto support to your vehicles, send me a link and I will add them to the collection linked at the top!

@@ -35,9 +35,6 @@ function ENT:StartTouch( ent )
 		local maxHealth = ent:GetNWInt( "GAuto_VehicleMaxHealth" )
 		local healthPercent = self.HealthPercent
 		if health >= maxHealth then return end
-		if health <= 0 then
-			ent:Fire( "turnon", "", 0.01 )
-		end
 		GAuto.AddHealth( ent, maxHealth * healthPercent )
 		Spark( self )
 		self:EmitSound( "items/smallmedkit1.wav" )

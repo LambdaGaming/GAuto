@@ -25,6 +25,66 @@ function GAuto.IsAirboat( ent )
 	return ent:GetClass() == "prop_vehicle_airboat"
 end
 
+--Context menu properties
+properties.Add( "gauto", {
+	MenuLabel = "GAuto",
+	Order = 2000,
+	MenuIcon = "icon16/car.png",
+	Filter = function( self, ent, ply )
+		if hook.Run( "CanProperty", ply, "gauto", ent ) == false then return false end
+		return ply:IsAdmin() and ent:IsVehicle()
+	end,
+	MenuOpen = function( self, option, ent, tr )
+		local options = {
+			{ "Eject All Occupants", "arrow_out.png" },
+			{ "Force Unlock Doors", "lock.png" },
+			{ "Repair Damage", "wrench.png" },
+			{ "Replenish Fuel", "lightning.png" },
+			{ "Toggle God Mode", "shield.png" }
+		}
+
+		local submenu = option:AddSubMenu()
+		for k,v in pairs( options ) do
+			local opt1 = submenu:AddOption( v[1] )
+			opt1:SetIcon( "icon16/"..v[2] )
+			opt1.OnMousePressed = function()
+				self:SendData( ent, k )
+			end
+		end
+	end,
+	SendData = function( self, ent, id )
+		self:MsgStart()
+			net.WriteEntity( ent )
+			net.WriteUInt( id, 8 )
+		self:MsgEnd()
+	end,
+	Receive = function( self, len, ply )
+		local ent = net.ReadEntity()
+		local id = net.ReadUInt( 8 )
+		if !self:Filter( ent, ply ) then return end
+		if id == 1 then
+			local d = ent:GetDriver()
+			if IsValid( d ) then d:ExitVehicle() end
+			for k,v in pairs( ent.seat ) do
+				local p = v:GetDriver()
+				if IsValid( p ) then p:ExitVehicle() end
+			end
+		elseif id == 2 then
+			ent:Fire( "Unlock", "", 0.01 )
+			ent:SetNWBool( "GAuto_DoorsLocked", false )
+			ent:SetNWEntity( "GAuto_LockOwner", nil )
+		elseif id == 3 then
+			local max = ent:GetNWInt( "GAuto_VehicleMaxHealth" )
+			GAuto.AddHealth( ent, max )
+			GAuto.RepairTire( ent )
+		elseif id == 4 then
+			GAuto.SetFuel( ent, 100 )
+		elseif id == 5 then
+			GAuto.ToggleGodMode( ent )
+		end
+	end
+} )
+
 if SERVER then
 	util.AddNetworkString( "GAuto_Notify" )
 	function GAuto.Notify( ply, text )

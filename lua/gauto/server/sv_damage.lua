@@ -64,13 +64,16 @@ function GAuto.TakeDamage( veh, dam ) --Takes away health from the vehicle, also
 	end
 end
 
-function GAuto.AddHealth( veh, hp ) --Adds health to the vehicle, nothing special
+function GAuto.AddHealth( veh, hp )
 	local health = veh:GetNWInt( "GAuto_VehicleHealth" )
 	local maxHealth = veh:GetNWInt( "GAuto_VehicleMaxHealth" )
 	local rounded = math.Round( health + hp, 2 )
 	local newHp = math.Clamp( rounded, 0, maxHealth )
 	if veh:GetNWBool( "GAuto_HasExploded" ) then
 		veh:SetNWBool( "GAuto_HasExploded", false )
+	end
+	if health <= 0 then
+		veh:Fire( "turnon", "", 0.01 )
 	end
 	veh:SetNWInt( "GAuto_VehicleHealth", newHp )
 	hook.Run( "GAuto_OnAddHealth", veh, hp )

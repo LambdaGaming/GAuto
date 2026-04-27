@@ -47,10 +47,9 @@ if SERVER then
 		if self.Owner:KeyDown( IN_ATTACK ) then
 			local tr = self.Owner:GetEyeTrace().Entity
 			if GAuto.IsDrivable( tr ) and self.Owner:GetPos():DistToSqr( tr:GetPos() ) < 40000 then
-				if tr:GetNWInt( "GAuto_VehicleHealth" ) < tr:GetNWInt( "GAuto_VehicleMaxHealth" ) then
-					if tr:GetNWInt( "GAuto_VehicleHealth" ) <= 0 then
-						tr:Fire( "turnon", "", 0.01 )
-					end
+				local hp = tr:GetNWInt( "GAuto_VehicleHealth" )
+				local maxHp = tr:GetNWInt( "GAuto_VehicleMaxHealth" )
+				if hp < maxHp then
 					GAuto.AddHealth( tr, 1 )
 					self:SendWeaponAnim( ACT_VM_SWINGMISS )
 					self.Owner:SetAnimation( PLAYER_ATTACK1 )
