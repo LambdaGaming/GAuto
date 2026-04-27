@@ -119,25 +119,27 @@ hook.Add( "HUDPaint", "GAuto_HUDStuff", function()
 
 	surface.SetTextColor( color_white )
 	surface.SetTextPos( cruise[1], cruise[2] )
+	local speed = 0
+	local label = ""
+	local velocity = vehicle:GetVelocity():Length()
+	if cvars.Bool( "gauto_hud_mph" ) then
+		speed = math.Round( velocity * 3600 / 63360 * 0.75 )
+		label = "MPH"
+	else
+		speed = math.Round( velocity * 3600 * 0.0000254 * 0.75 )
+		label = "KPH"
+	end
 	if vehicle:GetNWBool( "CruiseActive" ) then
 		surface.SetTextColor( 0, 255, 0 )
-		local velocity = vehicle:GetVelocity():Length()
-		local speed = 0
+		surface.DrawText( "Cruise Speed:" )
 		local throttle = vehicle:GetNWInt( "CruiseSpeed" )
 		local realThrottle = math.Round( throttle * 100 )
-		local label = ""
-		if cvars.Bool( "gauto_cruise_mph" ) then
-			speed = math.Round( velocity * 3600 / 63360 * 0.75 )
-			label = "MPH"
-		else
-			speed = math.Round( velocity * 3600 * 0.0000254 * 0.75 )
-			label = "KPH"
-		end
-		surface.DrawText( "Cruise Control:" )
 		surface.SetTextPos( cruise2[1], cruise2[2] )
 		surface.DrawText( speed.." "..label.." ("..realThrottle.."%)" )
 	else
-		surface.DrawText( "Cruise Control: Off" )
+		surface.DrawText( "Speed:" )
+		surface.SetTextPos( cruise2[1], cruise2[2] )
+		surface.DrawText( speed.." "..label )
 	end
 	surface.DrawLine( line4[1], line4[2], line4[1] + 144, line4[2] )
 	

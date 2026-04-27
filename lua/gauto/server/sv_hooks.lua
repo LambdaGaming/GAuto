@@ -170,7 +170,7 @@ hook.Add( "KeyPress", "GAuto_CruiseController", function( ply, key )
 		if key == IN_JUMP then
 			veh:SetNWBool( "CruiseActive", false )
 			veh:SetNWInt( "CruiseSpeed", 0 )
-			GAuto.Notify( ply, "Cruise control is now disabled." )
+			GAuto.Notify( ply, "Cruise control disabled." )
 		end
 		if key == IN_FORWARD then
 			veh:SetNWInt( "CruiseSpeed", math.Clamp( speed + 0.10, 0.05, 1 ) )

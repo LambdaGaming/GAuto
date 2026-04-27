@@ -12,7 +12,7 @@ Tires can be popped by bullets and spike strips. Deflated tires will cause the v
 Most vehicles have at least one passenger seat, supported vehicles can have up to 9. You can switch between them using the number keys. Drivers are able to eject players by holding alt and pressing any of the number keys.
 
 ### Vehicle HUD
-A small HUD will appear on the right side of the screen when you enter the driver's seat. It displays vehicle info including health, fuel level, door lock status, and cruise control status.
+A small HUD will appear on the right side of the screen when you enter the driver's seat. It displays vehicle info including health, fuel level, door lock status, speed, and cruise control status.
 
 ### Door Locking
 Drivers can lock their doors to prevent other players from entering by pressing N. This will not prevent passengers from leaving.

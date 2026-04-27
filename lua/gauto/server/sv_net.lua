@@ -51,11 +51,11 @@ function GAuto.CruiseControl( len, ply )
 		local cruiseActive = veh:GetNWBool( "CruiseActive" )
 		if cruiseActive then
 			veh:SetNWBool( "CruiseActive", false )
-			GAuto.Notify( ply, "Cruise control is now disabled." )
+			GAuto.Notify( ply, "Cruise control disabled." )
 			return
 		end
 		veh:SetNWBool( "CruiseActive", true )
-		GAuto.Notify( ply, "Cruise control is now enabled. Press forward/backward to increase/decrease cruise speed." )
+		GAuto.Notify( ply, "Cruise control enabled. Press forward/backward to increase/decrease cruise speed." )
 		veh:SetNWInt( "CruiseSpeed", 0.05 )
 	end
 end

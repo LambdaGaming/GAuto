@@ -3,7 +3,7 @@ CreateClientConVar( "gauto_lock_key", KEY_N, true, false, "Sets the key for lock
 CreateClientConVar( "gauto_cruise_key", KEY_V, true, false, "Sets the key for toggling cruise control." )
 CreateClientConVar( "gauto_engine_key", KEY_P, true, false, "Sets the key for toggling the engine." )
 CreateClientConVar( "gauto_eject_modifier", KEY_LALT, true, false, "Sets the modifier key that needs to be held while pressing a number key to kick a passenger out." )
-CreateClientConVar( "gauto_cruise_mph", 1, true, false, "Enable or disable displaying cruise speed in MPH. Disable to set to KPH." )
+CreateClientConVar( "gauto_hud_mph", 1, true, false, "Enable or disable displaying speed on the HUD in MPH. Disable to set to KPH." )
 CreateClientConVar( "gauto_disable_hud", 0, true, false, "Prevents the HUD from rendering if enabled." )
 
 --Spawn menu category icon
@@ -30,6 +30,6 @@ hook.Add( "PopulateToolMenu", "GAuto_ControlMenu", function()
 			Label = "Eject Modifier Key",
 			Command = "gauto_eject_modifier"
 		} )
-		panel:CheckBox( "Cruise Control: Display in MPH", "gauto_cruise_mph" )
+		panel:CheckBox( "Display speed on HUD in MPH", "gauto_hud_mph" )
 	end )
 end )
