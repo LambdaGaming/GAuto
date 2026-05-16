@@ -26,10 +26,6 @@ function GAuto.NoTireDamage( model )
 end
 
 function GAuto.LoadVehicle( model )
-	if !model then
-		error( "Invalid argument for GAuto.LoadVehicle()." )
-		return
-	end
 	local slashFix = GAuto.TrimModel( model )
 	local findVehicle = file.Read( "data_static/gauto/vehicles/"..slashFix..".json", "THIRDPARTY" )
 	local findVehicleExtra = file.Read( "gauto/vehicles/"..slashFix..".json", "DATA" )

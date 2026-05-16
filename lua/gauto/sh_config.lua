@@ -43,7 +43,7 @@ CreateConVar( "gauto_spike_model_offset", 90, { FCVAR_ARCHIVE }, "Yaw offset tha
 CreateConVar( "gauto_driver_seat", 1, { FCVAR_REPLICATED, FCVAR_ARCHIVE }, "Players will automatically enter the drivers seat if it is not taken. If set to 0, players will enter the closest detected seat." )
 CreateConVar( "gauto_auto_passenger", 1, { FCVAR_ARCHIVE }, "Unsupported vehicles will receive a single passenger seat next to the driver, if there is room for one." )
 
---Blacklisted models that shouldn't be affected by GAuto, such as trains or other vehicles that use prop_vehicle_jeep as their base
+--Blacklisted models that shouldn't be affected by GAuto such as trains, chairs, and trailers
 GAuto.Blacklist = {
 	["models/nova/airboat_seat.mdl"] = true, --Default gmod seat models
 	["models/nova/chair_office01.mdl"] = true,

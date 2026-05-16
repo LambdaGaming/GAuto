@@ -41,7 +41,7 @@ properties.Add( "gauto", {
 	MenuIcon = "icon16/car.png",
 	Filter = function( self, ent, ply )
 		if hook.Run( "CanProperty", ply, "gauto", ent ) == false then return false end
-		return ply:IsAdmin() and ent:IsVehicle()
+		return ply:IsAdmin() and GAuto.IsDrivable( ent ) and !GAuto.IsBlackListed( ent )
 	end,
 	MenuOpen = function( self, option, ent, tr )
 		local options = {
