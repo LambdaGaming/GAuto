@@ -1,0 +1,12 @@
+{
+	"HornSound": "ambient/alarms/apc_alarm_loop1.wav",
+	"MaxHealth": 200,
+	"NoTireDamage": true,
+	"Seats": [
+		{
+			"pos": "[0 0 70]",
+			"ang": "{0 0 0}"
+		}
+		
+	]
+}

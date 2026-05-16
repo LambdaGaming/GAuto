@@ -27,6 +27,7 @@ Functions that are meant to only be used internally are not listed here.
 |GAuto.IsBlackListed|Shared|Vehicle `veh`|Bool `blacklisted`|Returns whether or not the specified vehicle is considered blacklisted by GAuto.|
 |GAuto.IsDrivable|Shared|Entity `ent`|Bool `drivable`|Returns whether or not the specified entity is a drivable vehicle such as a jeep or airboat.|
 |GAuto.IsAirboat|Shared|Entity `ent`|Bool `airboat`|Returns whether or not the specified entity is an airboat.|
+|GAuto.IsAPC|Shared|Entity `ent`|Bool `airboat`|Returns whether or not the specified entity is an APC.|
 |GAuto.Notify|Shared|Player `ply`, String `text`|N/A|Sends a GAuto notification to the target player. When called on the client, only the text parameter can be used.|
 |GAuto.PopTire|Server|Vehicle `veh`, Number `wheel`|N/A|Pops a tire on the specified vehicle.|
 |GAuto.RepairTire|Server|Vehicle `veh`, Number `wheel`|N/A|Repairs the specified tire on a vehicle, or repairs all tires if `wheel` parameter isn't specified.|

@@ -16,13 +16,22 @@ function GAuto.IsBlackListed( veh )
 	return false
 end
 
---Will allow all jeeps and airboats
+--Will allow all jeeps, airboats, and APCs
 function GAuto.IsDrivable( ent )
-	return IsValid( ent ) and ( ent:GetClass() == "prop_vehicle_jeep" or ent:GetClass() == "prop_vehicle_airboat" )
+	local allowed = {
+		prop_vehicle_jeep = true,
+		prop_vehicle_airboat = true,
+		prop_vehicle_apc = true
+	}
+	return IsValid( ent ) and allowed[ent:GetClass()]
 end
 
 function GAuto.IsAirboat( ent )
 	return ent:GetClass() == "prop_vehicle_airboat"
+end
+
+function GAuto.IsAPC( ent )
+	return ent:GetClass() == "prop_vehicle_apc"
 end
 
 --Context menu properties
