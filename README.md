@@ -46,11 +46,11 @@ Dust will emit from wheels when driving on dirt, grass, and sand. The engine wil
 
 # FAQs
 ### Is a lighting system planned?
-No. Large systems like this are outside the scope of this addon. If you want a lighting system to use with GAuto, I recommend [Photon 1](https://steamcommunity.com/sharedfiles/filedetails/?id=339648087) or [Photon 2](https://steamcommunity.com/sharedfiles/filedetails/?id=3128242636).
+No. Large systems like this are outside the intended scope of this addon. If you want a lighting system to use with GAuto, I recommend [Photon 1](https://steamcommunity.com/sharedfiles/filedetails/?id=339648087) or [Photon 2](https://steamcommunity.com/sharedfiles/filedetails/?id=3128242636).
 ### Will you add support to [this car]?
 I occasionally add support for more vehicles but I usually don't take requests for it. Ideally, vehicle creators should be adding support to their own vehicles. You can also add support by submitting a PR for it on GitHub.
 ### Will you add [this feature]?
-At this point, new features are a low priority. GAuto has been in development since 2019 and I've added everything that I originally wanted to add, and more. I'll gladly take requests but there's no guarantee that they will be added.
+At this point, new features are a low priority. I started developing GAuto in 2019 and I've added everything that I originally wanted to add, and more. I'll still take requests but there's no guarantee they will be added.
 ### Why is smoke and fire sometimes floating above the car?
 The smoke and fire effects are placed at the position of the engine attachment that is built into the vehicle's model. If the attachment isn't aligned properly, the effects won't be aligned properly either. Some vehicle creators do this intentionally to make the vehicle drivable in deep water. Supported vehicles can have an engine offset parameter applied so the effects appear in the right place.
 
