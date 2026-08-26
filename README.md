@@ -86,6 +86,9 @@ Most vehicles should work fine with GAuto, but there are a handful that are unsu
 __VCMod, SVMod, Vehicle Damage 2, Etc__  
 Vehicle systems like these are NOT compatible. They will likely interfere with GAuto and cause various systems to break.
 
+# Contributing
+ Contributions are welcome! Please read through the [guidelines](https://lambdagaming.github.io/guides/contributing) before submitting an issue or pull request.
+
 # Credits
 - Lambda Gaming Community - Beta testing and feature suggestions
 - rp_truenorth_v1a - Map used in screenshots and thumbnail on the Steam workshop
