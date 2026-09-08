@@ -19,9 +19,9 @@ function ENT:Initialize()
 	self.HealthPercent = 0.3
 end
 
-local function Spark( ent )
+function ENT:Spark()
 	local ed = EffectData()
-	ed:SetOrigin( ent:GetPos() )
+	ed:SetOrigin( self:GetPos() )
 	ed:SetNormal( VectorRand() )
 	ed:SetMagnitude( 3 )
 	ed:SetScale( 1 )
@@ -36,7 +36,7 @@ function ENT:StartTouch( ent )
 		local healthPercent = self.HealthPercent
 		if health >= maxHealth then return end
 		GAuto.AddHealth( ent, maxHealth * healthPercent )
-		Spark( self )
+		self:Spark()
 		self:EmitSound( "items/smallmedkit1.wav" )
 		self:Remove()
 	end

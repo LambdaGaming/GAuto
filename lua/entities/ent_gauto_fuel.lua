@@ -22,7 +22,7 @@ end
 
 function ENT:Splash()
 	local ed = EffectData()
-	ed:SetOrigin( ent:GetPos() )
+	ed:SetOrigin( self:GetPos() )
 	ed:SetNormal( VectorRand() )
 	ed:SetMagnitude( 3 )
 	ed:SetScale( 1 )
